@@ -1,0 +1,30 @@
+{
+  "name": "@workspace/db",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "db:generate": "prisma generate --no-engine",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:studio": "prisma studio"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@workspace/eslint": "workspace:*",
+    "@workspace/tsconfig": "workspace:*",
+    "prisma": "^6.4.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "packageManager": "bun@1.2.3",
+  "dependencies": {
+    "@prisma/client": "6.4.1"
+  }
+}

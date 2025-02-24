@@ -4,21 +4,21 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@workspace/api";
 
 export const Epic = () => {
-  const { data } = useQuery({
+  const { data: messages } = useQuery({
     queryKey: ["epic"],
     queryFn: async () => (await api.hello.index.get()).data,
   });
 
-  if (!data) {
+  if (!messages) {
     return <h1>Loading...</h1>;
   }
 
   return (
     <section>
-      {data.map((yeet, i) => {
+      {messages.map((message) => {
         return (
-          <div key={i}>
-            <h1>{i + 1}: {yeet}</h1>
+          <div key={message.id}>
+            <h1>{message.message}</h1>
           </div>
         );
       })}

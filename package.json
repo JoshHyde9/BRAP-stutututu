@@ -6,7 +6,8 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "prisma:generate": "prisma generate --schema=./packages/db/schema.prisma"
   },
   "devDependencies": {
     "@workspace/eslint": "workspace:*",
@@ -16,5 +17,8 @@
     "typescript": "5.5.4"
   },
   "packageManager": "bun@1.2.3",
-  "workspaces": ["apps/*", "packages/*"]
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
 }

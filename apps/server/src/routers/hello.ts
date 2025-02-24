@@ -1,7 +1,9 @@
-import Elysia from "elysia";
+import { WithPrismaPlugin } from "..";
 
-export const helloRouter = new Elysia().group("/hello", (app) =>
-  app.get("/", () =>
-    new Array(40).fill("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-  )
-);
+export const helloRouter = (app: WithPrismaPlugin) =>
+  app.group("/hello", (app) =>
+    app.get("/", async ({ ctx }) => {
+      const posts = await ctx.prisma.post.findMany();
+      return posts;
+    })
+  );
