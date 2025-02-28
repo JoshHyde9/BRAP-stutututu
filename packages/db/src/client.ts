@@ -1,6 +1,6 @@
 import { PrismaClient } from "../generated/client";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({ log: ["query", "error"] });
 
 const globalForPrisma = global as unknown as { prisma: typeof prisma };
 
