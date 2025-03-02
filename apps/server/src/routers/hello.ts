@@ -1,9 +1,14 @@
-import { WithPrismaPlugin } from "..";
+import { ElysiaContext } from "..";
 
-export const helloRouter = (app: WithPrismaPlugin) =>
+export const helloRouter = (app: ElysiaContext) =>
   app.group("/hello", (app) =>
-    app.get("/", async ({ ctx }) => {
-      const posts = await ctx.prisma.post.findMany();
-      return posts;
+    app.get(
+      "/me",
+      async ({ user, prisma }) => {
+        return await prisma.user.findUnique({ where: { id: user.id } });
+      },
+      { auth: true }
+    ).get("/", async ({ prisma }) => {
+      return await prisma.user.findMany();
     })
   );

@@ -2,18 +2,18 @@
 
 Fkn idk tbh
 
-- [Bun](https://bun.sh/)
-- [Turborepo](https://turbo.build/)
-- [Nextjs](https://nextjs.org/)
-- [Elysia](https://elysiajs.com/)
-- [Prizzma](https://www.prisma.io/)
+- [Bun](https://bun.sh)
+- [Turborepo](https://turbo.build)
+- [Nextjs](https://nextjs.org)
+- [Elysia](https://elysiajs.com)
+- [Prizzma](https://www.prisma.io)
+- [Better Auth](https://www.better-auth.com)
 - [Tanstack Query](https://tanstack.com/query/latest)
-- [TailwindCSS](https://tailwindcss.com/)
-- [Shadcn/ui](https://ui.shadcn.com/)
-- 
+- [TailwindCSS](https://tailwindcss.com)
+- [Shadcn/ui](https://ui.shadcn.com)
+- [Neon Postgres](https://neon.tech)
+
 ## TODO
 
-- Auth (either Authjs or fuck around with Better Auth)
-- Database (most likely postgres)
 - Upgrade to tailwind v4
 
