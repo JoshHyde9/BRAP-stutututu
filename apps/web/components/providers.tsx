@@ -11,6 +11,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
       enableColorScheme
+      storageKey="discord-theme"
     >
       {children}
     </NextThemesProvider>

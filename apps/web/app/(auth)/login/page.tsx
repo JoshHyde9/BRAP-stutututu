@@ -3,7 +3,7 @@
 import { signIn } from "@workspace/auth";
 import { Button } from "@workspace/ui/components/button";
 
-export const SignIn = () => {
+export default function SignIn() {
   return (
     <Button
       onClick={async () =>
@@ -16,4 +16,4 @@ export const SignIn = () => {
       Sign in
     </Button>
   );
-};
+}

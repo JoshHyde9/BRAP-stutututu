@@ -1,17 +1,14 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Open_Sans } from "next/font/google";
 
 import "@workspace/ui/globals.css";
-import { Providers } from "@/components/providers";
+
 import ReactQueryProviders from "@/lib/query-client";
 
-const fontSans = Geist({
+import { Providers } from "@/components/providers";
+
+const fontSans = Open_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
-});
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
 });
 
 export default function RootLayout({
@@ -22,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
+        className={`${fontSans.variable} font-sans antialiased bg-white dark:bg-[#313338]`}
       >
         <ReactQueryProviders>
           <Providers>{children}</Providers>
