@@ -16,4 +16,5 @@ Fkn idk tbh
 ## TODO
 
 - Upgrade to tailwind v4
+- Work out why getting session on server doesn't work
 
