@@ -17,4 +17,5 @@ Fkn idk tbh
 
 - Upgrade to tailwind v4
 - Work out why getting session on server doesn't work
+  - Seems like credentials are not being sent to the server via better-auth api. Had to make own requests [which can be seen here](/apps/web/lib/get-server-session.ts)
 

@@ -8,11 +8,12 @@ import { api } from "@workspace/api";
 
 import { Epic } from "@/components/epic";
 
-import { SignIn } from "@/components/sign-in-button";
-import { SignOut } from "@/components/sign-out";
+import { Session } from "@/components/get-session";
+import { getServerSession } from "@/lib/get-server-session";
 
 export default async function Page() {
   const queryClient = new QueryClient();
+  const session = await getServerSession();
 
   await queryClient.prefetchQuery({
     queryKey: ["epic"],
@@ -25,8 +26,7 @@ export default async function Page() {
       <div className="flex flex-col items-center justify-center gap-4">
         <h1 className="text-2xl font-bold">Hello World</h1>
 
-        <SignIn />
-        <SignOut />
+        <Session />
 
         <HydrationBoundary state={dehydrate(queryClient)}>
           <Epic />

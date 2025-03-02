@@ -1,15 +1,23 @@
 "use client";
 
-import { signOut, useSession } from "@workspace/auth";
+import { signOut } from "@workspace/auth";
 import { Button } from "@workspace/ui/components/button";
+import { redirect } from "next/navigation";
 
 export const SignOut = () => {
-  const { data: session } = useSession();
   return (
-    <div>
-      {session && (
-        <Button onClick={async () => await signOut()}>Sign out</Button>
-      )}
-    </div>
+    <Button
+      onClick={async () =>
+        await signOut({
+          fetchOptions: {
+            onSuccess: () => {
+              redirect("/");
+            },
+          },
+        })
+      }
+    >
+      Sign out
+    </Button>
   );
 };
