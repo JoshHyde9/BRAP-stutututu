@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-   output = "../generated/client"
+  output   = "../generated/client"
 }
 
 datasource db {
@@ -18,6 +18,10 @@ model User {
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
+
+  servers  Server[]
+  members  Member[]
+  channels Channel[]
 
   @@unique([email])
   @@map("user")
@@ -66,4 +70,76 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model Server {
+  id         String @id @default(uuid())
+  name       String
+  imageUrl   String @db.Text
+  inviteCode String @db.Text
+
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  members  Member[]
+  channels Channel[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ownerId])
+  @@map("server")
+}
+
+enum MemberRole {
+  ADMIN
+  MODERATOR
+  GUEST
+
+  @@map("member_role")
+}
+
+model Member {
+  id   String     @id @default(uuid())
+  role MemberRole @default(GUEST)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  serverId String
+  server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([serverId])
+  @@map("member")
+}
+
+enum ChannelType {
+  TEXT
+  AUDIO
+  VIDEO
+
+  @@map("channel_type")
+}
+
+model Channel {
+  id   String      @id @default(uuid())
+  name String
+  type ChannelType @default(TEXT)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  serverId String
+  server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([serverId])
+  @@map("channel")
 }
