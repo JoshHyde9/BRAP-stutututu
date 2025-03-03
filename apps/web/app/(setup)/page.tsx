@@ -1,5 +1,8 @@
-import { getServerSession } from "@/lib/get-server-session";
 import { redirect } from "next/navigation";
+
+import { getServerSession } from "@/lib/get-server-session";
+
+import { SignOut } from "@/components/sign-out";
 
 const SetupPage = async () => {
   const session = await getServerSession();
@@ -9,8 +12,10 @@ const SetupPage = async () => {
   }
 
   return (
-    <div>
-      <h1>Weclome {session.user.name}</h1>
+    <div className="container mx-auto max-w-prose flex flex-col space-y-5">
+      <h1 className="text-5xl font-bold">Weclome {session.user.name}</h1>
+
+      <SignOut />
     </div>
   );
 };

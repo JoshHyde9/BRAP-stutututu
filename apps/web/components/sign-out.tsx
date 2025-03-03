@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 export const SignOut = () => {
   return (
     <Button
+    size="lg"
       onClick={async () =>
         await signOut({
           fetchOptions: {

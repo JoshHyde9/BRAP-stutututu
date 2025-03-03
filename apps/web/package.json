@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.66.9",
-    "@workspace/ui": "workspace:*",
     "@workspace/auth": "workspace:*",
+    "@workspace/ui": "workspace:*",
     "lucide-react": "0.456.0",
     "next": "^15.1.0",
     "next-themes": "^0.4.3",
@@ -20,14 +20,14 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.9",
     "@types/node": "^20",
-    "@types/react": "18.3.0",
-    "@types/react-dom": "18.3.1",
+    "@types/react": "19.0.4",
+    "@types/react-dom": "19.0.4",
+    "@workspace/api": "workspace:*",
     "@workspace/eslint": "workspace:^",
     "@workspace/tsconfig": "workspace:*",
-    "@workspace/api": "workspace:*",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
+    "tailwindcss": "^4.0.9",
     "typescript": "^5"
   }
 }
