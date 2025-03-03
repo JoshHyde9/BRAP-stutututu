@@ -102,6 +102,7 @@ enum MemberRole {
 model Member {
   id   String     @id @default(uuid())
   role MemberRole @default(GUEST)
+  nickname String?
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
