@@ -4,7 +4,7 @@ import { cors } from "@elysiajs/cors";
 import { elysiaContext } from "./middleware/context";
 import { betterAuthView } from "./auth-view";
 
-import { helloRouter } from "./routers/hello";
+import { serverRouter } from "./routers/server";
 
 const app = new Elysia({ prefix: "/api" })
   .use(elysiaContext)
@@ -16,7 +16,7 @@ const app = new Elysia({ prefix: "/api" })
       allowedHeaders: ["Content-Type", "Authorization"],
     })
   )
-  .use(helloRouter)
+  .use(serverRouter)
   .all("/auth/*", betterAuthView)
   .listen(5000);
 

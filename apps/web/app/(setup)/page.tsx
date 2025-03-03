@@ -2,7 +2,9 @@ import { redirect } from "next/navigation";
 
 import { getServerSession } from "@/lib/get-server-session";
 
-import { SignOut } from "@/components/sign-out";
+import { prisma } from "@workspace/db";
+
+import { InitialModal } from "@/components/modals/initial-modal";
 
 const SetupPage = async () => {
   const session = await getServerSession();
@@ -11,13 +13,16 @@ const SetupPage = async () => {
     return redirect("/login");
   }
 
+  const server = await prisma.server.findFirst({
+    where: { members: { some: { userId: session.user.id } } },
+  });
+
+  if (server) {
+    return redirect(`/server/${server.id}`);
+  }
+
   return (
-    <div className="container mx-auto max-w-prose flex flex-col space-y-5">
-      <h1 className="text-5xl font-bold">Weclome {session.user.name}</h1>
-
-
-      <SignOut />
-    </div>
+      <InitialModal />
   );
 };
 

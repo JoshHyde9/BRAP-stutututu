@@ -21,6 +21,12 @@ export const ourFileRouter = {
   })
     .middleware(async () => await auth())
     .onUploadComplete(() => {}),
+  messageFile: f({
+    image: { maxFileSize: "32MB" },
+    pdf: { maxFileSize: "4MB" },
+  })
+    .middleware(async () => await auth())
+    .onUploadComplete(() => {}),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

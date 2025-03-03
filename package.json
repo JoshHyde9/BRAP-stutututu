@@ -1,14 +1,6 @@
 {
   "name": "jims-rich-media-chat-client-v2",
   "version": "0.0.1",
-  "private": true,
-  "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "prisma:generate": "prisma generate --schema=./packages/db/prisma/schema.prisma"
-  },
   "devDependencies": {
     "@workspace/eslint": "workspace:*",
     "@workspace/tsconfig": "workspace:*",
@@ -17,6 +9,14 @@
     "typescript": "5.5.4"
   },
   "packageManager": "bun@1.2.3",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "prisma:generate": "prisma generate --schema=./packages/db/prisma/schema.prisma"
+  },
   "workspaces": [
     "apps/*",
     "packages/*"
