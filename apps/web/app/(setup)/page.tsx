@@ -15,6 +15,7 @@ const SetupPage = async () => {
     <div className="container mx-auto max-w-prose flex flex-col space-y-5">
       <h1 className="text-5xl font-bold">Weclome {session.user.name}</h1>
 
+
       <SignOut />
     </div>
   );
