@@ -74,7 +74,7 @@ export const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role }) => {
         )}
         {!isAdmin && (
           <DropdownMenuItem
-            className="cursor-pointer px-3 py-2 text-sm text-rose-500 focus:bg-rose-400/90 dark:focus:bg-rose-500/20"
+            className="cursor-pointer px-3 py-2 text-sm text-rose-500 focus:bg-rose-100/90 dark:focus:bg-rose-500/20"
           >
             Leave Server <LogOut className="ml-auto size-4" />
           </DropdownMenuItem>
