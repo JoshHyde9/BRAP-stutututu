@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 export const SignOut = () => {
   return (
     <Button
+    className="w-full"
     size="lg"
       onClick={async () =>
         await signOut({

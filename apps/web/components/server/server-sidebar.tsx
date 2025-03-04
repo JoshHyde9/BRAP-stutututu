@@ -6,12 +6,6 @@ import { api } from "@workspace/api";
 import { getServerSession } from "@/lib/get-server-session";
 
 import { ServerHeader } from "@/components/server/server-header";
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "@workspace/ui/components/avatar";
-import { Settings } from "lucide-react";
 import { ServerSidebarBottom } from "./server-sidebar-bottom";
 
 type ServerSidebarProps = {
