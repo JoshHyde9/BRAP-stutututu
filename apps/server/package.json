@@ -21,9 +21,9 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@workspace/db": "workspace:*",
-    "@workspace/auth": "workspace:*",
     "@elysiajs/cors": "^1.2.0",
+    "@workspace/auth": "workspace:*",
+    "@workspace/db": "workspace:*",
     "elysia": "^1.2.21"
   }
 }

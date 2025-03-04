@@ -83,7 +83,7 @@ export const serverRouter = (app: ElysiaContext) =>
               members: {
                 include: {
                   user: {
-                    select: { id: true, image: true, name: true, },
+                    select: { id: true, image: true, name: true },
                   },
                 },
                 orderBy: { role: "asc" },
@@ -94,6 +94,70 @@ export const serverRouter = (app: ElysiaContext) =>
         {
           auth: true,
           params: t.Object({ id: t.String() }),
+        }
+      )
+      .post(
+        "/newInviteCode",
+        async ({ user, prisma, body }) => {
+          return await prisma.server.update({
+            where: {
+              id: body.id,
+              ownerId: user.id,
+            },
+            data: {
+              inviteCode: uuidv4(),
+            },
+            select: {
+              inviteCode: true,
+            },
+          });
+        },
+        {
+          auth: true,
+          body: t.Object({ id: t.String() }),
+        }
+      )
+      .get(
+        "/byServerInviteCode/:inviteCode",
+        async ({ user, prisma, params }) => {
+          const server = await prisma.server.findFirst({
+            where: {
+              inviteCode: params.inviteCode,
+              members: {
+                some: {
+                  userId: user.id,
+                },
+              },
+            },
+            select: { id: true, inviteCode: true },
+          });
+
+          return server;
+        },
+        {
+          auth: true,
+          params: t.Object({ inviteCode: t.String() }),
+        }
+      )
+      .put(
+        "/addNewMember",
+        async ({ user, prisma, body }) => {
+          console.log(user);
+          return await prisma.server.update({
+            where: {
+              inviteCode: body.inviteCode,
+            },
+            data: {
+              members: {
+                create: [{ userId: user.id }],
+              },
+            },
+            select: { id: true },
+          });
+        },
+        {
+          auth: true,
+          body: t.Object({ inviteCode: t.String() }),
         }
       )
   );
