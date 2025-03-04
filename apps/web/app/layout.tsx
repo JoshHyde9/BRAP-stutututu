@@ -4,7 +4,8 @@ import "@workspace/ui/globals.css";
 
 import ReactQueryProviders from "@/lib/query-client";
 
-import { Providers } from "@/components/providers";
+import { ThemeProvider } from "@/app/providers/theme-provider";
+import { ModalProvider } from "./providers/modal-provider";
 
 const fontSans = Open_Sans({
   subsets: ["latin"],
@@ -22,7 +23,10 @@ export default function RootLayout({
         className={`${fontSans.variable} font-sans antialiased bg-white dark:bg-[#313338]`}
       >
         <ReactQueryProviders>
-          <Providers>{children}</Providers>
+          <ThemeProvider>
+            <ModalProvider />
+            {children}
+          </ThemeProvider>
         </ReactQueryProviders>
       </body>
     </html>
