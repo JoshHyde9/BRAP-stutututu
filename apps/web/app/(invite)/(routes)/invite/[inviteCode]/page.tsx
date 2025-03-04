@@ -11,7 +11,6 @@ type InviteCodePageProps = {
 export const InviteCodePage = async ({ params }: InviteCodePageProps) => {
   const session = await getServerSession();
   const { inviteCode } = await params;
-  const cookieStore = await cookies();
   const headerStore = await headers();
 
   if (!session) {
