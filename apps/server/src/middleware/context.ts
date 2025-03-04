@@ -13,7 +13,7 @@ export const elysiaContext = new Elysia()
         });
 
         if (!session) return error(401);
-        
+
         return {
           user: session.user,
           session: session.session,
