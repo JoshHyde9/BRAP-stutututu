@@ -58,7 +58,7 @@ export const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role }) => {
             Create Channel <PlusCircle className="ml-auto size-4" />
           </DropdownMenuItem>
         )}
-        <DropdownMenuSeparator />
+       {isModerator && <DropdownMenuSeparator />}
         <DropdownMenuItem
           className="cursor-pointer px-3 py-2 text-sm"
         >
