@@ -112,15 +112,15 @@ export const MembersModal = () => {
                   <TableCell>{roleIconMap[member.role]}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
-                      <ActionTooltip
-                        label="More Actions"
-                        side="top"
-                        align="center"
-                      >
-                        <DropdownMenuTrigger>
+                      <DropdownMenuTrigger>
+                        <ActionTooltip
+                          label="More Actions"
+                          side="top"
+                          align="center"
+                        >
                           <MoreVertical className="size-4 text-zinc-500" />
-                        </DropdownMenuTrigger>
-                      </ActionTooltip>
+                        </ActionTooltip>
+                      </DropdownMenuTrigger>
 
                       <DropdownMenuContent side="left">
                         {server.ownerId === member.userId && (
