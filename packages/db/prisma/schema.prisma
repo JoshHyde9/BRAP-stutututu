@@ -11,6 +11,7 @@ datasource db {
 model User {
   id            String    @id
   name          String
+  displayName   String?
   email         String
   emailVerified Boolean
   image         String?
@@ -76,7 +77,7 @@ model Server {
   id         String @id @default(uuid())
   name       String
   imageUrl   String @db.Text
-  inviteCode String @db.Text @unique
+  inviteCode String @unique @db.Text
 
   ownerId String
   owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
@@ -100,8 +101,8 @@ enum MemberRole {
 }
 
 model Member {
-  id   String     @id @default(uuid())
-  role MemberRole @default(GUEST)
+  id       String     @id @default(uuid())
+  role     MemberRole @default(GUEST)
   nickname String?
 
   userId String
