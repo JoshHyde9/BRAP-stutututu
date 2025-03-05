@@ -2,7 +2,16 @@
 
 import type { ServerWithMembers } from "@/lib/types";
 
-import { ChevronDown, LogOut, Pencil, PlusCircle, Settings, Trash, UserPlus, Users } from "lucide-react";
+import {
+  ChevronDown,
+  LogOut,
+  Pencil,
+  PlusCircle,
+  Settings,
+  Trash,
+  UserPlus,
+  Users,
+} from "lucide-react";
 import { MemberRole } from "@workspace/db";
 
 import { useModal } from "@/hooks/use-modal-store";
@@ -35,47 +44,43 @@ export const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 text-xs font-medium text-black dark:text-neutral-400 space-y-[2px]">
         {isModerator && (
-          <DropdownMenuItem onClick={() => onOpen("invite", { server })} className="cursor-pointer px-3 py-2 text-sm text-indigo-600 dark:text-indigo-400 focus:bg-indigo-400/20 dark:focus:bg-indigo-500/20 dark:focus:text-primary">
+          <DropdownMenuItem
+            onClick={() => onOpen("invite", { server })}
+            className="cursor-pointer px-3 py-2 text-sm text-indigo-600 dark:text-indigo-400 focus:bg-indigo-400/20 dark:focus:bg-indigo-500/20 dark:focus:text-primary"
+          >
             Invite People <UserPlus className="ml-auto size-4" />
           </DropdownMenuItem>
         )}
         {isAdmin && (
-          <DropdownMenuItem className="cursor-pointer px-3 py-2 text-sm">
+          <DropdownMenuItem
+            onClick={() => onOpen("editServer", { server })}
+            className="cursor-pointer px-3 py-2 text-sm"
+          >
             Server Settings <Settings className="ml-auto size-4" />
           </DropdownMenuItem>
         )}
         {isAdmin && (
-          <DropdownMenuItem
-            className="cursor-pointer px-3 py-2 text-sm"
-          >
+          <DropdownMenuItem className="cursor-pointer px-3 py-2 text-sm">
             Manage Members <Users className="ml-auto size-4" />
           </DropdownMenuItem>
         )}
         {isModerator && (
-          <DropdownMenuItem
-            className="cursor-pointer px-3 py-2 text-sm"
-          >
+          <DropdownMenuItem className="cursor-pointer px-3 py-2 text-sm">
             Create Channel <PlusCircle className="ml-auto size-4" />
           </DropdownMenuItem>
         )}
-       {isModerator && <DropdownMenuSeparator />}
-        <DropdownMenuItem
-          className="cursor-pointer px-3 py-2 text-sm"
-        >
+        {isModerator && <DropdownMenuSeparator />}
+        <DropdownMenuItem className="cursor-pointer px-3 py-2 text-sm">
           Update Server Profile <Pencil className="ml-auto size-4" />
         </DropdownMenuItem>
         {isModerator && <DropdownMenuSeparator />}
         {isAdmin && (
-          <DropdownMenuItem
-            className="cursor-pointer px-3 py-2 text-sm text-rose-500 focus:bg-rose-100/90 dark:focus:bg-rose-500/20"
-          >
+          <DropdownMenuItem className="cursor-pointer px-3 py-2 text-sm text-rose-500 focus:bg-rose-100/90 dark:focus:bg-rose-500/20">
             Delete Server <Trash className="ml-auto size-4" />
           </DropdownMenuItem>
         )}
         {!isAdmin && (
-          <DropdownMenuItem
-            className="cursor-pointer px-3 py-2 text-sm text-rose-500 focus:bg-rose-100/90 dark:focus:bg-rose-500/20"
-          >
+          <DropdownMenuItem className="cursor-pointer px-3 py-2 text-sm text-rose-500 focus:bg-rose-100/90 dark:focus:bg-rose-500/20">
             Leave Server <LogOut className="ml-auto size-4" />
           </DropdownMenuItem>
         )}

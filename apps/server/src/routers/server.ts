@@ -142,7 +142,6 @@ export const serverRouter = (app: ElysiaContext) =>
       .put(
         "/addNewMember",
         async ({ user, prisma, body }) => {
-          console.log(user);
           return await prisma.server.update({
             where: {
               inviteCode: body.inviteCode,
@@ -158,6 +157,28 @@ export const serverRouter = (app: ElysiaContext) =>
         {
           auth: true,
           body: t.Object({ inviteCode: t.String() }),
+        }
+      )
+      .patch(
+        "/editServer/:serverId",
+        async ({ user, prisma, params, body }) => {
+          await prisma.server.update({
+            where: {
+              id: params.serverId,
+              ownerId: user.id,
+            },
+            data: {
+              name: body.name,
+              imageUrl: body.imageUrl,
+            },
+          });
+
+          return { success: true };
+        },
+        {
+          auth: true,
+          body: t.Object({ name: t.String(), imageUrl: t.String() }),
+          params: t.Object({ serverId: t.String() }),
         }
       )
   );

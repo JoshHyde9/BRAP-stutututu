@@ -1,7 +1,7 @@
 import type { Server } from "@workspace/db";
 import { create } from "zustand";
 
-export type ModalType = "createServer" | "invite";
+export type ModalType = "createServer" | "invite" | "editServer";
 
 type ModalData = {
   server?: Server;
