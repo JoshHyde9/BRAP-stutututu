@@ -1,7 +1,9 @@
 "use client";
 
+import type { MemberRole } from "@workspace/db";
 import type { ServerWithMembers } from "@/lib/types";
 
+import { useMutation } from "@tanstack/react-query";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
   Check,
@@ -14,6 +16,7 @@ import {
   ShieldQuestion,
 } from "lucide-react";
 
+import { api } from "@workspace/api";
 import { useModal } from "@/hooks/use-modal-store";
 
 import {
@@ -48,13 +51,42 @@ import { ActionTooltip } from "@/components/action-tooltip";
 
 import { roleIconMap } from "@/lib/iconMaps";
 
+type EditMemberRoleSchema = {
+  memberId: string;
+  role: MemberRole;
+};
+
 // TODO: Make actions functional
 export const MembersModal = () => {
-  const { isOpen, onClose, type, props } = useModal();
+  const { onOpen, isOpen, onClose, type, props } = useModal();
 
   const { server } = props as { server: ServerWithMembers };
 
   const isModalOpen = isOpen && type === "members";
+
+  const editMemberRole = async (values: EditMemberRoleSchema) => {
+    const { data, error } = await api.member
+      .editMemberRole({ serverId: server.id })
+      .patch(values);
+
+    if (error) throw error;
+
+    return data;
+  };
+
+  const { mutate } = useMutation({
+    mutationFn: editMemberRole,
+    onError: (err) => {
+      console.log(err);
+    },
+    onSuccess: (server) => {
+      onOpen("members", { server });
+    },
+  });
+
+  const onEditMemberRole = (values: EditMemberRoleSchema) => {
+    mutate(values);
+  };
 
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
@@ -64,7 +96,8 @@ export const MembersModal = () => {
             Manage Members
           </DialogTitle>
           <DialogDescription className="text-center text-zinc-500">
-            {server?.members.length} Members
+            {server?.members.length}{" "}
+            {server?.members.length > 1 ? "Members" : "Member"}
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="mt-8 max-h-[420px] pr-6">
@@ -123,7 +156,15 @@ export const MembersModal = () => {
                           </ActionTooltip>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent side="left">
-                          <DropdownMenuItem className="cursor-pointer">
+                          <DropdownMenuItem
+                            className="cursor-pointer"
+                            onClick={() =>
+                              onEditMemberRole({
+                                memberId: member.id,
+                                role: "MODERATOR",
+                              })
+                            }
+                          >
                             <ShieldCheck className="size-4 mr-2" />
                             Moderator
                           </DropdownMenuItem>
@@ -134,11 +175,7 @@ export const MembersModal = () => {
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger>
-                        <ActionTooltip
-                          label="More Actions"
-                          side="top"
-                          align="center"
-                        >
+                        <ActionTooltip label="More Actions">
                           <MoreVertical className="size-4 text-zinc-500" />
                         </ActionTooltip>
                       </DropdownMenuTrigger>
@@ -158,14 +195,30 @@ export const MembersModal = () => {
                               </DropdownMenuSubTrigger>
                               <DropdownMenuPortal>
                                 <DropdownMenuSubContent>
-                                  <DropdownMenuItem className="cursor-pointer">
+                                  <DropdownMenuItem
+                                    className="cursor-pointer"
+                                    onClick={() =>
+                                      onEditMemberRole({
+                                        memberId: member.id,
+                                        role: "GUEST",
+                                      })
+                                    }
+                                  >
                                     <Shield className="size-4 mr-2" />
                                     Guest
                                     {member.role === "GUEST" && (
                                       <Check className="size-4 ml-auto" />
                                     )}
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem className="cursor-pointer">
+                                  <DropdownMenuItem
+                                    className="cursor-pointer"
+                                    onClick={() =>
+                                      onEditMemberRole({
+                                        memberId: member.id,
+                                        role: "MODERATOR",
+                                      })
+                                    }
+                                  >
                                     <ShieldCheck className="size-4 mr-2" />
                                     Moderator
                                     {member.role === "MODERATOR" && (

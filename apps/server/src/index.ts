@@ -5,6 +5,7 @@ import { elysiaContext } from "./middleware/context";
 import { betterAuthView } from "./auth-view";
 
 import { serverRouter } from "./routers/server";
+import { memberRouter } from "./routers/member";
 
 const app = new Elysia({ prefix: "/api" })
   .use(elysiaContext)
@@ -17,6 +18,7 @@ const app = new Elysia({ prefix: "/api" })
     })
   )
   .use(serverRouter)
+  .use(memberRouter)
   .all("/auth/*", betterAuthView)
   .listen(5000);
 
