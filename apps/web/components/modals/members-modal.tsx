@@ -56,7 +56,12 @@ type EditMemberRoleSchema = {
   role: MemberRole;
 };
 
+type KickMemberSchema = {
+  memberId: string;
+};
+
 // TODO: Make actions functional
+// FIXME: REFACTOR HOLY CRAP
 export const MembersModal = () => {
   const { onOpen, isOpen, onClose, type, props } = useModal();
 
@@ -74,7 +79,7 @@ export const MembersModal = () => {
     return data;
   };
 
-  const { mutate } = useMutation({
+  const { mutate: mutateMemberRole } = useMutation({
     mutationFn: editMemberRole,
     onError: (err) => {
       console.log(err);
@@ -85,7 +90,31 @@ export const MembersModal = () => {
   });
 
   const onEditMemberRole = (values: EditMemberRoleSchema) => {
-    mutate(values);
+    mutateMemberRole(values);
+  };
+
+  const kickMember = async (values: KickMemberSchema) => {
+    const { data, error } = await api.member
+      .kickMember({ serverId: server.id })
+      .patch(values);
+
+    if (error) throw error;
+
+    return data;
+  };
+
+  const { mutate: mutateKickMember } = useMutation({
+    mutationFn: kickMember,
+    onError: (err) => {
+      console.log(err);
+    },
+    onSuccess: (server) => {
+      onOpen("members", { server });
+    },
+  });
+
+  const onKickMember = (values: KickMemberSchema) => {
+    mutateKickMember(values);
   };
 
   return (
@@ -229,7 +258,12 @@ export const MembersModal = () => {
                               </DropdownMenuPortal>
                             </DropdownMenuSub>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="cursor-pointer">
+                            <DropdownMenuItem
+                              className="cursor-pointer text-rose-500 focus:bg-rose-100/90 dark:focus:bg-rose-500/20"
+                              onClick={() =>
+                                onKickMember({ memberId: member.id })
+                              }
+                            >
                               <Gavel className="size-4 mr-2" /> Kick
                             </DropdownMenuItem>
                           </>
