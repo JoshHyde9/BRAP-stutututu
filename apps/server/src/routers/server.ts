@@ -83,7 +83,13 @@ export const serverRouter = (app: ElysiaContext) =>
               members: {
                 include: {
                   user: {
-                    select: { id: true, image: true, name: true },
+                    select: {
+                      id: true,
+                      image: true,
+                      name: true,
+                      displayName: true,
+                      createdAt: true,
+                    },
                   },
                 },
                 orderBy: { role: "asc" },
