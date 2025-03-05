@@ -109,7 +109,9 @@ export const MembersModal = () => {
                       addSuffix: true,
                     })}
                   </TableCell>
-                  <TableCell>{roleIconMap[member.role]}</TableCell>
+                  <TableCell>
+                    <ActionTooltip label={member.role.toLowerCase()}>{roleIconMap[member.role]}</ActionTooltip>
+                  </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger>
