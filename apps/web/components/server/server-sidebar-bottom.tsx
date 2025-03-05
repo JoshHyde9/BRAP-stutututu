@@ -32,8 +32,7 @@ export const ServerSidebarBottom: React.FC<ServerSidebarBottomProps> = ({
               </Avatar>
             </div>
             <div className="flex flex-col items-start w-">
-              {/* TODO: Add user display name */}
-              <h3 className="font-medium overflow-hidden truncate w-24">Jim's Discord Account</h3>
+              <h3 className="font-medium overflow-hidden truncate w-24">{session.user.displayName}</h3>
               <h6 className="font-medium text-xs text-zinc-600">
                 {session.user.name}
               </h6>

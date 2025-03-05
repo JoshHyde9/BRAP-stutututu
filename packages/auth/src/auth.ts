@@ -13,11 +13,20 @@ export const auth = betterAuth({
       clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
       mapProfileToUser: (profile) => {
         return {
-          displayName: profile.display_name,
+          displayName: profile.global_name
         };
       },
     },
   },
+  user: {
+    additionalFields: {
+      displayName: {
+        type: "string",
+        required: false,
+        input: false
+      }
+    }
+  }
 });
 
 export type Session = typeof auth.$Infer.Session;
