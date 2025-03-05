@@ -31,10 +31,10 @@ export const ServerSidebarBottom: React.FC<ServerSidebarBottomProps> = ({
                 <AvatarFallback>{session.user.name[0]}</AvatarFallback>
               </Avatar>
             </div>
-            <div className="flex flex-col items-start w-">
-              <h3 className="font-medium overflow-hidden truncate w-24">{session.user.displayName}</h3>
-              <h6 className="font-medium text-xs text-zinc-600">
-                {session.user.name}
+            <div className="flex flex-col w-24 text-left">
+              <h3 className="font-medium truncate overflow-hidden">{session.user.displayName ?? session.user.name}</h3>
+              <h6 className="font-medium text-xs text-zinc-600 truncate overflow-hidden">
+                {session.user.name} 
               </h6>
             </div>
           </button>
