@@ -8,6 +8,7 @@ import {
   Gavel,
   IdCard,
   MoreVertical,
+  Plus,
   Shield,
   ShieldCheck,
   ShieldQuestion,
@@ -110,7 +111,25 @@ export const MembersModal = () => {
                     })}
                   </TableCell>
                   <TableCell>
-                    <ActionTooltip label={member.role.toLowerCase()}>{roleIconMap[member.role]}</ActionTooltip>
+                    {member.role !== "GUEST" ? (
+                      <ActionTooltip label={member.role.toLowerCase()}>
+                        {roleIconMap[member.role]}
+                      </ActionTooltip>
+                    ) : (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger>
+                          <ActionTooltip label="Add Roles">
+                            <Plus className="size-4 ml-2 md:size-5 text-zinc-500" />
+                          </ActionTooltip>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent side="left">
+                          <DropdownMenuItem className="cursor-pointer">
+                            <ShieldCheck className="size-4 mr-2" />
+                            Moderator
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
