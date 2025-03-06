@@ -208,11 +208,15 @@ export const MembersModal = () => {
                           <MoreVertical className="size-4 text-zinc-500" />
                         </ActionTooltip>
                       </DropdownMenuTrigger>
-
                       <DropdownMenuContent side="left">
                         {server.ownerId === member.userId && (
-                          <DropdownMenuItem className="cursor-pointer">
-                            Edit server profile
+                          <DropdownMenuItem
+                            className="cursor-pointer"
+                            onClick={() =>
+                              onOpen("editServerProfile", { server, userId: member.userId })
+                            }
+                          >
+                            Edit Server Profile
                           </DropdownMenuItem>
                         )}
                         {server.ownerId !== member.userId && (

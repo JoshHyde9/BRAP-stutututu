@@ -1,10 +1,11 @@
-import type { Server } from "@workspace/db";
+import { ServerWithMembers } from "@/lib/types";
 import { create } from "zustand";
 
-export type ModalType = "createServer" | "invite" | "editServer" | "members";
+export type ModalType = "createServer" | "invite" | "editServer" | "members" | "editServerProfile";
 
 type ModalData = {
-  server?: Server;
+  server?: ServerWithMembers;
+  userId?: string;
 };
 
 type ModalStore = {

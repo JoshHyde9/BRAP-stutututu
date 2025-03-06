@@ -50,7 +50,7 @@ export const ServerSidebar: React.FC<ServerSidebarProps> = async ({
   return (
     <div className="flex flex-col h-full w-full text-primary bg-[#f2f3f5] dark:bg-[#2b2d31]">
       <div className="flex-1">
-        <ServerHeader server={server} role={loggedInUserRole} />
+        <ServerHeader server={server} role={loggedInUserRole} userId={session.user.id} />
       </div>
 
       <ServerSidebarBottom session={session} />

@@ -27,9 +27,10 @@ import {
 type ServerHeaderProps = {
   server: ServerWithMembers;
   role: MemberRole;
+  userId: string;
 };
 
-export const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role }) => {
+export const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role, userId }) => {
   const { onOpen } = useModal();
   const isAdmin = role === MemberRole.ADMIN;
   const isModerator = isAdmin || role === MemberRole.MODERATOR;
@@ -73,7 +74,10 @@ export const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role }) => {
           </DropdownMenuItem>
         )}
         {isModerator && <DropdownMenuSeparator />}
-        <DropdownMenuItem className="cursor-pointer px-3 py-2 text-sm">
+        <DropdownMenuItem
+          className="cursor-pointer px-3 py-2 text-sm"
+          onClick={() => onOpen("editServerProfile", { server, userId })}
+        >
           Update Server Profile <Pencil className="ml-auto size-4" />
         </DropdownMenuItem>
         {isModerator && <DropdownMenuSeparator />}

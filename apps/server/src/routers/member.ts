@@ -78,4 +78,37 @@ export const memberRouter = (app: ElysiaContext) =>
           params: t.Object({ serverId: t.String() }),
         }
       )
+      .patch(
+        "/editMember/:serverId/:memberId",
+        async ({ user, prisma, body, params }) => {
+          const trimmedNickname = body.nickname.trim();
+
+          return await prisma.member.update({
+            where: {
+              id: params.memberId,
+              serverId: params.serverId,
+              userId: user.id,
+            },
+            data: {
+              nickname: trimmedNickname.length > 1 ? trimmedNickname : null,
+            },
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                  displayName: true,
+                  createdAt: true,
+                },
+              },
+            },
+          });
+        },
+        {
+          auth: true,
+          body: t.Object({ nickname: t.String() }),
+          params: t.Object({ serverId: t.String(), memberId: t.String() }),
+        }
+      )
   );
