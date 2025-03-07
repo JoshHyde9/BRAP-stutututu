@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { headers, cookies } from "next/headers";
+import { headers } from "next/headers";
 
 import { api } from "@workspace/api";
 import { getServerSession } from "@/lib/get-server-session";
