@@ -51,14 +51,11 @@ import { UserAvatar } from "@/components/user-avatar";
 import { ActionTooltip } from "@/components/action-tooltip";
 
 import { roleIconMap } from "@/lib/iconMaps";
+import { KickMember } from "./kick-member";
 
 type EditMemberRoleSchema = {
   memberId: string;
   role: MemberRole;
-};
-
-type KickMemberSchema = {
-  memberId: string;
 };
 
 // TODO: Make actions functional
@@ -92,30 +89,6 @@ export const MembersModal = () => {
 
   const onEditMemberRole = (values: EditMemberRoleSchema) => {
     mutateMemberRole(values);
-  };
-
-  const kickMember = async (values: KickMemberSchema) => {
-    const { data, error } = await api.member
-      .kickMember({ serverId: server.id })
-      .patch(values);
-
-    if (error) throw error;
-
-    return data;
-  };
-
-  const { mutate: mutateKickMember } = useMutation({
-    mutationFn: kickMember,
-    onError: (err) => {
-      console.log(err);
-    },
-    onSuccess: (server) => {
-      onOpen("members", { server });
-    },
-  });
-
-  const onKickMember = (values: KickMemberSchema) => {
-    mutateKickMember(values);
   };
 
   return (
@@ -266,14 +239,7 @@ export const MembersModal = () => {
                               </DropdownMenuPortal>
                             </DropdownMenuSub>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="cursor-pointer text-rose-500 focus:bg-rose-100/90 dark:focus:bg-rose-500/20"
-                              onClick={() =>
-                                onKickMember({ memberId: member.id })
-                              }
-                            >
-                              <Gavel className="size-4 mr-2" /> Kick
-                            </DropdownMenuItem>
+                            <KickMember member={member} server={server} onOpen={onOpen} />
                             <DropdownMenuItem
                               className="cursor-pointer text-rose-500 focus:bg-rose-100/90 dark:focus:bg-rose-500/20"
                               onClick={() => onOpen("banMember", { server, member })}
