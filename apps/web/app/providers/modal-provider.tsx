@@ -7,6 +7,7 @@ import { InviteModal } from "@/components/modals/invite-modal";
 import { EditServerModal } from "@/components/modals/edit-server-modal";
 import { MembersModal } from "@/components/modals/members-modal";
 import { EditServerProfileModal } from "@/components/modals/edit-server-profile";
+import { BanMemberModal } from "@/components/modals/ban-member-modal";
 
 export const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -24,6 +25,7 @@ export const ModalProvider = () => {
       <EditServerModal />
       <MembersModal />
       <EditServerProfileModal />
+      <BanMemberModal />
     </>
   );
 };

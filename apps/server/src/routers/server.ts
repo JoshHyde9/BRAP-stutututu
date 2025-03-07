@@ -126,19 +126,29 @@ export const serverRouter = (app: ElysiaContext) =>
       .get(
         "/byServerInviteCode/:inviteCode",
         async ({ user, prisma, params }) => {
-          const server = await prisma.server.findFirst({
+          return await prisma.server.findFirst({
             where: {
-              inviteCode: params.inviteCode,
-              members: {
-                some: {
-                  userId: user.id,
+              OR: [
+                {
+                  inviteCode: params.inviteCode,
+                  members: {
+                    some: {
+                      userId: user.id,
+                    },
+                  },
                 },
-              },
+                {
+                  inviteCode: params.inviteCode,
+                  bans: {
+                    some: {
+                      userId: user.id,
+                    },
+                  },
+                },
+              ],
             },
             select: { id: true, inviteCode: true },
           });
-
-          return server;
         },
         {
           auth: true,

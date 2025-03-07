@@ -23,6 +23,7 @@ model User {
   servers  Server[]
   members  Member[]
   channels Channel[]
+  bans     Ban[]
 
   @@unique([email])
   @@map("user")
@@ -84,6 +85,7 @@ model Server {
 
   members  Member[]
   channels Channel[]
+  bans     Ban[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -144,4 +146,22 @@ model Channel {
   @@index([userId])
   @@index([serverId])
   @@map("channel")
+}
+
+model Ban {
+  id     String  @id @default(uuid())
+  reason String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  serverId String
+  server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([serverId])
+  @@map("ban")
 }

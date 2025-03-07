@@ -12,6 +12,7 @@ import {
   MoreVertical,
   Plus,
   Shield,
+  ShieldBan,
   ShieldCheck,
   ShieldQuestion,
 } from "lucide-react";
@@ -213,7 +214,10 @@ export const MembersModal = () => {
                           <DropdownMenuItem
                             className="cursor-pointer"
                             onClick={() =>
-                              onOpen("editServerProfile", { server, userId: member.userId })
+                              onOpen("editServerProfile", {
+                                server,
+                                userId: member.userId,
+                              })
                             }
                           >
                             Edit Server Profile
@@ -269,6 +273,12 @@ export const MembersModal = () => {
                               }
                             >
                               <Gavel className="size-4 mr-2" /> Kick
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="cursor-pointer text-rose-500 focus:bg-rose-100/90 dark:focus:bg-rose-500/20"
+                              onClick={() => onOpen("banMember", { server, member })}
+                            >
+                              <ShieldBan className="size-4 mr-2" /> Ban
                             </DropdownMenuItem>
                           </>
                         )}

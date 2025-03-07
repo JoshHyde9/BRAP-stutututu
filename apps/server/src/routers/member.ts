@@ -79,6 +79,51 @@ export const memberRouter = (app: ElysiaContext) =>
         }
       )
       .patch(
+        "/ban/:serverId/:userId",
+        async ({ user, prisma, params, body }) => {
+          const [_, server] = await prisma.$transaction([
+            prisma.ban.create({
+              data: {
+                userId: params.userId,
+                serverId: params.serverId,
+                reason: body.reason,
+              },
+            }),
+            prisma.server.update({
+              where: {
+                id: params.serverId,
+                ownerId: user.id,
+              },
+              data: {
+                members: {
+                  deleteMany: {
+                    userId: params.userId,
+                    NOT: {
+                      userId: user.id,
+                    },
+                  },
+                },
+              },
+              include: {
+                members: {
+                  include: {
+                    user: true,
+                  },
+                  orderBy: { role: "asc" },
+                },
+              },
+            }),
+          ]);
+
+          return server;
+        },
+        {
+          auth: true,
+          body: t.Object({ reason: t.String() }),
+          params: t.Object({ serverId: t.String(), userId: t.String() }),
+        }
+      )
+      .patch(
         "/editMember/:serverId/:memberId",
         async ({ user, prisma, body, params }) => {
           const trimmedNickname = body.nickname.trim();
