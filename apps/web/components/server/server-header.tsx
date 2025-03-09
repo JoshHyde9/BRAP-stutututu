@@ -74,7 +74,7 @@ export const ServerHeader: React.FC<ServerHeaderProps> = ({
         {isModerator && (
           <DropdownMenuItem
             className="cursor-pointer px-3 py-2 text-sm"
-            onClick={() => onOpen("createChannel", {server })}
+            onClick={() => onOpen("createChannel", { server })}
           >
             Create Channel <PlusCircle className="ml-auto size-4" />
           </DropdownMenuItem>
@@ -93,7 +93,10 @@ export const ServerHeader: React.FC<ServerHeaderProps> = ({
           </DropdownMenuItem>
         )}
         {!isAdmin && (
-          <DropdownMenuItem className="cursor-pointer px-3 py-2 text-sm text-rose-500 focus:bg-rose-100/90 dark:focus:bg-rose-500/20">
+          <DropdownMenuItem
+            className="cursor-pointer px-3 py-2 text-sm text-rose-500 focus:bg-rose-100/90 dark:focus:bg-rose-500/20"
+            onClick={() => onOpen("leaveServer", { server })}
+          >
             Leave Server <LogOut className="ml-auto size-4" />
           </DropdownMenuItem>
         )}

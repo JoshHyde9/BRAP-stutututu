@@ -197,4 +197,35 @@ export const serverRouter = (app: ElysiaContext) =>
           params: t.Object({ serverId: t.String() }),
         }
       )
+      .patch(
+        "/leave/:serverId",
+        async ({ user, prisma, params }) => {
+          await prisma.server.update({
+            where: {
+              id: params.serverId,
+              ownerId: {
+                not: user.id,
+              },
+              members: {
+                some: {
+                  userId: user.id,
+                },
+              },
+            },
+            data: {
+              members: {
+                deleteMany: {
+                  userId: user.id,
+                },
+              },
+            },
+          });
+
+          return { success: true };
+        },
+        {
+          auth: true,
+          params: t.Object({ serverId: t.String() }),
+        }
+      )
   );

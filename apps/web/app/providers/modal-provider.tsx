@@ -9,6 +9,7 @@ import { MembersModal } from "@/components/modals/members-modal/members-modal";
 import { EditServerProfileModal } from "@/components/modals/edit-server-profile";
 import { BanMemberModal } from "@/components/modals/members-modal/ban-member-modal";
 import { CreateChannelModal } from "@/components/modals/create-channel-modal";
+import { LeaveServerModal } from "@/components/modals/leave-server-modal";
 
 export const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -28,6 +29,7 @@ export const ModalProvider = () => {
       <EditServerProfileModal />
       <BanMemberModal />
       <CreateChannelModal />
+      <LeaveServerModal />
     </>
   );
 };
