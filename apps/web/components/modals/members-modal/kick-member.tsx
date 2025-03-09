@@ -2,11 +2,10 @@
 
 import type { MemberWithUser, ServerWithMembers } from "@/lib/types";
 
-import { Gavel } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
+import { Gavel } from "lucide-react";
 
 import { api } from "@workspace/api";
-
 import { DropdownMenuItem } from "@workspace/ui/components/dropdown-menu";
 
 type KickMemberSchema = {
@@ -53,7 +52,7 @@ export const KickMember: React.FC<KickMemberProps> = ({
       className="cursor-pointer text-rose-500 focus:bg-rose-100/90 dark:focus:bg-rose-500/20"
       onClick={() => onKickMember({ memberId: member.id })}
     >
-      <Gavel className="size-4 mr-2" /> Kick
+      <Gavel className="mr-2 size-4" /> Kick
     </DropdownMenuItem>
   );
 };

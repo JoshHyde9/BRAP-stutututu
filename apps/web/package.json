@@ -33,7 +33,9 @@
     "@workspace/api": "workspace:*",
     "@workspace/eslint": "workspace:^",
     "@workspace/tsconfig": "workspace:*",
+    "@workspace/prettier": "workspace:*",
     "tailwindcss": "^4.0.9",
     "typescript": "^5"
-  }
+  },
+  "prettier": "@workspace/prettier"
 }
