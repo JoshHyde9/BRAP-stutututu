@@ -12,10 +12,9 @@ import {
   UserPlus,
   Users,
 } from "lucide-react";
-import { MemberRole } from "@workspace/db";
 
 import { useModal } from "@/hooks/use-modal-store";
-
+import { MemberRole } from "@workspace/db";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,7 +29,11 @@ type ServerHeaderProps = {
   userId: string;
 };
 
-export const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role, userId }) => {
+export const ServerHeader: React.FC<ServerHeaderProps> = ({
+  server,
+  role,
+  userId,
+}) => {
   const { onOpen } = useModal();
   const isAdmin = role === MemberRole.ADMIN;
   const isModerator = isAdmin || role === MemberRole.MODERATOR;
@@ -38,16 +41,16 @@ export const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role, userId
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="focus:outline-none" asChild>
-        <button className="w-full text-md font-semibold px-3 flex items-center h-12 transition border-neutral-200  border-b-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 dark:border-neutral-800">
+        <button className="text-md flex h-12 w-full items-center border-b-2 border-neutral-200 px-3 font-semibold transition hover:bg-zinc-700/10 dark:border-neutral-800 dark:hover:bg-zinc-700/50">
           {server.name}
-          <ChevronDown className="size-5 ml-auto" />
+          <ChevronDown className="ml-auto size-5" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 text-xs font-medium text-black dark:text-neutral-400 space-y-[2px]">
+      <DropdownMenuContent className="w-56 space-y-[2px] text-xs font-medium text-black dark:text-neutral-400">
         {isModerator && (
           <DropdownMenuItem
             onClick={() => onOpen("invite", { server })}
-            className="cursor-pointer px-3 py-2 text-sm text-indigo-600 dark:text-indigo-400 focus:bg-indigo-400/20 dark:focus:bg-indigo-500/20 dark:focus:text-primary"
+            className="dark:focus:text-primary cursor-pointer px-3 py-2 text-sm text-indigo-600 focus:bg-indigo-400/20 dark:text-indigo-400 dark:focus:bg-indigo-500/20"
           >
             Invite People <UserPlus className="ml-auto size-4" />
           </DropdownMenuItem>
@@ -69,7 +72,10 @@ export const ServerHeader: React.FC<ServerHeaderProps> = ({ server, role, userId
           </DropdownMenuItem>
         )}
         {isModerator && (
-          <DropdownMenuItem className="cursor-pointer px-3 py-2 text-sm">
+          <DropdownMenuItem
+            className="cursor-pointer px-3 py-2 text-sm"
+            onClick={() => onOpen("createChannel", {server })}
+          >
             Create Channel <PlusCircle className="ml-auto size-4" />
           </DropdownMenuItem>
         )}
