@@ -88,7 +88,10 @@ export const ServerHeader: React.FC<ServerHeaderProps> = ({
         </DropdownMenuItem>
         {isModerator && <DropdownMenuSeparator />}
         {isAdmin && (
-          <DropdownMenuItem className="cursor-pointer px-3 py-2 text-sm text-rose-500 focus:bg-rose-100/90 dark:focus:bg-rose-500/20">
+          <DropdownMenuItem
+            className="cursor-pointer px-3 py-2 text-sm text-rose-500 focus:bg-rose-100/90 dark:focus:bg-rose-500/20"
+            onClick={() => onOpen("deleteServer", { server })}
+          >
             Delete Server <Trash className="ml-auto size-4" />
           </DropdownMenuItem>
         )}

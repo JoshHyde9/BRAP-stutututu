@@ -228,4 +228,21 @@ export const serverRouter = (app: ElysiaContext) =>
           params: t.Object({ serverId: t.String() }),
         }
       )
+      .delete(
+        "/deleteServer/:serverId",
+        async ({ user, prisma, params }) => {
+          await prisma.server.delete({
+            where: {
+              id: params.serverId,
+              ownerId: user.id,
+            },
+          });
+
+          return { success: true };
+        },
+        {
+          auth: true,
+          params: t.Object({ serverId: t.String() }),
+        }
+      )
   );
