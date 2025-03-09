@@ -1,14 +1,12 @@
 "use client";
 
-import type { MemberRole } from "@workspace/db";
 import type { ServerWithMembers } from "@/lib/types";
+import type { MemberRole } from "@workspace/db";
 
 import { useMutation } from "@tanstack/react-query";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
   Check,
-  Gavel,
-  IdCard,
   MoreVertical,
   Plus,
   Shield,
@@ -17,9 +15,13 @@ import {
   ShieldQuestion,
 } from "lucide-react";
 
-import { api } from "@workspace/api";
+import { ActionTooltip } from "@/components/action-tooltip";
+import { CopyUserId } from "@/components/modals/members-modal/copy-user-id";
+import { KickMember } from "@/components/modals/members-modal/kick-member";
+import { UserAvatar } from "@/components/user-avatar";
 import { useModal } from "@/hooks/use-modal-store";
-
+import { roleIconMap } from "@/lib/iconMaps";
+import { api } from "@workspace/api";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +29,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import {
   Table,
@@ -36,22 +49,6 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuTrigger,
-  DropdownMenuSubTrigger,
-} from "@workspace/ui/components/dropdown-menu";
-import { UserAvatar } from "@/components/user-avatar";
-import { ActionTooltip } from "@/components/action-tooltip";
-
-import { roleIconMap } from "@/lib/iconMaps";
-import { KickMember } from "./kick-member";
 
 type EditMemberRoleSchema = {
   memberId: string;
@@ -93,9 +90,9 @@ export const MembersModal = () => {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
-      <DialogContent className=" lg:min-w-2xl bg-white text-black dark:bg-[#2b2d31] dark:text-primary">
+      <DialogContent className="lg:min-w-2xl dark:text-primary bg-white text-black dark:bg-[#2b2d31]">
         <DialogHeader className="px-6 pt-8">
-          <DialogTitle className="text-center text-2xl font-bold dark:text-primary">
+          <DialogTitle className="dark:text-primary text-center text-2xl font-bold">
             Manage Members
           </DialogTitle>
           <DialogDescription className="text-center text-zinc-500">
@@ -155,7 +152,7 @@ export const MembersModal = () => {
                       <DropdownMenu>
                         <DropdownMenuTrigger>
                           <ActionTooltip label="Add Roles">
-                            <Plus className="size-4 ml-2 md:size-5 text-zinc-500" />
+                            <Plus className="ml-2 size-4 text-zinc-500 md:size-5" />
                           </ActionTooltip>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent side="left">
@@ -168,7 +165,7 @@ export const MembersModal = () => {
                               })
                             }
                           >
-                            <ShieldCheck className="size-4 mr-2" />
+                            <ShieldCheck className="mr-2 size-4" />
                             Moderator
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -199,8 +196,8 @@ export const MembersModal = () => {
                         {server.ownerId !== member.userId && (
                           <>
                             <DropdownMenuSub>
-                              <DropdownMenuSubTrigger className="flex items-center cursor-pointer">
-                                <ShieldQuestion className="size-4 mr-2" />
+                              <DropdownMenuSubTrigger className="flex cursor-pointer items-center">
+                                <ShieldQuestion className="mr-2 size-4" />
                                 <span>Role</span>
                               </DropdownMenuSubTrigger>
                               <DropdownMenuPortal>
@@ -214,10 +211,10 @@ export const MembersModal = () => {
                                       })
                                     }
                                   >
-                                    <Shield className="size-4 mr-2" />
+                                    <Shield className="mr-2 size-4" />
                                     Guest
                                     {member.role === "GUEST" && (
-                                      <Check className="size-4 ml-auto" />
+                                      <Check className="ml-auto size-4" />
                                     )}
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
@@ -229,30 +226,33 @@ export const MembersModal = () => {
                                       })
                                     }
                                   >
-                                    <ShieldCheck className="size-4 mr-2" />
+                                    <ShieldCheck className="mr-2 size-4" />
                                     Moderator
                                     {member.role === "MODERATOR" && (
-                                      <Check className="size-4 ml-auto" />
+                                      <Check className="ml-auto size-4" />
                                     )}
                                   </DropdownMenuItem>
                                 </DropdownMenuSubContent>
                               </DropdownMenuPortal>
                             </DropdownMenuSub>
                             <DropdownMenuSeparator />
-                            <KickMember member={member} server={server} onOpen={onOpen} />
+                            <KickMember
+                              member={member}
+                              server={server}
+                              onOpen={onOpen}
+                            />
                             <DropdownMenuItem
                               className="cursor-pointer text-rose-500 focus:bg-rose-100/90 dark:focus:bg-rose-500/20"
-                              onClick={() => onOpen("banMember", { server, member })}
+                              onClick={() =>
+                                onOpen("banMember", { server, member })
+                              }
                             >
-                              <ShieldBan className="size-4 mr-2" /> Ban
+                              <ShieldBan className="mr-2 size-4" /> Ban
                             </DropdownMenuItem>
                           </>
                         )}
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="cursor-pointer">
-                          <IdCard className="size-4 mr-2" />
-                          Copy User ID
-                        </DropdownMenuItem>
+                        <CopyUserId userId={member.userId} />
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
