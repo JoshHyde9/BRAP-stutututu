@@ -1,6 +1,7 @@
 {
   "extends": "@workspace/tsconfig/nextjs.json",
   "compilerOptions": {
+    "lib": ["DOM"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
