@@ -42,7 +42,7 @@ export const ServerMember: React.FC<ServerMemberProps> = ({
         name={member.nickname ?? member.user.displayName ?? member.user.name}
         className="size-8 md:size-8"
       />
-      <div className="flex justify-between w-full">
+      <div className="flex text-left pl-2 w-full">
         <p
           className={cn(
             "w-32 truncate text-sm font-semibold text-zinc-500 transition group-hover:text-zinc-600 dark:text-zinc-400 dark:group-hover:text-zinc-300",
