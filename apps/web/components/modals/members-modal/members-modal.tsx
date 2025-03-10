@@ -104,7 +104,7 @@ export const MembersModal = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[100px]">Name</TableHead>
+                <TableHead className="w-60">Name</TableHead>
                 <TableHead>Member Since</TableHead>
                 <TableHead>Joined Discord</TableHead>
                 <TableHead>Roles</TableHead>
@@ -121,7 +121,7 @@ export const MembersModal = () => {
                     <div className="flex flex-col gap-y-1">
                       <div className="flex items-center text-xs font-semibold">
                         <div className="flex flex-col space-y-1.5">
-                          <div className="text-base">
+                          <div className="w-44 text-base overflow-hidden text-ellipsis">
                             {member.nickname ??
                               member.user.displayName ??
                               member.user.name}
