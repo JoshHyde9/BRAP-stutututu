@@ -129,4 +129,16 @@ export const channelRouter = (app: ElysiaContext) =>
           params: t.Object({ serverId: t.String(), channelId: t.String() }),
         }
       )
+      .get(
+        "/byId/:channelId",
+        async ({ prisma, params }) => {
+          return await prisma.channel.findUnique({
+            where: { id: params.channelId },
+          });
+        },
+        {
+          auth: true,
+          params: t.Object({ channelId: t.String() }),
+        }
+      )
   );

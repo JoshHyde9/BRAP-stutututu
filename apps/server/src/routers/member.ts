@@ -156,4 +156,16 @@ export const memberRouter = (app: ElysiaContext) =>
           params: t.Object({ serverId: t.String(), memberId: t.String() }),
         }
       )
+      .get(
+        "/loggedInUserServerMember/:serverId",
+        async ({ user, prisma, params }) => {
+          return await prisma.member.findFirst({
+            where: {
+              serverId: params.serverId,
+              userId: user.id,
+            },
+          });
+        },
+        { auth: true, params: t.Object({ serverId: t.String() }) }
+      )
   );
