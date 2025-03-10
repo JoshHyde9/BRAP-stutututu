@@ -95,7 +95,7 @@ export const ServerSidebar: React.FC<ServerSidebarProps> = async ({
                 label: "Members",
                 type: "member",
                 data: members.map((member) => ({
-                  id: member.id,
+                  id: member.userId,
                   name:
                     member.nickname ??
                     member.user.displayName ??

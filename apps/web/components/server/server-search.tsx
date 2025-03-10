@@ -56,12 +56,10 @@ export const ServerSearch: React.FC<ServerSearchProps> = ({ data }) => {
   const onClick = ({ id, type }: OnClickProps) => {
     setOpen(false);
 
-    // TODO: Create ability for users to DM each other
     if (type === "member") {
-      return router.push(`/server/${params?.serverId}/conversation/${id}`);
+      return router.push(`/conversation/${id}`);
     }
 
-    // TODO: Create individual channel page
     if (type === "channel") {
       return router.push(`/server/${params?.serverId}/channel/${id}`);
     }

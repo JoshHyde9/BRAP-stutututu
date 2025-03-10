@@ -31,7 +31,7 @@ export const ServerMember: React.FC<ServerMemberProps> = ({
   const icon = roleIconMap[member.role];
 
   const onClick = () => {
-    router.push(`/server/${params.serverId}/conversation/${member.id}`);
+    router.push(`/conversation/${member.userId}`);
   };
 
   return (
