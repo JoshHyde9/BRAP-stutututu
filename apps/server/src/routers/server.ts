@@ -67,6 +67,35 @@ export const serverRouter = (app: ElysiaContext) =>
         }
       )
       .get(
+        "/byIdWithGeneral/:serverId",
+        async ({ user, prisma, params }) => {
+          return await prisma.server.findUnique({
+            where: {
+              id: params.serverId,
+              members: {
+                some: {
+                  userId: user.id,
+                },
+              },
+            },
+            include: {
+              channels: {
+                where: {
+                  name: "general",
+                },
+                orderBy: {
+                  createdAt: "asc",
+                },
+              },
+            },
+          });
+        },
+        {
+          auth: true,
+          params: t.Object({ serverId: t.String() }),
+        }
+      )
+      .get(
         "/byIdWithMembersAndChannels/:id",
         async ({ user, prisma, params }) => {
           return await prisma.server.findUnique({
