@@ -28,7 +28,7 @@ export const ServerSidebarBottom: React.FC<ServerSidebarBottomProps> = ({
             <div>
               <Avatar className="size-7 md:size-10">
                 <AvatarImage src={session.user.image as string} alt={session.user.name} />
-                <AvatarFallback>{session.user.name[0]}</AvatarFallback>
+                <AvatarFallback>{session.user.name[0]?.toUpperCase()}</AvatarFallback>
               </Avatar>
             </div>
             <div className="flex flex-col w-24 text-left">

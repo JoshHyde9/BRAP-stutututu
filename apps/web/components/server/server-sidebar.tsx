@@ -4,12 +4,16 @@ import { redirect } from "next/navigation";
 import { api } from "@workspace/api";
 import { ChannelType } from "@workspace/db";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
+import { Separator } from "@workspace/ui/components/separator";
 
 import { getServerSession } from "@/lib/get-server-session";
 import { channelIconMap, roleIconMap } from "@/lib/iconMaps";
 
+import { ServerChannel } from "@/components/server/server-channel";
 import { ServerHeader } from "@/components/server/server-header";
+import { ServerMember } from "@/components/server/server-member";
 import { ServerSearch } from "@/components/server/server-search";
+import { ServerSection } from "@/components/server/server-section";
 import { ServerSidebarBottom } from "@/components/server/server-sidebar-bottom";
 
 type ServerSidebarProps = {
@@ -104,6 +108,89 @@ export const ServerSidebar: React.FC<ServerSidebarProps> = async ({
             ]}
           />
         </div>
+        <Separator className="my-2 rounded-md bg-zinc-200 dark:bg-zinc-700" />
+
+        {!!textChannels.length && (
+          <div className="mb-2">
+            <ServerSection
+              sectionType="channel"
+              label="Text Channels"
+              channelType={ChannelType.TEXT}
+              role={loggedInUserRole}
+              server={server}
+            />
+            <div className="space-y-[2px]">
+              {textChannels.map((channel) => (
+                <ServerChannel
+                  key={channel.id}
+                  channel={channel}
+                  server={server}
+                  loggedInUserRole={loggedInUserRole}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!!audioChannels.length && (
+          <div className="mb-2">
+            <ServerSection
+              sectionType="channel"
+              label="Voice Channels"
+              channelType={ChannelType.AUDIO}
+              role={loggedInUserRole}
+              server={server}
+            />
+            <div className="space-y-[2px]">
+              {audioChannels.map((channel) => (
+                <ServerChannel
+                  key={channel.id}
+                  channel={channel}
+                  server={server}
+                  loggedInUserRole={loggedInUserRole}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!!videoChannels.length && (
+          <div className="mb-2">
+            <ServerSection
+              sectionType="channel"
+              label="Video Channels"
+              channelType={ChannelType.VIDEO}
+              role={loggedInUserRole}
+              server={server}
+            />
+            <div className="space-y-[2px]">
+              {videoChannels.map((channel) => (
+                <ServerChannel
+                  key={channel.id}
+                  channel={channel}
+                  server={server}
+                  loggedInUserRole={loggedInUserRole}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!!members.length && (
+          <div className="mb-2">
+            <ServerSection
+              sectionType="member"
+              label="Members"
+              role={loggedInUserRole}
+              server={server}
+            />
+            <div className="space-y-[2px]">
+              {members.map((member) => (
+                <ServerMember key={member.id} member={member} server={server} />
+              ))}
+            </div>
+          </div>
+        )}
       </ScrollArea>
 
       <ServerSidebarBottom session={session} />

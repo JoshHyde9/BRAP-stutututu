@@ -22,3 +22,9 @@ export const roleIconMap = {
     [ChannelType.AUDIO]: <Mic className="mr-2 size-4" />,
     [ChannelType.VIDEO]: <Video className="mr-2 size-4" />,
   }
+
+  export const sidebarIconMap = {
+    [ChannelType.TEXT]: Hash,
+    [ChannelType.AUDIO]: Mic,
+    [ChannelType.VIDEO]: Video,
+  };

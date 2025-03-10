@@ -1,5 +1,7 @@
 "use client";
 
+import type { SectionType } from "@/lib/types";
+
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Command, Search } from "lucide-react";
@@ -13,12 +15,10 @@ import {
   CommandList,
 } from "@workspace/ui/components/command";
 
-type Type = "channel" | "member";
-
 type ServerSearchProps = {
   data: {
     label: string;
-    type: Type;
+    type: SectionType;
     data: {
       id: string;
       icon: React.ReactNode;
@@ -29,7 +29,7 @@ type ServerSearchProps = {
 
 type OnClickProps = {
   id: string;
-  type: Type;
+  type: SectionType;
 };
 
 type ParamsProps = {

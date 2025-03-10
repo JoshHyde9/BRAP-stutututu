@@ -35,19 +35,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
+import { useEffect } from "react";
 
 export const CreateChannelModal = () => {
   const { isOpen, onClose, type, props } = useModal();
   const router = useRouter();
 
+  console.log({channelType: props.channelType})
+
   const form = useForm({
     resolver: zodResolver(createNewChannelSchema),
     defaultValues: {
       name: "",
-      type: ChannelType.TEXT,
+      type: props.channelType ?? ChannelType.TEXT,
     },
   });
-
+  
   const createChannel = async (
     values: z.infer<typeof createNewChannelSchema>,
   ) => {
@@ -70,6 +73,13 @@ export const CreateChannelModal = () => {
       onClose();
     },
   });
+
+  useEffect(() => {
+    console.log(props.channelType)
+    if (props.channelType) {
+      form.setValue("type", props.channelType)
+    }
+  }, [])
 
   const onSubmit = async (values: z.infer<typeof createNewChannelSchema>) => {
     const parsedData = await createNewChannelSchema.parseAsync(values);
@@ -134,7 +144,7 @@ export const CreateChannelModal = () => {
                     <Select
                       disabled={isPending}
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      defaultValue={props.channelType ?? field.value}
                     >
                       <FormControl>
                         <SelectTrigger className="dark:text-primary/80 w-full border-0 bg-zinc-300/50 capitalize focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-zinc-800">
