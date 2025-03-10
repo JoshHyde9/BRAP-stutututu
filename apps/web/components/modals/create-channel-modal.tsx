@@ -2,13 +2,12 @@
 
 import type z from "zod";
 
+import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 
-import { useModal } from "@/hooks/use-modal-store";
-import { createNewChannelSchema } from "@/lib/schema";
 import { api } from "@workspace/api";
 import { ChannelType } from "@workspace/db";
 import { Button } from "@workspace/ui/components/button";
@@ -35,13 +34,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
-import { useEffect } from "react";
+
+import { useModal } from "@/hooks/use-modal-store";
+import { createNewChannelSchema } from "@/lib/schema";
 
 export const CreateChannelModal = () => {
   const { isOpen, onClose, type, props } = useModal();
   const router = useRouter();
-
-  console.log({channelType: props.channelType})
 
   const form = useForm({
     resolver: zodResolver(createNewChannelSchema),
@@ -50,11 +49,13 @@ export const CreateChannelModal = () => {
       type: props.channelType ?? ChannelType.TEXT,
     },
   });
-  
+
   const createChannel = async (
     values: z.infer<typeof createNewChannelSchema>,
   ) => {
-    const { data, error } = await api.channel.create({ serverId: props.server!.id }).post(values);
+    const { data, error } = await api.channel
+      .create({ serverId: props.server!.id })
+      .post(values);
 
     if (error) throw error;
 
@@ -75,11 +76,10 @@ export const CreateChannelModal = () => {
   });
 
   useEffect(() => {
-    console.log(props.channelType)
     if (props.channelType) {
-      form.setValue("type", props.channelType)
+      form.setValue("type", props.channelType ?? ChannelType.TEXT);
     }
-  }, [])
+  }, []);
 
   const onSubmit = async (values: z.infer<typeof createNewChannelSchema>) => {
     const parsedData = await createNewChannelSchema.parseAsync(values);
@@ -119,12 +119,15 @@ export const CreateChannelModal = () => {
                         className="dark:text-primary/80 border-0 bg-zinc-300/50 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-zinc-800"
                         placeholder="Channel name..."
                         onChange={(event) => {
-                          field.onChange(
-                            // @ts-ignore gross TS error I cba to deal with
-                            event.currentTarget.value
-                              .replace(/\s+/g, "-")
-                              .toLowerCase(),
-                          );
+                          if (form.getValues("type") === "TEXT") {
+                            field.onChange(
+                              event.currentTarget.value
+                                .replace(/\s+/g, "-")
+                                .toLowerCase(),
+                            );
+                          } else {
+                            field.onChange(event.currentTarget.value);
+                          }
                         }}
                       />
                     </FormControl>

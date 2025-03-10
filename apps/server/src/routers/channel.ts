@@ -17,8 +17,8 @@ export const channelRouter = (app: ElysiaContext) =>
           return error("Bad Request", "Channel name cannot be 'general'.");
         }
 
-        // Replace all spaces with "-" and convert to lowercase
-        const sanitisedName = body.name.replace(/\s+/g, "-").toLowerCase();
+        // Replace all spaces with "-" and convert to lowercase if channel type is a text channel
+        const sanitisedName = body.type === "TEXT" ? body.name.replace(/\s+/g, "-").toLowerCase() : body.name;
         
         return await prisma.server.update({
             where: {
