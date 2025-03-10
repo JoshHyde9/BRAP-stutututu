@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { Command, Search } from "lucide-react";
 
 import {
@@ -12,10 +13,12 @@ import {
   CommandList,
 } from "@workspace/ui/components/command";
 
+type Type = "channel" | "member";
+
 type ServerSearchProps = {
   data: {
     label: string;
-    type: "channel" | "member";
+    type: Type;
     data: {
       id: string;
       icon: React.ReactNode;
@@ -24,8 +27,19 @@ type ServerSearchProps = {
   }[];
 };
 
+type OnClickProps = {
+  id: string;
+  type: Type;
+};
+
+type ParamsProps = {
+  serverId: string;
+};
+
 export const ServerSearch: React.FC<ServerSearchProps> = ({ data }) => {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const params = useParams<ParamsProps>();
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -39,6 +53,19 @@ export const ServerSearch: React.FC<ServerSearchProps> = ({ data }) => {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
+  const onClick = ({ id, type }: OnClickProps) => {
+    setOpen(false);
+
+    // TODO: Create ability for users to DM each other
+    if (type === "member") {
+      return router.push(`/server/${params?.serverId}/conversation/${id}`);
+    }
+
+    // TODO: Create individual channel page
+    if (type === "channel") {
+      return router.push(`/server/${params?.serverId}/channel/${id}`);
+    }
+  };
 
   return (
     <>
@@ -51,7 +78,10 @@ export const ServerSearch: React.FC<ServerSearchProps> = ({ data }) => {
           Search
         </p>
         <kbd className="bg-muted text-muted-foreground pointer-events-none ml-auto inline-flex h-5 select-none items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium">
-          <span className="text-xs"><Command className="size-3" /></span>K
+          <span className="text-xs">
+            <Command className="size-3" />
+          </span>
+          K
         </kbd>
       </button>
       <CommandDialog open={open} onOpenChange={setOpen}>
@@ -64,7 +94,7 @@ export const ServerSearch: React.FC<ServerSearchProps> = ({ data }) => {
             return (
               <CommandGroup key={label} heading={label}>
                 {data.map(({ icon, id, name }) => (
-                  <CommandItem key={id}>
+                  <CommandItem key={id} onSelect={() => onClick({ id, type })}>
                     {icon}
                     <span>{name}</span>
                   </CommandItem>
