@@ -85,8 +85,8 @@ export const ServerSearch: React.FC<ServerSearchProps> = ({ data }) => {
         </kbd>
       </button>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Type a command or search..." />
-        <CommandList>
+        <CommandInput placeholder="Type for a member or channel..." />
+        <CommandList className="bg-white dark:bg-[#313338]">
           <CommandEmpty>No results found.</CommandEmpty>
           {data.map(({ data, type, label }) => {
             if (!data.length) return null;
@@ -94,7 +94,7 @@ export const ServerSearch: React.FC<ServerSearchProps> = ({ data }) => {
             return (
               <CommandGroup key={label} heading={label}>
                 {data.map(({ icon, id, name }) => (
-                  <CommandItem key={id} onSelect={() => onClick({ id, type })}>
+                  <CommandItem key={id} onSelect={() => onClick({ id, type })} className="cursor-pointer">
                     {icon}
                     <span>{name}</span>
                   </CommandItem>
