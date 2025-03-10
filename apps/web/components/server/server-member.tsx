@@ -30,8 +30,13 @@ export const ServerMember: React.FC<ServerMemberProps> = ({
 
   const icon = roleIconMap[member.role];
 
+  const onClick = () => {
+    router.push(`/server/${params.serverId}/conversation/${member.id}`);
+  };
+
   return (
     <button
+      onClick={onClick}
       className={cn(
         "group mb-1 flex w-full items-center gap-x-2 rounded-md p-2 transition hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50",
         params.memberId === member.id && "bg-zinc-700/20 dark:bg-zinc-700",
@@ -42,7 +47,7 @@ export const ServerMember: React.FC<ServerMemberProps> = ({
         name={member.nickname ?? member.user.displayName ?? member.user.name}
         className="size-8 md:size-8"
       />
-      <div className="flex text-left pl-2 w-full">
+      <div className="flex w-full pl-2 text-left">
         <p
           className={cn(
             "w-32 truncate text-sm font-semibold text-zinc-500 transition group-hover:text-zinc-600 dark:text-zinc-400 dark:group-hover:text-zinc-300",
