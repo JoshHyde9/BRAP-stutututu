@@ -63,6 +63,7 @@ export const ServerSidebar: React.FC<ServerSidebarProps> = async ({
       <ScrollArea className="flex-1 px-3">
         <div className="mt-2">
           <ServerSearch
+            searchTitle="Type for a member or channel..."
             data={[
               {
                 label: "Text Channels",
@@ -184,7 +185,7 @@ export const ServerSidebar: React.FC<ServerSidebarProps> = async ({
             />
             <div className="space-y-[2px]">
               {members.map((member) => (
-                <ServerMember key={member.id} member={member} server={server} />
+                <ServerMember key={member.id} member={member} />
               ))}
             </div>
           </div>

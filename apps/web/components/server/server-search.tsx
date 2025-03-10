@@ -15,17 +15,37 @@ import {
   CommandList,
 } from "@workspace/ui/components/command";
 
-type ServerSearchProps = {
+import { UserAvatar } from "@/components/user-avatar";
+
+type SearchProps = {
+  searchTitle: string;
   data: {
     label: string;
     type: SectionType;
     data: {
       id: string;
       icon: React.ReactNode;
+      imageUrl?: never;
       name: string;
     }[];
   }[];
 };
+
+type ConversationSearchProps = {
+  searchTitle: string;
+  data: {
+    label: string;
+    type: SectionType;
+    data: {
+      id: string;
+      icon?: never;
+      imageUrl: string | null;
+      name: string;
+    }[];
+  }[];
+};
+
+type ServerSearchProps = SearchProps | ConversationSearchProps;
 
 type OnClickProps = {
   id: string;
@@ -36,7 +56,10 @@ type ParamsProps = {
   serverId: string;
 };
 
-export const ServerSearch: React.FC<ServerSearchProps> = ({ data }) => {
+export const ServerSearch: React.FC<ServerSearchProps> = ({
+  data,
+  searchTitle,
+}) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const params = useParams<ParamsProps>();
@@ -83,7 +106,7 @@ export const ServerSearch: React.FC<ServerSearchProps> = ({ data }) => {
         </kbd>
       </button>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Type for a member or channel..." />
+        <CommandInput placeholder={searchTitle} />
         <CommandList className="bg-white dark:bg-[#313338]">
           <CommandEmpty>No results found.</CommandEmpty>
           {data.map(({ data, type, label }) => {
@@ -91,9 +114,13 @@ export const ServerSearch: React.FC<ServerSearchProps> = ({ data }) => {
 
             return (
               <CommandGroup key={label} heading={label}>
-                {data.map(({ icon, id, name }) => (
-                  <CommandItem key={id} onSelect={() => onClick({ id, type })} className="cursor-pointer">
-                    {icon}
+                {data.map(({ id, name, icon, imageUrl }) => (
+                  <CommandItem
+                    key={id}
+                    onSelect={() => onClick({ id, type })}
+                    className="cursor-pointer"
+                  >
+                    {icon ? icon : <UserAvatar name={name} src={imageUrl} />}
                     <span>{name}</span>
                   </CommandItem>
                 ))}
