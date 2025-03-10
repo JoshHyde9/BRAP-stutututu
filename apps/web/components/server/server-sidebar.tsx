@@ -47,9 +47,7 @@ export const ServerSidebar: React.FC<ServerSidebarProps> = async ({
     (channel) => channel.type === ChannelType.VIDEO,
   );
 
-  const members = server.members.filter(
-    (member) => member.userId !== session.user.id,
-  );
+  const members = server.members;
 
   const loggedInUserRole = server.members.find(
     (member) => member.userId === session.user.id,
