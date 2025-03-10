@@ -20,10 +20,13 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
-  servers  Server[]
-  members  Member[]
-  channels Channel[]
-  bans     Ban[]
+  servers                Server[]
+  members                Member[]
+  channels               Channel[]
+  bans                   Ban[]
+  conversationsInitiated Conversation[]  @relation("UserOne")
+  conversationsReceived  Conversation[]  @relation("UserTwo")
+  directMessages         DirectMessage[]
 
   @@unique([email])
   @@map("user")
@@ -113,6 +116,8 @@ model Member {
   serverId String
   server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
+  messages Message[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -140,6 +145,8 @@ model Channel {
   serverId String
   server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
+  messages Message[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -164,4 +171,65 @@ model Ban {
   @@index([userId])
   @@index([serverId])
   @@map("ban")
+}
+
+model Message {
+  id      String @id @default(uuid())
+  content String @db.Text
+
+  fileUrl String? @db.Text
+
+  memberId String
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  channelId String
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([memberId])
+  @@index([channelId])
+  @@map("message")
+}
+
+model Conversation {
+  id String @id @default(uuid())
+
+  userOneId String
+  userOne   User   @relation("UserOne", fields: [userOneId], references: [id], onDelete: Cascade)
+
+  userTwoId String
+  userTwo   User   @relation("UserTwo", fields: [userTwoId], references: [id], onDelete: Cascade)
+
+  directMessages DirectMessage[]
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@unique([userOneId, userTwoId])
+  @@index([userOneId])
+  @@index([userTwoId])
+  @@map("conversation")
+}
+
+model DirectMessage {
+  id String @id @default(uuid())
+
+  content String @db.Text
+
+  fileUrl String? @db.Text
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([conversationId])
+  @@map("direct_message")
 }
