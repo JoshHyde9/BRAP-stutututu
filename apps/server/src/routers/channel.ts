@@ -5,22 +5,25 @@ import { ElysiaContext } from "..";
 
 export const channelRouter = (app: ElysiaContext) =>
   app.group("/channel", (app) =>
-    app.post(
-      "/create/:serverId",
-      async ({ user, prisma, body, params, error }) => {
+    app
+      .post(
+        "/create/:serverId",
+        async ({ user, prisma, body, params, error }) => {
+          if (params.serverId.trim() === "") {
+            return error("Bad Request", "Server id canot be empty.");
+          }
 
-        if (params.serverId.trim() === "") {
-            return error("Bad Request", "Server id canot be empty.")
-        }
+          if (body.name.toLowerCase() === "general") {
+            return error("Bad Request", "Channel name cannot be 'general'.");
+          }
 
-        if (body.name.toLowerCase() === "general") {
-          return error("Bad Request", "Channel name cannot be 'general'.");
-        }
+          // Replace all spaces with "-" and convert to lowercase if channel type is a text channel
+          const sanitisedName =
+            body.type === "TEXT"
+              ? body.name.replace(/\s+/g, "-").toLowerCase()
+              : body.name;
 
-        // Replace all spaces with "-" and convert to lowercase if channel type is a text channel
-        const sanitisedName = body.type === "TEXT" ? body.name.replace(/\s+/g, "-").toLowerCase() : body.name;
-        
-        return await prisma.server.update({
+          return await prisma.server.update({
             where: {
               id: params.serverId,
               members: {
@@ -42,14 +45,88 @@ export const channelRouter = (app: ElysiaContext) =>
               },
             },
           });
-      },
-      {
-        auth: true,
-        body: t.Object({
-          name: t.String(),
-          type: t.Enum(ChannelType),
-        }),
-        params: t.Object({ serverId: t.String() }),
-      }
-    )
+        },
+        {
+          auth: true,
+          body: t.Object({
+            name: t.String(),
+            type: t.Enum(ChannelType),
+          }),
+          params: t.Object({ serverId: t.String() }),
+        }
+      )
+      .delete(
+        "/deleteChannel/:serverId/:channelId",
+        async ({ user, prisma, params }) => {
+          await prisma.server.update({
+            where: {
+              id: params.serverId,
+              members: {
+                some: {
+                  userId: user.id,
+                  role: {
+                    in: [MemberRole.ADMIN, MemberRole.MODERATOR],
+                  },
+                },
+              },
+            },
+            data: {
+              channels: {
+                delete: {
+                  id: params.channelId,
+                  name: {
+                    not: "general",
+                  },
+                },
+              },
+            },
+          });
+
+          return { success: true };
+        },
+        {
+          auth: true,
+          params: t.Object({ serverId: t.String(), channelId: t.String() }),
+        }
+      )
+      .patch(
+        "/editChannel/:serverId/:channelId",
+        async ({ user, prisma, params, body }) => {
+          // Replace all spaces with "-" and convert to lowercase if channel type is a text channel
+          const sanitisedName =
+            body.type === "TEXT"
+              ? body.name.replace(/\s+/g, "-").toLowerCase()
+              : body.name;
+
+          return await prisma.server.update({
+            where: {
+              id: params.serverId,
+              members: {
+                some: {
+                  userId: user.id,
+                  role: {
+                    in: [MemberRole.ADMIN, MemberRole.MODERATOR],
+                  },
+                },
+              },
+            },
+            data: {
+              channels: {
+                update: {
+                  where: { id: params.channelId, name: { not: "general" } },
+                  data: {
+                    name: sanitisedName,
+                    type: body.type,
+                  },
+                },
+              },
+            },
+          });
+        },
+        {
+          auth: true,
+          body: t.Object({ name: t.String(), type: t.Enum(ChannelType) }),
+          params: t.Object({ serverId: t.String(), channelId: t.String() }),
+        }
+      )
   );

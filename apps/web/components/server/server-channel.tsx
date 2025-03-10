@@ -10,12 +10,13 @@ import { cn } from "@workspace/ui/lib/utils";
 
 import { useModal } from "@/hooks/use-modal-store";
 import { sidebarIconMap } from "@/lib/iconMaps";
+import { ServerWithMembers } from "@/lib/types";
 
 import { ActionTooltip } from "@/components/action-tooltip";
 
 type ServerChannelProps = {
   channel: Channel;
-  server: Server;
+  server: ServerWithMembers;
   loggedInUserRole: MemberRole;
 };
 
@@ -26,15 +27,23 @@ type ParamsProps = {
 
 export const ServerChannel: React.FC<ServerChannelProps> = ({
   channel,
+  server,
   loggedInUserRole,
 }) => {
   const params = useParams<ParamsProps>();
   const router = useRouter();
+  const { onOpen } = useModal();
 
   const Icon = sidebarIconMap[channel.type];
 
   const onChannelClick = () => {
     router.push(`/server/${params.serverId}/channel/${channel.id}`);
+  };
+
+  // Stops onChannelClick from being called when opening Edit/Delete modals
+  const onAction = (e: React.MouseEvent, action: ModalType) => {
+    e.stopPropagation();
+    onOpen(action, { channel, server });
   };
 
   return (
@@ -58,10 +67,16 @@ export const ServerChannel: React.FC<ServerChannelProps> = ({
       {channel.name !== "general" && loggedInUserRole !== MemberRole.GUEST && (
         <div className="ml-auto flex items-center gap-x-2">
           <ActionTooltip label="Edit">
-            <Edit className="hidden size-4 text-zinc-500 transition hover:text-zinc-600 group-hover:block dark:text-zinc-400 dark:hover:text-zinc-300" />
+            <Edit
+              onClick={(e) => onAction(e, "editChannel")}
+              className="hidden size-4 text-zinc-500 transition hover:text-zinc-600 group-hover:block dark:text-zinc-400 dark:hover:text-zinc-300"
+            />
           </ActionTooltip>
           <ActionTooltip label="Delete">
-            <Trash className="hidden size-4 text-zinc-500 transition hover:text-zinc-600 group-hover:block dark:text-zinc-400 dark:hover:text-zinc-300" />
+            <Trash
+              onClick={(e) => onAction(e, "deleteChannel")}
+              className="hidden size-4 text-zinc-500 transition hover:text-zinc-600 group-hover:block dark:text-zinc-400 dark:hover:text-zinc-300"
+            />
           </ActionTooltip>
         </div>
       )}

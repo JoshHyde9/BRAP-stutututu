@@ -1,5 +1,5 @@
 import type { MemberWithUser, ServerWithMembers } from "@/lib/types";
-import type { ChannelType } from "@workspace/db";
+import type { Channel, ChannelType } from "@workspace/db";
 
 import { create } from "zustand";
 
@@ -12,13 +12,16 @@ export type ModalType =
   | "banMember"
   | "createChannel"
   | "leaveServer"
-  | "deleteServer";
+  | "deleteServer"
+  | "editChannel"
+  | "deleteChannel";
 
 export type ModalData = {
   server?: ServerWithMembers;
   userId?: string;
   member?: MemberWithUser;
   channelType?: ChannelType;
+  channel?: Channel;
 };
 
 type ModalStore = {
