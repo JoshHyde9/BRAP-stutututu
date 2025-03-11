@@ -2,10 +2,12 @@ import { Open_Sans } from "next/font/google";
 
 import "@workspace/ui/globals.css";
 
+import { ThemeProvider } from "@/app/providers/theme-provider";
+
 import ReactQueryProviders from "@/lib/query-client";
 
-import { ThemeProvider } from "@/app/providers/theme-provider";
 import { ModalProvider } from "./providers/modal-provider";
+import { SocketProvider } from "./providers/ws-provider";
 
 const fontSans = Open_Sans({
   subsets: ["latin"],
@@ -20,12 +22,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${fontSans.variable} font-sans antialiased bg-white dark:bg-[#313338]`}
+        className={`${fontSans.variable} bg-white font-sans antialiased dark:bg-[#313338]`}
       >
         <ReactQueryProviders>
           <ThemeProvider>
-            <ModalProvider />
-            {children}
+            <SocketProvider>
+              <ModalProvider />
+              {children}
+            </SocketProvider>
           </ThemeProvider>
         </ReactQueryProviders>
       </body>
