@@ -8,8 +8,8 @@ import { serverRouter } from "./routers/server";
 import { memberRouter } from "./routers/member";
 import { channelRouter } from "./routers/channel";
 import { conversationRouter } from "./routers/conversation";
-import { wsRouter } from "./routers/ws";
 import { messageRouter } from "./routers/message";
+import { wsRouter } from "./routers/ws";
 
 const app = new Elysia({ prefix: "/api" })
   .use(elysiaContext)

@@ -25,7 +25,11 @@ type ChatInputProps = {
   type: "conversation" | "channel";
 };
 
-export const ChatInput: React.FC<ChatInputProps> = ({ queryParams, type, name }) => {
+export const ChatInput: React.FC<ChatInputProps> = ({
+  queryParams,
+  type,
+  name,
+}) => {
   const form = useForm({
     resolver: zodResolver(sendMessageSchema),
     defaultValues: {
@@ -48,6 +52,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({ queryParams, type, name })
 
   const { mutate: sendMessage, isPending } = useMutation({
     mutationFn: onSendMessage,
+    onSuccess: () => {
+      form.reset();
+    },
   });
 
   const onSubmit = async (values: z.infer<typeof sendMessageSchema>) => {
