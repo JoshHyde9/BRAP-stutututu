@@ -6,6 +6,7 @@ import { api } from "@workspace/api";
 import { getServerSession } from "@/lib/get-server-session";
 
 import { ChatHeader } from "@/components/chat/chat-header";
+import { ChatInput } from "@/components/chat/chat-input";
 
 type ChannelIdPageProps = {
   params: Promise<{ serverId: string; channelId: string }>;
@@ -36,6 +37,8 @@ const ChannelIdPage: React.FC<ChannelIdPageProps> = async ({ params }) => {
   return (
     <div className="flex h-full flex-col bg-white dark:bg-[#313338]">
       <ChatHeader type="channel" name={channel.name} serverId={channel.serverId} />
+      <div className="flex-1">Messages</div>
+      <ChatInput name={channel.name} type="channel" queryParams={{ channelId: channel.id, serverId: channel.serverId }}  />
     </div>
   );
 };

@@ -12,3 +12,8 @@ export const createNewChannelSchema = z.object({
   }),
   type: z.nativeEnum(ChannelType)
 })
+
+export const sendMessageSchema = z.object({
+  content: z.string().min(1),
+  fileUrl: z.string().optional(),
+})

@@ -9,6 +9,7 @@ import { memberRouter } from "./routers/member";
 import { channelRouter } from "./routers/channel";
 import { conversationRouter } from "./routers/conversation";
 import { wsRouter } from "./routers/ws";
+import { messageRouter } from "./routers/message";
 
 const app = new Elysia({ prefix: "/api" })
   .use(elysiaContext)
@@ -24,6 +25,7 @@ const app = new Elysia({ prefix: "/api" })
   .use(memberRouter)
   .use(channelRouter)
   .use(conversationRouter)
+  .use(messageRouter)
   .use(wsRouter)
   .all("/auth/*", betterAuthView)
   .listen(5000);
