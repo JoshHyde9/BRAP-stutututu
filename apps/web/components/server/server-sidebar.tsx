@@ -17,7 +17,7 @@ import { ServerSection } from "@/components/server/server-section";
 import { ServerSidebarBottom } from "@/components/server/server-sidebar-bottom";
 
 type ServerSidebarProps = {
-  serverId: string;
+  serverId?: string;
 };
 
 export const ServerSidebar: React.FC<ServerSidebarProps> = async ({
@@ -25,7 +25,7 @@ export const ServerSidebar: React.FC<ServerSidebarProps> = async ({
 }) => {
   const session = await getServerSession();
 
-  if (!session) {
+  if (!session || !serverId) {
     return redirect("/");
   }
 

@@ -10,14 +10,19 @@ import {
   SheetTrigger,
 } from "@workspace/ui/components/sheet";
 
+import { ConversationSidebar } from "./chat/conversation-sidebar";
 import { NavigationSidebar } from "./navigation/navigation-sidebar";
 import { ServerSidebar } from "./server/server-sidebar";
 
 type MobileToggleProps = {
-  serverId: string;
+  type: "channel" | "conversation";
+  serverId?: string;
 };
 
-export const MobileToggle: React.FC<MobileToggleProps> = ({ serverId }) => {
+export const MobileToggle: React.FC<MobileToggleProps> = ({
+  serverId,
+  type,
+}) => {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -33,7 +38,11 @@ export const MobileToggle: React.FC<MobileToggleProps> = ({ serverId }) => {
           </SheetHeader>
           <NavigationSidebar />
         </div>
-        <ServerSidebar serverId={serverId} />
+        {type === "channel" ? (
+          <ServerSidebar serverId={serverId} />
+        ) : (
+          <ConversationSidebar />
+        )}
       </SheetContent>
     </Sheet>
   );

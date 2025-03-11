@@ -39,9 +39,9 @@ type ConversationSearchProps = {
     data: {
       id: string;
       icon?: never;
-      imageUrl: string | null;
+      imageUrl?: string | null;
       name: string;
-    }[];
+    }[] | null;
   }[];
 };
 
@@ -98,7 +98,7 @@ export const ServerSearch: React.FC<ServerSearchProps> = ({
         <p className="text-sm font-semibold text-zinc-500 transition group-hover:text-zinc-600 dark:text-zinc-400 dark:group-hover:text-zinc-300">
           Search
         </p>
-        <kbd className="bg-muted text-muted-foreground pointer-events-none ml-auto inline-flex h-5 select-none items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium">
+        <kbd className="bg-muted text-muted-foreground pointer-events-none ml-auto hidden h-5 select-none items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium md:inline-flex">
           <span className="text-xs">
             <Command className="size-3" />
           </span>
@@ -110,11 +110,11 @@ export const ServerSearch: React.FC<ServerSearchProps> = ({
         <CommandList className="bg-white dark:bg-[#313338]">
           <CommandEmpty>No results found.</CommandEmpty>
           {data.map(({ data, type, label }) => {
-            if (!data.length) return null;
+            if (data && !data.length) return null;
 
             return (
               <CommandGroup key={label} heading={label}>
-                {data.map(({ id, name, icon, imageUrl }) => (
+                {data && data.map(({ id, name, icon, imageUrl }) => (
                   <CommandItem
                     key={id}
                     onSelect={() => onClick({ id, type })}
