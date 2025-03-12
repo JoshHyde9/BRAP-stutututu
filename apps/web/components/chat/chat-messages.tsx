@@ -20,8 +20,9 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
       ) : (
         messages &&
         messages.map((message) => (
-          <div key={message.id}>
-            <h1>{message.content}</h1>
+          <div key={message.id} className="my-3">
+            <p>{message.member.nickname ?? message.member.user.displayName ??message.member.user.name}</p>
+            <span>{message.content}</span>
           </div>
         ))
       )}

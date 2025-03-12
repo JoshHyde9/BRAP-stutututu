@@ -1,38 +1,32 @@
 import { useEffect } from "react";
-import { useSocket } from "@/app/providers/ws-provider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@workspace/api";
 
-import { WSMessageType } from "@/lib/types";
+import { useSocket } from "@/app/providers/ws-provider";
 
 type ChannelMessagesProps = {
   channelId: string;
 };
 
 export const useChannelMessages = ({ channelId }: ChannelMessagesProps) => {
+  const { isConnected , joinChannel, leaveChannel } = useSocket();
   const queryClient = useQueryClient();
-  const { socket, connected } = useSocket();
 
-  useEffect(() => {
-    if (socket && connected) {
-      socket.on("message", (data) => {
-        const newMessage: WSMessageType = data.data.message;
-
-        if (newMessage) {
-          queryClient.setQueryData(
-            ["messages"],
-            (oldData: WSMessageType[] = []) => {
-              return [...oldData, newMessage];
-            },
-          );
+    useEffect(() => {
+      if (isConnected && channelId) {
+        joinChannel(channelId);
+      }
+  
+      return () => {
+        if (isConnected && channelId) {
+          leaveChannel(channelId);
         }
-      });
-    }
-  }, [socket, connected, queryClient]);
+      };
+    }, [isConnected, channelId, joinChannel, leaveChannel]);
 
   return useQuery({
-    queryKey: ["messages"],
+    queryKey: ["messages", channelId],
     queryFn: async () => {
       const { data, error } = await api.message
         .channelMessages({ channelId })

@@ -9,7 +9,7 @@ interface SendMessageParams {
 }
 
 export const useChatSocket = () => {
-  const { socket, connected } = useSocket();
+  const { sendChatMessage } = useSocket();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -19,21 +19,9 @@ export const useChatSocket = () => {
       fileUrl,
       content,
     }: SendMessageParams) => {
-      if (!socket || !connected) {
-        throw new Error("No WS connection");
-      }
-
       return new Promise((resolve, reject) => {
         try {
-          socket.send({
-            type: "create-chat-message",
-            data: {
-              channelId,
-              serverId,
-              content,
-              fileUrl,
-            },
-          });
+          sendChatMessage({ channelId, serverId, content, fileUrl });
 
           resolve({ success: true });
         } catch (error) {
@@ -42,9 +30,9 @@ export const useChatSocket = () => {
       });
     },
 
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["messages"],
+        queryKey: ["messages", variables.channelId],
       });
     },
   });

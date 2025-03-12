@@ -1,26 +1,26 @@
 import { auth, type Session } from "@workspace/auth";
 import { ElysiaContext } from "..";
 import { t } from "elysia";
-import { EventEmitter } from "events";
 
-const chatEvents = new EventEmitter();
 const wsConnections = new Map<string, Session>();
+const channels = new Map<string, Set<string>>();
 
 export const wsRouter = (app: ElysiaContext) =>
   app.group("/ws", (app) =>
     app.ws("/chat", {
-      body: t.Union([
-        t.Object({ type: t.Literal("new-message") }),
-        t.Object({
-          type: t.Literal("create-chat-message"),
-          data: t.Object({
-            serverId: t.String(),
-            channelId: t.String(),
-            content: t.String(),
-            fileUrl: t.Optional(t.String()),
-          }),
+      body: t.Object({
+        type: t.Union([
+          t.Literal("join"),
+          t.Literal("leave"),
+          t.Literal("create-chat-message"),
+        ]),
+        data: t.Object({
+          channelId: t.String(),
+          serverId: t.Optional(t.String()),
+          content: t.Optional(t.String()),
+          fileUrl: t.Optional(t.String()),
         }),
-      ]),
+      }),
       open: async (ws) => {
         const headers = ws.data.request.headers;
 
@@ -30,7 +30,6 @@ export const wsRouter = (app: ElysiaContext) =>
           return ws.close(3000, "Unauthorized");
         }
 
-        ws.subscribe("message");
         wsConnections.set(ws.id, session);
       },
       message: async (ws, message) => {
@@ -40,14 +39,32 @@ export const wsRouter = (app: ElysiaContext) =>
           return ws.close(3000, "Unauthorized");
         }
 
-        switch (message.type) {
-          case "create-chat-message":
-            const { prisma } = ws.data;
-            const { data } = message;
+        const { prisma } = ws.data;
+        const { channelId, serverId, content, fileUrl } = message.data;
 
+        switch (message.type) {
+          case "join":
+            if (!channels.has(channelId)) {
+              channels.set(channelId, new Set());
+            }
+
+            channels.get(channelId)?.add(ws.id);
+
+            ws.subscribe(`channel:${channelId}`);
+            break;
+          case "leave":
+            channels.get(channelId)?.delete(ws.id);
+
+            if (channels.get(channelId)?.size === 0) {
+              channels.delete(channelId);
+            }
+
+            ws.unsubscribe(`channel:${channelId}`);
+            break;
+          case "create-chat-message":
             const server = await prisma.server.findFirst({
               where: {
-                id: data.serverId,
+                id: serverId,
                 members: {
                   some: {
                     userId: session.user.id,
@@ -64,7 +81,7 @@ export const wsRouter = (app: ElysiaContext) =>
             }
 
             const channel = await prisma.channel.findFirst({
-              where: { id: data.channelId, serverId: data.serverId },
+              where: { id: channelId, serverId: serverId },
             });
 
             if (!channel) {
@@ -81,9 +98,9 @@ export const wsRouter = (app: ElysiaContext) =>
 
             const newMessage = await prisma.message.create({
               data: {
-                content: data.content,
-                fileUrl: data.fileUrl,
-                channelId: data.channelId,
+                content: content as string,
+                fileUrl: fileUrl,
+                channelId: channelId,
                 memberId: member.id,
               },
               include: {
@@ -104,13 +121,21 @@ export const wsRouter = (app: ElysiaContext) =>
               },
             });
 
-            const eventKey = `chat:${data.channelId}:messages`;
-            chatEvents.emit(eventKey, newMessage);
-            ws.publish("message", { message: newMessage });
+            ws.publish(`channel:${channelId}`, { message: newMessage });
             ws.send({ message: newMessage });
         }
       },
       close: (ws) => {
+        for (const [channelId, channelMembers] of channels.entries()) {
+          if (channelMembers.has(ws.id)) {
+            channelMembers.delete(ws.id);
+
+            if (channels.size === 0) {
+              channels.delete(channelId);
+            }
+          }
+        }
+
         wsConnections.delete(ws.id);
       },
     })
