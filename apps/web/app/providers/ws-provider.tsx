@@ -1,11 +1,14 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@workspace/api";
 
+import { WSMessageType } from "@/lib/types";
+
 type SocketContextType = {
-  socket: any | null;
+  socket: ReturnType<typeof api.ws.chat.subscribe> | null | null;
   connected: boolean;
 };
 
@@ -23,6 +26,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     typeof api.ws.chat.subscribe
   > | null>(null);
   const [connected, setConnected] = useState(false);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const socketInstance = api.ws.chat.subscribe();

@@ -4,11 +4,9 @@ import type { QueryParamsKeys } from "@/lib/types";
 import type z from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { Plus, Smile } from "lucide-react";
 import { useForm } from "react-hook-form";
 
-import { api } from "@workspace/api";
 import {
   Form,
   FormControl,
@@ -17,6 +15,7 @@ import {
 } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 
+import { useChatSocket } from "@/hooks/use-chat-socket";
 import { sendMessageSchema } from "@/lib/schema";
 
 type ChatInputProps = {
@@ -30,6 +29,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   type,
   name,
 }) => {
+  const { mutate: sendMessage, isPending } = useChatSocket();
   const form = useForm({
     resolver: zodResolver(sendMessageSchema),
     defaultValues: {
@@ -38,28 +38,20 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     },
   });
 
-  const onSendMessage = async (values: z.infer<typeof sendMessageSchema>) => {
-    const { data, error } = await api.message
-      .createMessage({
-        serverId: queryParams.serverId,
-      })({ channelId: queryParams.channelId })
-      .post(values);
-
-    if (error) throw error;
-
-    return data;
-  };
-
-  const { mutate: sendMessage, isPending } = useMutation({
-    mutationFn: onSendMessage,
-    onSuccess: () => {
-      form.reset();
-    },
-  });
-
   const onSubmit = async (values: z.infer<typeof sendMessageSchema>) => {
     const parsedData = await sendMessageSchema.parseAsync(values);
-    sendMessage(parsedData);
+    sendMessage(
+      {
+        channelId: queryParams.channelId,
+        serverId: queryParams.serverId,
+        ...parsedData,
+      },
+      {
+        onSuccess: () => {
+          form.reset();
+        },
+      },
+    );
   };
 
   return (
