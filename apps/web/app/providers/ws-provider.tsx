@@ -5,10 +5,8 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@workspace/api";
 
-import { WSMessageType } from "@/lib/types";
-
 type SocketContextType = {
-  socket: ReturnType<typeof api.ws.chat.subscribe> | null | null;
+  socket: ReturnType<typeof api.ws.chat.subscribe> | null;
   connected: boolean;
 };
 
