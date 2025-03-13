@@ -1,4 +1,4 @@
-import type { MemberWithUser, ServerWithMembers } from "@/lib/types";
+import type { MemberWithUser, QueryParamsKeys, ServerWithMembers } from "@/lib/types";
 import type { Channel, ChannelType } from "@workspace/db";
 
 import { create } from "zustand";
@@ -14,13 +14,15 @@ export type ModalType =
   | "leaveServer"
   | "deleteServer"
   | "editChannel"
-  | "deleteChannel";
+  | "deleteChannel"
+  | "messageFile";
 
 export type ModalData = {
   server?: ServerWithMembers;
   userId?: string;
   member?: MemberWithUser;
   channelType?: ChannelType;
+  query?: Record<QueryParamsKeys, string>;
   channel?: Channel;
 };
 
