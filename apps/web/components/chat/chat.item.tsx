@@ -1,8 +1,17 @@
 import Image from "next/image";
-import { format, formatDistanceToNowStrict } from "date-fns";
-import { FileIcon } from "lucide-react";
+import { format } from "date-fns";
+import { FileIcon, X } from "lucide-react";
 
 import { MemberRole } from "@workspace/db";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@workspace/ui/components/dialog";
 
 import { roleIconMap } from "@/lib/iconMaps";
 
@@ -59,19 +68,30 @@ export const ChatItem: React.FC<ChatItemProps> = ({ message }) => {
             </span>
           </div>
           {isImage && (
-            <a
-              href={message.fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-secondary relative mt-2 flex aspect-video h-full w-[550px] items-center overflow-hidden rounded-md border"
-            >
-              <Image
-                src={message.fileUrl}
-                alt={message.content}
-                fill
-                className="object-cover"
-              />
-            </a>
+            <Dialog>
+              <DialogTrigger>
+                <Image
+                  src={message.fileUrl}
+                  alt={message.content}
+                  width={400}
+                  height={300}
+                  className="mt-2 cursor-pointer rounded-md object-contain"
+                />
+              </DialogTrigger>
+              <DialogContent className="max-h-screen w-fit max-w-screen-lg overflow-hidden border-0 bg-transparent p-0">
+                <DialogHeader>
+                  <DialogTitle className="sr-only">Image</DialogTitle>
+                  <DialogDescription className="h-screen w-screen">
+                    <Image
+                      src={message.fileUrl}
+                      alt={message.content}
+                      fill
+                      className="max-h-[90vh] w-auto max-w-full object-contain"
+                    />
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
           )}
           {isPDF && (
             <div className="relative mt-2 flex items-center rounded-md bg-neutral-300/10 p-2">
