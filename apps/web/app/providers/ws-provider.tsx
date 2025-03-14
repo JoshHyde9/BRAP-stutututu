@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@workspace/api";
 
@@ -36,6 +36,11 @@ type WebSocketContextType = {
 
 type EdenWebSocket = ReturnType<typeof api.ws.chat.subscribe>;
 
+interface PageData {
+  messages: WSMessageType[];
+  nextCursor?: string | null;
+}
+
 const SocketContext = createContext<WebSocketContextType | undefined>(
   undefined,
 );
@@ -54,16 +59,37 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     socketInstance.on("message", (event) => {
-      // @ts-ignore try work out a way to type the data object????
+      // @ts-ignore
+      // FIXME: try work out a way to type the data object????
       const newMessage: WSMessageType = event.data.message;
 
       if (newMessage) {
         queryClient.invalidateQueries({
           queryKey: ["messages", newMessage.channelId],
         });
+
+        // FIXME: This seems gross
         queryClient.setQueryData(
           ["messages", newMessage.channelId],
-          (oldMessages: WSMessageType[] = []) => [...oldMessages, newMessage],
+          (oldMessages: InfiniteData<PageData>) => {
+            if (!oldMessages || !oldMessages.pages[0]) return oldMessages;
+
+            const newData = {
+              ...oldMessages,
+              pages: [...oldMessages.pages.map((page) => ({ ...page }))],
+            };
+
+            if (newData && newData.pages[0]?.messages) {
+              newData.pages[0].messages = [
+                newMessage,
+                ...oldMessages.pages[0].messages,
+              ];
+            } else {
+              newData.pages[0]!.messages = [newMessage];
+            }
+
+            return newData;
+          },
         );
       }
     });

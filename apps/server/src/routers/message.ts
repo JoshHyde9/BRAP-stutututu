@@ -1,6 +1,19 @@
 import { t } from "elysia";
 
 import { ElysiaContext } from "..";
+import { MemberRole, Message, User } from "@workspace/db";
+
+type MessageWithMemberWithUser = {
+  member: {
+    user: Pick<User, "id" | "name" | "displayName" | "image" | "createdAt">;
+    id: string;
+    updatedAt: Date;
+    userId: string;
+    serverId: string;
+    role: MemberRole;
+    nickname: string | null;
+  };
+} & Message;
 
 export const messageRouter = (app: ElysiaContext) =>
   app.group("/message", (app) =>
@@ -79,33 +92,76 @@ export const messageRouter = (app: ElysiaContext) =>
         }
       )
       .get(
-        "/channelMessages/:channelId",
-        async ({ params, prisma }) => {
-          return await prisma.message.findMany({
-            where: { channelId: params.channelId },
-            include: {
-              member: {
-                include: {
-                  user: {
-                    select: {
-                      id: true,
-                      name: true,
-                      displayName: true,
-                      image: true,
-                      createdAt: true,
+        "/channelMessages",
+        async ({ query, prisma }) => {
+          const MESSAGE_BATCH = 25;
+
+          let messages: MessageWithMemberWithUser[] = [];
+
+          if (query.cursor) {
+            messages = await prisma.message.findMany({
+              take: MESSAGE_BATCH,
+              skip: 1,
+              cursor: { id: query.cursor },
+              where: { channelId: query.channelId },
+              include: {
+                member: {
+                  include: {
+                    user: {
+                      select: {
+                        id: true,
+                        name: true,
+                        displayName: true,
+                        image: true,
+                        createdAt: true,
+                      },
                     },
                   },
                 },
               },
-            },
-            orderBy: {
-              createdAt: "asc",
-            },
-          });
+              orderBy: {
+                createdAt: "desc",
+              },
+            });
+          } else {
+            messages = await prisma.message.findMany({
+              take: MESSAGE_BATCH,
+              where: { channelId: query.channelId },
+              include: {
+                member: {
+                  include: {
+                    user: {
+                      select: {
+                        id: true,
+                        name: true,
+                        displayName: true,
+                        image: true,
+                        createdAt: true,
+                      },
+                    },
+                  },
+                },
+              },
+              orderBy: {
+                createdAt: "desc",
+              },
+            });
+          }
+
+          let nextCursor: string | undefined = undefined;
+
+          if (messages.length === MESSAGE_BATCH) {
+            nextCursor = messages[MESSAGE_BATCH - 1]?.id;
+          }
+
+          return { messages, nextCursor };
         },
         {
           auth: true,
-          params: t.Object({ channelId: t.String() }),
+          query: t.Object({
+            channelId: t.String(),
+            cursor: t.Optional(t.String()),
+          }),
         }
       )
   );
