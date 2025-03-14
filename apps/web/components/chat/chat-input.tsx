@@ -65,6 +65,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   const handleEmojiSelect = (emoji: string) => {
+    // TODO: Put emoji where cursor is
+    // useRef?????
     form.setValue("content", `${form.getValues("content")} ${emoji}`);
   };
 

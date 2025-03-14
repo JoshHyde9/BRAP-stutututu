@@ -14,6 +14,8 @@ type FileUploadProps = {
 export const FileUpload = ({ endpoint, onChange, value }: FileUploadProps) => {
   const fileType = value.split(".").pop();
 
+  console.log(fileType)
+
   if (value && fileType === "gif") {
     return (
       <div className="relative size-44">
