@@ -11,6 +11,7 @@ import { Button } from "@workspace/ui/components/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -65,11 +66,14 @@ export const MessageFileModal = () => {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleModalClose}>
-      <DialogContent className="overflow-hidden bg-white p-0 text-black dark:bg-[#2b2d31]">
+      <DialogContent className="min-w-[600px] overflow-hidden bg-white p-0 text-black dark:bg-[#2b2d31]">
         <DialogHeader className="px-6 pt-8">
           <DialogTitle className="dark:text-primary text-center text-2xl font-bold">
             Send an Attachment
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Send an Attachment
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -83,7 +87,7 @@ export const MessageFileModal = () => {
                       <FormControl>
                         <FileUpload
                           endpoint="messageFile"
-                          value={field.value!}
+                          value={field.value}
                           onChange={field.onChange}
                         />
                       </FormControl>

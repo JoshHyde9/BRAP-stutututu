@@ -1,6 +1,9 @@
-import { getServerSession } from "@/lib/get-server-session";
-import { createUploadthing, type FileRouter } from "uploadthing/next";
+import type { FileRouter } from "uploadthing/next";
+
+import { createUploadthing } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
+
+import { getServerSession } from "@/lib/get-server-session";
 
 const f = createUploadthing();
 
@@ -26,7 +29,10 @@ export const ourFileRouter = {
     pdf: { maxFileSize: "4MB" },
   })
     .middleware(async () => await auth())
-    .onUploadComplete(() => {}),
+    .onUploadComplete(({ file }) => ({
+      ufsUrl: file.ufsUrl,
+      fileType: file.type,
+    })),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;
