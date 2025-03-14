@@ -15,6 +15,17 @@ Fkn idk tbh
 
 ## TODO
 
-- [x] Work out why getting session on server doesn't work
-  - Seems like credentials are not being sent to the server via better-auth api. Had to make own requests [which can be seen here](/apps/web/lib/get-server-session.ts)
+- [ ] Server member can delete and edit their messages
+- [ ] Server moderators and admins can delete server member messages
+- [ ] Users can DM eachother
+- [ ] Voice chats & video chats
+  - [https://livekit.io/](https://livekit.io/)????? 
+- [ ] Server admins and moderators can unban server members
+- [ ] Server member profile popover thing
+- [ ] Friends
+- [ ] Message replies 
+- [ ] Message reactions
+- [ ] Pinned messages
+- [ ] User activity status
+- [ ] Mention users
 
