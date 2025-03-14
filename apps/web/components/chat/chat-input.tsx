@@ -14,10 +14,18 @@ import {
   FormItem,
 } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@workspace/ui/components/popover";
 
 import { useChatSocket } from "@/hooks/use-chat-socket";
 import { useModal } from "@/hooks/use-modal-store";
 import { sendMessageSchema } from "@/lib/schema";
+
+import { ActionTooltip } from "@/components/action-tooltip";
+import { EmojiPicker } from "@/components/chat/emoji-picker";
 
 type ChatInputProps = {
   queryParams: Record<QueryParamsKeys, string>;
@@ -56,6 +64,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     );
   };
 
+  const handleEmojiSelect = (emoji: string) => {
+    form.setValue("content", `${form.getValues("content")} ${emoji}`);
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -65,26 +77,37 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <div className="relative p-4 pb-6">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      onOpen("messageFile", {
-                        query: queryParams,
-                      })
-                    }
-                    className="absolute left-8 top-7 flex size-[24px] items-center justify-center rounded-full bg-zinc-500 p-1 transition hover:bg-zinc-600 dark:bg-zinc-400 dark:hover:bg-zinc-300"
-                  >
-                    <Plus className="text-white dark:text-[#313338]" />
-                  </button>
+                <div className="relative flex items-center p-4 pb-6">
+                  <ActionTooltip label="Upload file">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onOpen("messageFile", {
+                          query: queryParams,
+                        })
+                      }
+                      className="absolute left-8 top-7 flex size-[24px] items-center justify-center rounded-full bg-zinc-500 p-1 transition hover:bg-zinc-600 dark:bg-zinc-400 dark:hover:bg-zinc-300"
+                    >
+                      <Plus className="text-white dark:text-[#313338]" />
+                    </button>
+                  </ActionTooltip>
                   <Input
                     disabled={isPending}
                     className="border-none bg-zinc-200/90 px-14 py-6 text-zinc-600 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-zinc-700/75 dark:text-zinc-200"
                     placeholder={`Message ${type === "conversation" ? name : `#${name}`}`}
                     {...field}
                   />
-                  <div className="absolute right-8 top-8">
-                    <Smile />
+                  <div className="absolute right-8 flex items-center">
+                    <Popover>
+                      <PopoverTrigger>
+                        <ActionTooltip label="Add emoji">
+                          <Smile />
+                        </ActionTooltip>
+                      </PopoverTrigger>
+                      <PopoverContent side="left" className="w-fit">
+                        <EmojiPicker handleEmojiSelect={handleEmojiSelect} />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
               </FormControl>

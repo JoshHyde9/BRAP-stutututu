@@ -4,6 +4,7 @@
 @import "uploadthing/tw/v4";
 
 @source "../../../../node_modules/@uploadthing/react/dist";
+@source "../../../../node_modules/@ferrucc-io/emoji-picker/dist";
 @source "../../../../packages/ui/src/**/*.{js,ts,jsx,tsx}";
 
 @custom-variant dark (&:is(.dark *));

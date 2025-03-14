@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ferrucc-io/emoji-picker": "^0.0.44",
     "@tanstack/react-query": "^5.66.9",
     "@uploadthing/react": "^7.3.0",
     "@workspace/auth": "workspace:*",
