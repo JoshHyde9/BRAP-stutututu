@@ -29,10 +29,7 @@ export const ourFileRouter = {
     pdf: { maxFileSize: "4MB" },
   })
     .middleware(async () => await auth())
-    .onUploadComplete(({ file }) => ({
-      ufsUrl: file.ufsUrl,
-      fileType: file.type,
-    })),
+    .onUploadComplete(() => {}),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;
