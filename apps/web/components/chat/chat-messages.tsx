@@ -1,6 +1,6 @@
 "use client";
 
-import type { Session } from "@workspace/auth";
+import type { Member } from "@workspace/db";
 
 import { ComponentRef, Fragment, useRef } from "react";
 import { Loader2, ServerCrash } from "lucide-react";
@@ -15,14 +15,14 @@ type ChatMessagesProps = {
   channelId: string;
   channelName: string;
   serverId: string;
-  session: Session;
+  loggedInMember: Member;
 };
 
 export const ChatMessages: React.FC<ChatMessagesProps> = ({
   channelId,
   channelName,
   serverId,
-  session
+  loggedInMember,
 }) => {
   const {
     data,
@@ -90,7 +90,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
                 message={message}
                 channelId={channelId}
                 serverId={serverId}
-                session={session}
+                loggedInMember={loggedInMember}
               />
             ))}
           </Fragment>

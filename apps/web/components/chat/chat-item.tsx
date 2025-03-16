@@ -1,11 +1,10 @@
-import type { Session } from "@workspace/auth";
+import type { Member, MemberRole } from "@workspace/db";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { format } from "date-fns";
 import { Edit, FileIcon, Trash } from "lucide-react";
 
-import { MemberRole } from "@workspace/db";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +21,7 @@ import { EditMessage } from "@/components/chat/edit-message";
 import { UserAvatar } from "@/components/user-avatar";
 
 type ChatItemProps = {
-  session: Session;
+  loggedInMember: Member;
   serverId: string;
   channelId: string;
   message: {
@@ -47,7 +46,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
   message,
   channelId,
   serverId,
-  session,
+  loggedInMember,
 }) => {
   // FIXME: File type rendering
   const fileType = message.fileUrl?.split(".").pop();
@@ -70,6 +69,8 @@ export const ChatItem: React.FC<ChatItemProps> = ({
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
+  const canDelete = loggedInMember.role !== "GUEST";
 
   return (
     <div className="group relative flex w-full items-center p-4 transition hover:bg-black/5">
@@ -153,9 +154,9 @@ export const ChatItem: React.FC<ChatItemProps> = ({
           )}
         </div>
       </div>
-      {session.user.id === message.member.user.id && (
-        <div className="absolute -top-2 right-5 hidden items-center gap-x-2 rounded-sm border bg-white p-1 group-hover:flex dark:bg-zinc-800">
-          {!message.fileUrl && (
+      <div className="absolute -top-2 right-5 hidden items-center gap-x-2 rounded-sm border bg-white p-1 group-hover:flex dark:bg-zinc-800">
+        {message.member.user.id === loggedInMember.userId &&
+          !message.fileUrl && (
             <ActionTooltip label="Edit">
               <Edit
                 className="ml-auto size-4 cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300"
@@ -163,11 +164,12 @@ export const ChatItem: React.FC<ChatItemProps> = ({
               />
             </ActionTooltip>
           )}
+        {canDelete && (
           <ActionTooltip label="Delete">
             <Trash className="ml-auto size-4 cursor-pointer text-rose-500 transition hover:text-rose-600 dark:hover:text-rose-300" />
           </ActionTooltip>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
