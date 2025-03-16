@@ -1,24 +1,28 @@
 "use client";
 
+import type { Session } from "@workspace/auth";
+
 import { ComponentRef, Fragment, useRef } from "react";
 import { Loader2, ServerCrash } from "lucide-react";
 
 import { useChannelMessages } from "@/hooks/use-channel-messages";
 import { useChatScroll } from "@/hooks/use-chat-scroll";
 
-import { ChatWelcome } from "@/components/chat/chat-welcome";
 import { ChatItem } from "@/components/chat/chat-item";
+import { ChatWelcome } from "@/components/chat/chat-welcome";
 
 type ChatMessagesProps = {
   channelId: string;
   channelName: string;
   serverId: string;
+  session: Session;
 };
 
 export const ChatMessages: React.FC<ChatMessagesProps> = ({
   channelId,
   channelName,
   serverId,
+  session
 }) => {
   const {
     data,
@@ -86,6 +90,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
                 message={message}
                 channelId={channelId}
                 serverId={serverId}
+                session={session}
               />
             ))}
           </Fragment>

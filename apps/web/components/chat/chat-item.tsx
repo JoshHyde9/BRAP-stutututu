@@ -1,7 +1,9 @@
-import { useState } from "react";
+import type { Session } from "@workspace/auth";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { format } from "date-fns";
-import { FileIcon } from "lucide-react";
+import { Edit, FileIcon, Trash } from "lucide-react";
 
 import { MemberRole } from "@workspace/db";
 import {
@@ -20,6 +22,7 @@ import { EditMessage } from "@/components/chat/edit-message";
 import { UserAvatar } from "@/components/user-avatar";
 
 type ChatItemProps = {
+  session: Session;
   serverId: string;
   channelId: string;
   message: {
@@ -27,6 +30,7 @@ type ChatItemProps = {
       nickname: string | null;
       role: MemberRole;
       user: {
+        id: string;
         name: string;
         displayName: string | null;
         image: string | null;
@@ -43,6 +47,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
   message,
   channelId,
   serverId,
+  session,
 }) => {
   // FIXME: File type rendering
   const fileType = message.fileUrl?.split(".").pop();
@@ -50,7 +55,21 @@ export const ChatItem: React.FC<ChatItemProps> = ({
   const isPDF = fileType === "pdf" && message.fileUrl;
   const isImage = !isPDF && message.fileUrl;
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsEditing(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <div className="group relative flex w-full items-center p-4 transition hover:bg-black/5">
@@ -121,22 +140,34 @@ export const ChatItem: React.FC<ChatItemProps> = ({
               {message.content}
             </p>
           )}
+          {isEditing && (
+            <EditMessage
+              queryParams={{
+                serverId,
+                channelId,
+              }}
+              messageId={message.id}
+              content={message.content}
+              setIsEditing={setIsEditing}
+            />
+          )}
         </div>
       </div>
-      <div>
-        <button type="button" onClick={() => setIsOpen(!isOpen)}>
-          Edit
-        </button>
-        {isOpen && (
-          <EditMessage
-            queryParams={{
-              serverId,
-              channelId,
-            }}
-            messageId={message.id}
-          />
-        )}
-      </div>
+      {session.user.id === message.member.user.id && (
+        <div className="absolute -top-2 right-5 hidden items-center gap-x-2 rounded-sm border bg-white p-1 group-hover:flex dark:bg-zinc-800">
+          {!message.fileUrl && (
+            <ActionTooltip label="Edit">
+              <Edit
+                className="ml-auto size-4 cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300"
+                onClick={() => setIsEditing(!isEditing)}
+              />
+            </ActionTooltip>
+          )}
+          <ActionTooltip label="Delete">
+            <Trash className="ml-auto size-4 cursor-pointer text-rose-500 transition hover:text-rose-600 dark:hover:text-rose-300" />
+          </ActionTooltip>
+        </div>
+      )}
     </div>
   );
 };
