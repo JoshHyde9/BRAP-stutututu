@@ -3,7 +3,7 @@ import type { Member, MemberRole } from "@workspace/db";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { format } from "date-fns";
-import { Edit, FileIcon, Trash } from "lucide-react";
+import { Edit, FileIcon, MoreVertical, SmilePlus, Trash } from "lucide-react";
 
 import {
   Dialog,
@@ -155,6 +155,9 @@ export const ChatItem: React.FC<ChatItemProps> = ({
         </div>
       </div>
       <div className="absolute -top-2 right-5 hidden items-center gap-x-2 rounded-sm border bg-white p-1 group-hover:flex dark:bg-zinc-800">
+        <ActionTooltip label="Add Reaction">
+          <SmilePlus className="ml-auto size-4 cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300" />
+        </ActionTooltip>
         {message.member.user.id === loggedInMember.userId &&
           !message.fileUrl && (
             <ActionTooltip label="Edit">
@@ -169,6 +172,9 @@ export const ChatItem: React.FC<ChatItemProps> = ({
             <Trash className="ml-auto size-4 cursor-pointer text-rose-500 transition hover:text-rose-600 dark:hover:text-rose-300" />
           </ActionTooltip>
         )}
+        <ActionTooltip label="More">
+          <MoreVertical className="ml-auto size-4 cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300" />
+        </ActionTooltip>
       </div>
     </div>
   );
