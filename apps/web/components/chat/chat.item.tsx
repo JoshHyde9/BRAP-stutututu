@@ -1,11 +1,11 @@
+import { useState } from "react";
 import Image from "next/image";
 import { format } from "date-fns";
-import { FileIcon, X } from "lucide-react";
+import { FileIcon } from "lucide-react";
 
 import { MemberRole } from "@workspace/db";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -15,10 +15,13 @@ import {
 
 import { roleIconMap } from "@/lib/iconMaps";
 
-import { ActionTooltip } from "../action-tooltip";
-import { UserAvatar } from "../user-avatar";
+import { ActionTooltip } from "@/components/action-tooltip";
+import { EditMessage } from "@/components/chat/edit-message";
+import { UserAvatar } from "@/components/user-avatar";
 
 type ChatItemProps = {
+  serverId: string;
+  channelId: string;
   message: {
     member: {
       nickname: string | null;
@@ -29,18 +32,25 @@ type ChatItemProps = {
         image: string | null;
       };
     };
+    id: string;
     fileUrl?: string | null;
     content: string;
     createdAt: Date;
   };
 };
 
-export const ChatItem: React.FC<ChatItemProps> = ({ message }) => {
+export const ChatItem: React.FC<ChatItemProps> = ({
+  message,
+  channelId,
+  serverId,
+}) => {
   // FIXME: File type rendering
   const fileType = message.fileUrl?.split(".").pop();
 
   const isPDF = fileType === "pdf" && message.fileUrl;
   const isImage = !isPDF && message.fileUrl;
+
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="group relative flex w-full items-center p-4 transition hover:bg-black/5">
@@ -112,6 +122,20 @@ export const ChatItem: React.FC<ChatItemProps> = ({ message }) => {
             </p>
           )}
         </div>
+      </div>
+      <div>
+        <button type="button" onClick={() => setIsOpen(!isOpen)}>
+          Edit
+        </button>
+        {isOpen && (
+          <EditMessage
+            queryParams={{
+              serverId,
+              channelId,
+            }}
+            messageId={message.id}
+          />
+        )}
       </div>
     </div>
   );

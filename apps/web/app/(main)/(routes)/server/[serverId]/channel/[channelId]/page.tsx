@@ -42,7 +42,11 @@ const ChannelIdPage: React.FC<ChannelIdPageProps> = async ({ params }) => {
         name={channel.name}
         serverId={channel.serverId}
       />
-      <ChatMessages channelName={channel.name} channelId={channel.id} />
+      <ChatMessages
+        channelName={channel.name}
+        channelId={channel.id}
+        serverId={channel.serverId}
+      />
       <ChatInput
         name={channel.name}
         type="channel"

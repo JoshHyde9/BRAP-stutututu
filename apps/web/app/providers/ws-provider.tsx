@@ -19,10 +19,17 @@ type ChatMessage = {
   serverId?: string;
   content?: string;
   fileUrl?: string;
+  messageId?: string;
 };
 
+type WebSocketMessageType =
+  | "join"
+  | "leave"
+  | "create-chat-message"
+  | "edit-chat-message";
+
 export type WebSocketMessage = {
-  type: "join" | "leave" | "create-chat-message";
+  type: WebSocketMessageType;
   data: ChatMessage;
 };
 
@@ -32,6 +39,7 @@ type WebSocketContextType = {
   joinChannel: (channelId: string) => boolean;
   leaveChannel: (channelId: string) => boolean;
   sendChatMessage: (data: ChatMessage) => boolean;
+  editChatMessage: (data: ChatMessage) => boolean;
 };
 
 type EdenWebSocket = ReturnType<typeof api.ws.chat.subscribe>;
@@ -40,6 +48,11 @@ interface PageData {
   messages: WSMessageType[];
   nextCursor?: string | null;
 }
+
+type MessageData = {
+  type: WebSocketMessageType;
+  message: WSMessageType;
+};
 
 const SocketContext = createContext<WebSocketContextType | undefined>(
   undefined,
@@ -61,36 +74,56 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     socketInstance.on("message", (event) => {
       // @ts-ignore
       // FIXME: try work out a way to type the data object????
-      const newMessage: WSMessageType = event.data.message;
+      const eventData: MessageData = event.data;
+      const newMessage: WSMessageType = eventData.message;
 
-      if (newMessage) {
-        queryClient.invalidateQueries({
-          queryKey: ["messages", newMessage.channelId],
-        });
+      queryClient.invalidateQueries({
+        queryKey: ["messages", newMessage.channelId],
+      });
 
-        // FIXME: This seems gross
-        queryClient.setQueryData(
-          ["messages", newMessage.channelId],
-          (oldMessages: InfiniteData<PageData>) => {
-            if (!oldMessages || !oldMessages.pages[0]) return oldMessages;
+      switch (eventData.type) {
+        case "edit-chat-message":
+          // Update existing message instead of adding new one
+          queryClient.setQueryData(
+            ["messages", newMessage.channelId],
+            (oldMessages: InfiniteData<PageData>) => {
+              if (!oldMessages?.pages) return oldMessages;
 
-            const newData = {
-              ...oldMessages,
-              pages: [...oldMessages.pages.map((page) => ({ ...page }))],
-            };
+              const newPages = oldMessages.pages.map((page) => ({
+                ...page,
+                messages: page.messages.map((message) =>
+                  message.id === newMessage.id ? newMessage : message,
+                ),
+              }));
 
-            if (newData && newData.pages[0]?.messages) {
-              newData.pages[0].messages = [
-                newMessage,
-                ...oldMessages.pages[0].messages,
-              ];
-            } else {
-              newData.pages[0]!.messages = [newMessage];
-            }
+              return { ...oldMessages, pages: newPages };
+            },
+          );
+          break;
+        default:
+          queryClient.setQueryData(
+            ["messages", newMessage.channelId],
+            (oldMessages: InfiniteData<PageData>) => {
+              if (!oldMessages || !oldMessages.pages[0]) return oldMessages;
 
-            return newData;
-          },
-        );
+              const newData = {
+                ...oldMessages,
+                pages: [...oldMessages.pages.map((page) => ({ ...page }))],
+              };
+
+              if (newData && newData.pages[0]?.messages) {
+                newData.pages[0].messages = [
+                  newMessage,
+                  ...oldMessages.pages[0].messages,
+                ];
+              } else {
+                newData.pages[0]!.messages = [newMessage];
+              }
+
+              return newData;
+            },
+          );
+          break;
       }
     });
 
@@ -149,12 +182,28 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     [sendMessage],
   );
 
+  const editChatMessage = useCallback(
+    ({ channelId, content, serverId, messageId }: ChatMessage) => {
+      return sendMessage({
+        type: "edit-chat-message",
+        data: {
+          serverId,
+          channelId,
+          content,
+          messageId,
+        },
+      });
+    },
+    [sendMessage],
+  );
+
   const value: WebSocketContextType = {
     isConnected,
     sendMessage,
     joinChannel,
     leaveChannel,
     sendChatMessage,
+    editChatMessage,
   };
 
   return (

@@ -1,6 +1,7 @@
 import { auth, type Session } from "@workspace/auth";
 import { ElysiaContext } from "..";
 import { t } from "elysia";
+import { editMessage } from "../lib/ws-message-funcs";
 
 const wsConnections = new Map<string, Session>();
 const channels = new Map<string, Set<string>>();
@@ -13,12 +14,14 @@ export const wsRouter = (app: ElysiaContext) =>
           t.Literal("join"),
           t.Literal("leave"),
           t.Literal("create-chat-message"),
+          t.Literal("edit-chat-message"),
         ]),
         data: t.Object({
           channelId: t.String(),
           serverId: t.Optional(t.String()),
           content: t.Optional(t.String()),
           fileUrl: t.Optional(t.String()),
+          messageId: t.Optional(t.String()),
         }),
       }),
       open: async (ws) => {
@@ -40,7 +43,8 @@ export const wsRouter = (app: ElysiaContext) =>
         }
 
         const { prisma } = ws.data;
-        const { channelId, serverId, content, fileUrl } = message.data;
+        const { channelId, serverId, content, fileUrl, messageId } =
+          message.data;
 
         switch (message.type) {
           case "join":
@@ -123,6 +127,23 @@ export const wsRouter = (app: ElysiaContext) =>
 
             ws.publish(`channel:${channelId}`, { message: newMessage });
             ws.send({ message: newMessage });
+            break;
+          case "edit-chat-message":
+            try {
+              const editedMessage = await editMessage(prisma, session, {
+                content,
+                messageId,
+              });
+
+              if (editedMessage) {
+                ws.publish(`channel:${channelId}`, { message: editedMessage, type: "edit-chat-message" });
+                ws.send({ message: editedMessage, type: "edit-chat-message" });
+              }
+            } catch (error) {
+              console.log(error);
+            }
+
+            break;
         }
       },
       close: (ws) => {

@@ -12,11 +12,13 @@ import { ChatItem } from "@/components/chat/chat.item";
 type ChatMessagesProps = {
   channelId: string;
   channelName: string;
+  serverId: string;
 };
 
 export const ChatMessages: React.FC<ChatMessagesProps> = ({
   channelId,
   channelName,
+  serverId,
 }) => {
   const {
     data,
@@ -79,7 +81,12 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
         {data?.pages.map((group, i) => (
           <Fragment key={i}>
             {group?.messages.map((message) => (
-              <ChatItem key={message.id} message={message} />
+              <ChatItem
+                key={message.id}
+                message={message}
+                channelId={channelId}
+                serverId={serverId}
+              />
             ))}
           </Fragment>
         ))}

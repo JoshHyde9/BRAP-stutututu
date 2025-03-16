@@ -38,7 +38,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   type,
   name,
 }) => {
-  const { mutate: sendMessage, isPending } = useChatSocket();
+  const { sendMessage} = useChatSocket();
   const { onOpen } = useModal();
   const form = useForm({
     resolver: zodResolver(sendMessageSchema),
@@ -50,7 +50,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   const onSubmit = async (values: z.infer<typeof sendMessageSchema>) => {
     const parsedData = await sendMessageSchema.parseAsync(values);
-    sendMessage(
+    sendMessage.mutate(
       {
         channelId: queryParams.channelId,
         serverId: queryParams.serverId,
@@ -94,7 +94,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                     </button>
                   </ActionTooltip>
                   <Input
-                    disabled={isPending}
+                    disabled={sendMessage.isPending}
                     autoComplete="off"
                     className="border-none bg-zinc-200/90 px-14 py-6 text-zinc-600 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-zinc-700/75 dark:text-zinc-200"
                     placeholder={`Message ${type === "conversation" ? name : `#${name}`}`}

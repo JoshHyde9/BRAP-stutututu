@@ -1,18 +1,29 @@
 import { useSocket } from "@/app/providers/ws-provider";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+
+import { WSMessageType } from "@/lib/types";
 
 interface SendMessageParams {
   serverId: string;
   channelId: string;
   content: string;
   fileUrl?: string;
+  messageId?: string;
+}
+
+interface PageData {
+  messages: WSMessageType[];
+  nextCursor?: string | null;
 }
 
 export const useChatSocket = () => {
-  const { sendChatMessage } = useSocket();
-  const queryClient = useQueryClient();
+  const { sendChatMessage, editChatMessage } = useSocket();
 
-  return useMutation({
+  const sendMessage = useMutation({
     mutationFn: async ({
       channelId,
       serverId,
@@ -29,11 +40,26 @@ export const useChatSocket = () => {
         }
       });
     },
+  });
 
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["messages", variables.channelId],
+  const editMessage = useMutation({
+    mutationFn: async ({
+      channelId,
+      serverId,
+      content,
+      messageId,
+    }: SendMessageParams) => {
+      return new Promise((resolve, reject) => {
+        try {
+          editChatMessage({ channelId, serverId, content, messageId });
+
+          resolve({ success: true });
+        } catch (error) {
+          reject(error);
+        }
       });
     },
   });
+
+  return { sendMessage, editMessage };
 };
