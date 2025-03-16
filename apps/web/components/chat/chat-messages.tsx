@@ -7,7 +7,7 @@ import { useChannelMessages } from "@/hooks/use-channel-messages";
 import { useChatScroll } from "@/hooks/use-chat-scroll";
 
 import { ChatWelcome } from "@/components/chat/chat-welcome";
-import { ChatItem } from "@/components/chat/chat.item";
+import { ChatItem } from "@/components/chat/chat-item";
 
 type ChatMessagesProps = {
   channelId: string;
