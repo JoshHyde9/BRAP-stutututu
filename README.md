@@ -15,8 +15,6 @@ Fkn idk tbh
 
 ## TODO
 
-- [ ] Server member can delete and edit their messages
-- [ ] Server moderators and admins can delete server member messages
 - [ ] Users can DM eachother
 - [ ] Voice chats & video chats
   - [https://livekit.io/](https://livekit.io/)????? 
