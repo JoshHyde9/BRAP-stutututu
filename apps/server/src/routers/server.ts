@@ -274,4 +274,76 @@ export const serverRouter = (app: ElysiaContext) =>
           params: t.Object({ serverId: t.String() }),
         }
       )
+      .get(
+        "/bans/:serverId",
+        async ({ user, prisma, params, error }) => {
+          const loggedInMember = await prisma.member.findFirst({
+            where: { userId: user.id, serverId: params.serverId },
+          });
+
+          if (!loggedInMember) {
+            return error("Bad Request");
+          }
+
+          const canBan =
+            loggedInMember.role === "ADMIN" ||
+            loggedInMember.role === "MODERATOR";
+
+          if (!canBan) {
+            return error("Bad Request");
+          }
+
+          return await prisma.ban.findMany({
+            where: { serverId: params.serverId },
+            omit: { updatedAt: true, userId: true },
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                  displayName: true,
+                },
+              },
+            },
+          });
+        },
+        {
+          auth: true,
+          params: t.Object({ serverId: t.String() }),
+        }
+      )
+      .patch(
+        "/unBan/:serverId",
+        async ({ user, prisma, params, body, error }) => {
+          const loggedInMember = await prisma.member.findFirst({
+            where: { userId: user.id, serverId: params.serverId },
+          });
+
+          if (!loggedInMember) {
+            return error("Bad Request");
+          }
+
+          const canBan =
+            loggedInMember.role === "ADMIN" ||
+            loggedInMember.role === "MODERATOR";
+
+          if (!canBan) {
+            return error("Bad Request");
+          }
+
+          await prisma.ban.delete({
+            where: {
+              id: body.banId
+            },
+          });
+
+          return { success: true };
+        },
+        {
+          auth: true,
+          params: t.Object({ serverId: t.String() }),
+          body: t.Object({ banId: t.String() }),
+        }
+      )
   );

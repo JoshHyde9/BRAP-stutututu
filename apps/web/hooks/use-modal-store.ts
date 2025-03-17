@@ -1,4 +1,8 @@
-import type { MemberWithUser, QueryParamsKeys, ServerWithMembers } from "@/lib/types";
+import type {
+  MemberWithUser,
+  QueryParamsKeys,
+  ServerWithMembers,
+} from "@/lib/types";
 import type { Channel, ChannelType } from "@workspace/db";
 
 import { create } from "zustand";
@@ -15,7 +19,22 @@ export type ModalType =
   | "deleteServer"
   | "editChannel"
   | "deleteChannel"
-  | "messageFile";
+  | "messageFile"
+  | "unbanUser";
+
+type Ban = {
+  user: {
+    name: string;
+    id: string;
+    displayName: string | null;
+    image: string | null;
+  };
+} & {
+  id: string;
+  createdAt: Date;
+  serverId: string;
+  reason: string | null;
+};
 
 export type ModalData = {
   server?: ServerWithMembers;
@@ -24,6 +43,8 @@ export type ModalData = {
   channelType?: ChannelType;
   query?: Record<QueryParamsKeys, string>;
   channel?: Channel;
+  ban?: Ban;
+  serverId?: string;
 };
 
 type ModalStore = {
