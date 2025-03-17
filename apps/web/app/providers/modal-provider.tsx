@@ -7,7 +7,7 @@ import { DeleteChannelModal } from "@/components/modals/channel/delete-channel-m
 import { EditChannelModal } from "@/components/modals/channel/edit-channel-modal";
 import { CreateServerModal } from "@/components/modals/create-server-modal";
 import { DeleteServerModal } from "@/components/modals/delete-server-modal";
-import { EditServerModal } from "@/components/modals/edit-server-modal";
+import { EditServerModal } from "@/components/modals/server-settings/edit-server-modal";
 import { EditServerProfileModal } from "@/components/modals/edit-server-profile";
 import { InviteModal } from "@/components/modals/invite-modal";
 import { LeaveServerModal } from "@/components/modals/leave-server-modal";
