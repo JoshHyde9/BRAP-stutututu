@@ -97,15 +97,16 @@ export const EditServerModal = () => {
       <DialogContent className="min-w-3xl overflow-hidden bg-white p-0 text-black dark:bg-[#2b2d31]">
         <DialogHeader className="px-6 pt-8">
           <DialogTitle className="dark:text-primary text-center text-2xl font-bold">
-            Customise Your Server
+            Server Settings
           </DialogTitle>
           <DialogDescription className="text-center text-zinc-500">
-            Give your server some personality with a name and image. You can
-            always change this later.
+            {component === "overview" &&
+              "Give your server some personality with a name and image. You can always change this later."}
+            {component === "bans" && "View and search banned users"}
           </DialogDescription>
         </DialogHeader>
         <div className="flex">
-          <div className="w-1/4 border-r-2 px-2">
+          <div className="min-h-80 w-1/4 border-r-2 px-2">
             <button
               onClick={() => setComponent("overview")}
               className={cn(

@@ -31,14 +31,25 @@ export const ServerBans: React.FC<ServerBansProps> = ({ serverId }) => {
 
   if (isPending) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center">
+      <div className="flex h-full flex-1 flex-col items-center justify-center">
         <Loader2 className="my-4 size-7 animate-spin text-zinc-500" />
         <p className="text-xs text-zinc-500 dark:text-zinc-400">
-          Loading messages...
+          Loading bans...
         </p>
       </div>
     );
   }
+
+  if (bans?.length === 0) {
+    return (
+      <div className="flex h-full flex-1 flex-col items-center justify-center">
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          There are no banned users!
+        </p>
+      </div>
+    );
+  }
+
   return (
     <ScrollArea className="px-2 pb-2">
       {bans?.map((ban) => (
