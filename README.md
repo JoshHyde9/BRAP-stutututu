@@ -12,7 +12,7 @@ Fkn idk tbh
 - [TailwindCSS](https://tailwindcss.com)
 - [Shadcn/ui](https://ui.shadcn.com)
 - [Neon Postgres](https://neon.tech)
-- [https://livekit.io/](https://livekit.io/)
+- [LiveKit](https://livekit.io/)
 
 ## TODO
 
