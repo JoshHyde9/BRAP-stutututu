@@ -8,6 +8,7 @@ import { getServerSession } from "@/lib/get-server-session";
 import { ChatHeader } from "@/components/chat/chat-header";
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatMessages } from "@/components/chat/chat-messages";
+import { MediaRoom } from "@/components/chat/media-room";
 
 type ChannelIdPageProps = {
   params: Promise<{ serverId: string; channelId: string }>;
@@ -42,17 +43,27 @@ const ChannelIdPage: React.FC<ChannelIdPageProps> = async ({ params }) => {
         name={channel.name}
         serverId={channel.serverId}
       />
-      <ChatMessages
-        channelName={channel.name}
-        channelId={channel.id}
-        serverId={channel.serverId}
-        loggedInMember={loggedInMember}
-      />
-      <ChatInput
-        name={channel.name}
-        type="channel"
-        queryParams={{ channelId: channel.id, serverId: channel.serverId }}
-      />
+      {channel.type === "TEXT" && (
+        <>
+          <ChatMessages
+            channelName={channel.name}
+            channelId={channel.id}
+            serverId={channel.serverId}
+            loggedInMember={loggedInMember}
+          />
+          <ChatInput
+            name={channel.name}
+            type="channel"
+            queryParams={{ channelId: channel.id, serverId: channel.serverId }}
+          />
+        </>
+      )}
+      {channel.type === "AUDIO" && (
+        <MediaRoom chatId={channel.id} audio={true} video={false} />
+      )}
+      {channel.type === "VIDEO" && (
+        <MediaRoom chatId={channel.id} audio={true} video={true} />
+      )}
     </div>
   );
 };
