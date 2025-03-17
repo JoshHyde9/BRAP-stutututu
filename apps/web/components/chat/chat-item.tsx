@@ -3,7 +3,7 @@ import type { Member, MemberRole } from "@workspace/db";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { format } from "date-fns";
-import { Edit, FileIcon, MoreVertical, SmilePlus, Trash } from "lucide-react";
+import { Edit, FileIcon, MoreVertical, SmilePlus } from "lucide-react";
 
 import {
   Dialog,
@@ -17,6 +17,7 @@ import {
 import { roleIconMap } from "@/lib/iconMaps";
 
 import { ActionTooltip } from "@/components/action-tooltip";
+import { DeleteMessage } from "@/components/chat/delete-message";
 import { EditMessage } from "@/components/chat/edit-message";
 import { UserAvatar } from "@/components/user-avatar";
 
@@ -168,9 +169,11 @@ export const ChatItem: React.FC<ChatItemProps> = ({
             </ActionTooltip>
           )}
         {canDelete && (
-          <ActionTooltip label="Delete">
-            <Trash className="ml-auto size-4 cursor-pointer text-rose-500 transition hover:text-rose-600 dark:hover:text-rose-300" />
-          </ActionTooltip>
+          <DeleteMessage
+            channelId={channelId}
+            messageId={message.id}
+            serverId={serverId}
+          />
         )}
         <ActionTooltip label="More">
           <MoreVertical className="ml-auto size-4 cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300" />

@@ -54,3 +54,40 @@ export const editMessage = async (
 
   return editedMessage;
 };
+
+export const deleteMessage = async (
+  prisma: PrismaClient,
+  session: Session,
+  data: MessageData
+) => {
+  const [server, message] = await prisma.$transaction([
+    prisma.server.findUnique({
+      where: { id: data.serverId },
+      select: { members: { select: { userId: true, role: true } } },
+    }),
+    prisma.message.findUnique({
+      where: { id: data.messageId },
+      select: {
+        member: { select: { userId: true } },
+      },
+    }),
+  ]);
+
+  const member = server?.members.find(
+    (member) => member.userId === session.user.id
+  );
+
+  const isMessageOwner = message?.member.userId === session.user.id;
+  const isAdmin = member?.role === "ADMIN";
+  const isModerator = member?.role === "MODERATOR";
+  const canDelete = isMessageOwner || isAdmin || isModerator;
+
+  if (!canDelete) {
+    throw new Error("Don't try to be sneaky");
+  }
+
+  return await prisma.message.delete({
+    where: { id: data.messageId },
+    select: { id: true, channelId: true },
+  });
+};

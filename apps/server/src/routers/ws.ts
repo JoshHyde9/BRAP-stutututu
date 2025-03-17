@@ -1,7 +1,7 @@
 import { auth, type Session } from "@workspace/auth";
 import { ElysiaContext } from "..";
 import { t } from "elysia";
-import { editMessage } from "../lib/ws-message-funcs";
+import { deleteMessage, editMessage } from "../lib/ws-message-funcs";
 
 const wsConnections = new Map<string, Session>();
 const channels = new Map<string, Set<string>>();
@@ -15,6 +15,7 @@ export const wsRouter = (app: ElysiaContext) =>
           t.Literal("leave"),
           t.Literal("create-chat-message"),
           t.Literal("edit-chat-message"),
+          t.Literal("delete-chat-message"),
         ]),
         data: t.Object({
           channelId: t.String(),
@@ -136,13 +137,37 @@ export const wsRouter = (app: ElysiaContext) =>
               });
 
               if (editedMessage) {
-                ws.publish(`channel:${channelId}`, { message: editedMessage, type: "edit-chat-message" });
+                ws.publish(`channel:${channelId}`, {
+                  message: editedMessage,
+                  type: "edit-chat-message",
+                });
                 ws.send({ message: editedMessage, type: "edit-chat-message" });
               }
             } catch (error) {
               console.log(error);
             }
 
+            break;
+          case "delete-chat-message":
+            try {
+              const deletedMessage = await deleteMessage(prisma, session, {
+                messageId,
+                serverId,
+              });
+
+              if (deletedMessage) {
+                ws.publish(`channel:${channelId}`, {
+                  message: deletedMessage,
+                  type: "delete-chat-message",
+                });
+                ws.send({
+                  message: deletedMessage,
+                  type: "delete-chat-message",
+                });
+              }
+            } catch (error) {
+              console.log(error);
+            }
             break;
         }
       },

@@ -30,7 +30,7 @@ import { messageFileSchema } from "@/lib/schema";
 import { FileUpload } from "@/components/file-upload";
 
 export const MessageFileModal = () => {
-  const { mutate: sendMessage, isPending } = useChatSocket();
+  const { sendMessage } = useChatSocket();
   const { isOpen, onClose, type, props } = useModal();
 
   const form = useForm({
@@ -42,7 +42,7 @@ export const MessageFileModal = () => {
 
   const onSubmit = async (values: z.infer<typeof messageFileSchema>) => {
     const parsedData = await messageFileSchema.parseAsync(values);
-    sendMessage(
+    sendMessage.mutate(
       {
         channelId: props.query!.channelId,
         serverId: props.query!.serverId,
@@ -97,7 +97,7 @@ export const MessageFileModal = () => {
               </div>
             </div>
             <DialogFooter className="bg-gray-100 px-6 py-4 dark:bg-[#1E1F22]">
-              <Button disabled={isPending}>Send</Button>
+              <Button disabled={sendMessage.isPending}>Send</Button>
             </DialogFooter>
           </form>
         </Form>
