@@ -71,8 +71,6 @@ export const ChatItem: React.FC<ChatItemProps> = ({
     };
   }, []);
 
-  const canDelete = loggedInMember.role !== "GUEST";
-
   return (
     <div className="group relative flex w-full items-center p-4 transition hover:bg-black/5">
       <div className="group flex w-full items-start gap-x-2">
@@ -168,12 +166,17 @@ export const ChatItem: React.FC<ChatItemProps> = ({
               />
             </ActionTooltip>
           )}
-        {canDelete && (
+        {message.member.user.id === loggedInMember.userId ||
+        loggedInMember.role === "ADMIN" ||
+        (message.member.role == "GUEST" &&
+          loggedInMember.role === "MODERATOR") ? (
           <DeleteMessage
             channelId={channelId}
             messageId={message.id}
             serverId={serverId}
           />
+        ) : (
+          false
         )}
         <ActionTooltip label="More">
           <MoreVertical className="ml-auto size-4 cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300" />
