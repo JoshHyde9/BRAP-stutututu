@@ -116,7 +116,8 @@ model Member {
   serverId String
   server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
-  messages Message[]
+  messages  Message[]
+  reactions Reaction[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -185,6 +186,8 @@ model Message {
   channelId String
   channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
 
+  reactions Reaction[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -204,8 +207,8 @@ model Conversation {
 
   directMessages DirectMessage[]
 
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userOneId, userTwoId])
   @@index([userOneId])
@@ -232,4 +235,23 @@ model DirectMessage {
   @@index([userId])
   @@index([conversationId])
   @@map("direct_message")
+}
+
+model Reaction {
+  id String @id @default(uuid())
+
+  messageId String
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  memberId String
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  value String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([messageId])
+  @@index([memberId])
+  @@map("reaction")
 }
