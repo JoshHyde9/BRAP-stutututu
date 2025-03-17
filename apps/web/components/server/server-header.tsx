@@ -13,7 +13,6 @@ import {
   Users,
 } from "lucide-react";
 
-import { useModal } from "@/hooks/use-modal-store";
 import { MemberRole } from "@workspace/db";
 import {
   DropdownMenu,
@@ -22,6 +21,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
+
+import { useModal } from "@/hooks/use-modal-store";
 
 type ServerHeaderProps = {
   server: ServerWithMembers;
@@ -57,7 +58,7 @@ export const ServerHeader: React.FC<ServerHeaderProps> = ({
         )}
         {isAdmin && (
           <DropdownMenuItem
-            onClick={() => onOpen("editServer", { server })}
+            onClick={() => onOpen("serverSettings", { server })}
             className="cursor-pointer px-3 py-2 text-sm"
           >
             Server Settings <Settings className="ml-auto size-4" />

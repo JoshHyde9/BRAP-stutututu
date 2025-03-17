@@ -16,14 +16,14 @@ import { useModal } from "@/hooks/use-modal-store";
 import { ServerBans } from "@/components/modals/server-settings/server-bans";
 import { ServerOverview } from "@/components/modals/server-settings/server-overview";
 
-export const EditServerModal = () => {
+export const ServerSettingsModal = () => {
   const { isOpen, onClose, type, props } = useModal();
 
   const [component, setComponent] = useState<"overview" | "bans">("overview");
 
   const { server } = props;
 
-  const isModalOpen = isOpen && type === "editServer";
+  const isModalOpen = isOpen && type === "serverSettings";
 
   const handleModalClose = () => {
     onClose();
