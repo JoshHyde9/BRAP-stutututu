@@ -12,13 +12,11 @@ Fkn idk tbh
 - [TailwindCSS](https://tailwindcss.com)
 - [Shadcn/ui](https://ui.shadcn.com)
 - [Neon Postgres](https://neon.tech)
+- [https://livekit.io/](https://livekit.io/)
 
 ## TODO
 
 - [ ] Users can DM eachother
-- [ ] Voice chats & video chats
-  - [https://livekit.io/](https://livekit.io/)????? 
-- [ ] Server admins and moderators can unban server members
 - [ ] Server member profile popover thing
 - [ ] Friends
 - [ ] Message replies 
