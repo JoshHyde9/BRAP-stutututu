@@ -25,7 +25,7 @@ import { useModal } from "@/hooks/use-modal-store";
 import { sendMessageSchema } from "@/lib/schema";
 
 import { ActionTooltip } from "@/components/action-tooltip";
-import { EmojiPicker } from "@/components/chat/emoji-picker";
+import { Emoji, EmojiPicker } from "@/components/chat/emoji-picker";
 
 type ChatInputProps = {
   queryParams: Record<QueryParamsKeys, string>;
@@ -38,7 +38,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   type,
   name,
 }) => {
-  const { sendMessage} = useChatSocket();
+  const { sendMessage } = useChatSocket();
   const { onOpen } = useModal();
   const form = useForm({
     resolver: zodResolver(sendMessageSchema),
@@ -64,10 +64,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     );
   };
 
-  const handleEmojiSelect = (emoji: string) => {
+  const handleEmojiSelect = (emoji: Emoji) => {
     // TODO: Put emoji where cursor is
     // useRef?????
-    form.setValue("content", `${form.getValues("content")} ${emoji}`);
+    form.setValue("content", `${form.getValues("content")} ${emoji.native}`);
   };
 
   return (

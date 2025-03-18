@@ -20,7 +20,6 @@ Fkn idk tbh
 - [ ] Server member profile popover thing
 - [ ] Friends
 - [ ] Message replies 
-- [ ] Message reactions
 - [ ] Pinned messages
 - [ ] User activity status
 - [ ] Mention users

@@ -10,7 +10,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ferrucc-io/emoji-picker": "^0.0.44",
+    "@emoji-mart/data": "^1.2.1",
+    "@emoji-mart/react": "^1.1.1",
     "@livekit/components-react": "^2.8.1",
     "@livekit/components-styles": "^1.1.4",
     "@tanstack/react-query": "^5.66.9",
@@ -19,6 +20,7 @@
     "@workspace/db": "workspace:*",
     "@workspace/ui": "workspace:*",
     "date-fns": "^4.1.0",
+    "emoji-mart": "^5.6.0",
     "livekit-server-sdk": "^2.10.2",
     "lucide-react": "0.456.0",
     "next": "^15.1.0",
@@ -31,13 +33,14 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.9",
+    "@types/emoji-mart": "^3.0.14",
     "@types/node": "^20",
     "@types/react": "19.0.4",
     "@types/react-dom": "19.0.4",
     "@workspace/api": "workspace:*",
     "@workspace/eslint": "workspace:^",
-    "@workspace/tsconfig": "workspace:*",
     "@workspace/prettier": "workspace:*",
+    "@workspace/tsconfig": "workspace:*",
     "tailwindcss": "^4.0.9",
     "typescript": "^5"
   },

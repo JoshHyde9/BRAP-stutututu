@@ -23,6 +23,14 @@ export type WSMessageType = {
   channelId: string;
   createdAt: Date;
   updatedAt: Date;
+  reactions: {
+    messageId: string;
+    value: string;
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    memberId: string;
+  }[];
   member: {
     id: string;
     nickname?: string;

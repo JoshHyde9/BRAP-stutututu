@@ -1,7 +1,11 @@
 import { auth, type Session } from "@workspace/auth";
 import { ElysiaContext } from "..";
 import { t } from "elysia";
-import { deleteMessage, editMessage } from "../lib/ws-message-funcs";
+import {
+  createReaction,
+  deleteMessage,
+  editMessage,
+} from "../lib/ws-message-funcs";
 
 const wsConnections = new Map<string, Session>();
 const channels = new Map<string, Set<string>>();
@@ -16,13 +20,15 @@ export const wsRouter = (app: ElysiaContext) =>
           t.Literal("create-chat-message"),
           t.Literal("edit-chat-message"),
           t.Literal("delete-chat-message"),
+          t.Literal("create-message-reaction"),
         ]),
         data: t.Object({
-          channelId: t.String(),
+          channelId: t.Optional(t.String()),
           serverId: t.Optional(t.String()),
           content: t.Optional(t.String()),
           fileUrl: t.Optional(t.String()),
           messageId: t.Optional(t.String()),
+          value: t.Optional(t.String()),
         }),
       }),
       open: async (ws) => {
@@ -44,24 +50,24 @@ export const wsRouter = (app: ElysiaContext) =>
         }
 
         const { prisma } = ws.data;
-        const { channelId, serverId, content, fileUrl, messageId } =
+        const { channelId, serverId, content, fileUrl, messageId, value } =
           message.data;
 
         switch (message.type) {
           case "join":
-            if (!channels.has(channelId)) {
-              channels.set(channelId, new Set());
+            if (!channels.has(channelId!)) {
+              channels.set(channelId!, new Set());
             }
 
-            channels.get(channelId)?.add(ws.id);
+            channels.get(channelId!)?.add(ws.id);
 
             ws.subscribe(`channel:${channelId}`);
             break;
           case "leave":
-            channels.get(channelId)?.delete(ws.id);
+            channels.get(channelId!)?.delete(ws.id);
 
-            if (channels.get(channelId)?.size === 0) {
-              channels.delete(channelId);
+            if (channels.get(channelId!)?.size === 0) {
+              channels.delete(channelId!);
             }
 
             ws.unsubscribe(`channel:${channelId}`);
@@ -105,7 +111,7 @@ export const wsRouter = (app: ElysiaContext) =>
               data: {
                 content: content as string,
                 fileUrl: fileUrl,
-                channelId: channelId,
+                channelId: channelId!,
                 memberId: member.id,
               },
               include: {
@@ -163,6 +169,29 @@ export const wsRouter = (app: ElysiaContext) =>
                 ws.send({
                   message: deletedMessage,
                   type: "delete-chat-message",
+                });
+              }
+            } catch (error) {
+              console.log(error);
+            }
+            break;
+          case "create-message-reaction":
+            try {
+              const messageReaction = await createReaction(prisma, session, {
+                serverId,
+                messageId,
+                channelId,
+                value,
+              });
+
+              if (messageReaction) {
+                ws.publish(`channel:${channelId}`, {
+                  message: messageReaction,
+                  type: "create-message-reaction",
+                });
+                ws.send({
+                  message: messageReaction,
+                  type: "create-message-reaction",
                 });
               }
             } catch (error) {

@@ -3,7 +3,7 @@ import type { Member, MemberRole } from "@workspace/db";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { format } from "date-fns";
-import { Edit, FileIcon, MoreVertical, SmilePlus } from "lucide-react";
+import { Edit, FileIcon, MoreVertical } from "lucide-react";
 
 import {
   Dialog,
@@ -17,8 +17,10 @@ import {
 import { roleIconMap } from "@/lib/iconMaps";
 
 import { ActionTooltip } from "@/components/action-tooltip";
+import { AddReaction } from "@/components/chat/add-reaction";
 import { DeleteMessage } from "@/components/chat/delete-message";
 import { EditMessage } from "@/components/chat/edit-message";
+import { MessageReactions } from "@/components/chat/message-reactions";
 import { UserAvatar } from "@/components/user-avatar";
 
 type ChatItemProps = {
@@ -36,6 +38,14 @@ type ChatItemProps = {
         image: string | null;
       };
     };
+    reactions: {
+      messageId: string;
+      value: string;
+      id: string;
+      createdAt: Date;
+      updatedAt: Date;
+      memberId: string;
+    }[];
     id: string;
     fileUrl?: string | null;
     content: string;
@@ -140,6 +150,15 @@ export const ChatItem: React.FC<ChatItemProps> = ({
               {message.content}
             </p>
           )}
+          {message.reactions && message.reactions.length > 0 && (
+            <MessageReactions
+              loggedInMember={loggedInMember}
+              messageId={message.id}
+              serverId={serverId}
+              channelId={channelId}
+              reactions={message.reactions}
+            />
+          )}
           {isEditing && (
             <EditMessage
               queryParams={{
@@ -154,9 +173,11 @@ export const ChatItem: React.FC<ChatItemProps> = ({
         </div>
       </div>
       <div className="absolute -top-2 right-5 hidden items-center gap-x-2 rounded-sm border bg-white p-1 group-hover:flex dark:bg-zinc-800">
-        <ActionTooltip label="Add Reaction">
-          <SmilePlus className="ml-auto size-4 cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300" />
-        </ActionTooltip>
+        <AddReaction
+          channelId={channelId}
+          messageId={message.id}
+          serverId={serverId}
+        />
         {message.member.user.id === loggedInMember.userId &&
           !message.fileUrl && (
             <ActionTooltip label="Edit">

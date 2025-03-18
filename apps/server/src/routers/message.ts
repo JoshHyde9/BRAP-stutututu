@@ -102,6 +102,7 @@ export const messageRouter = (app: ElysiaContext) =>
                   },
                 },
               },
+              reactions: true
             },
             orderBy: {
               createdAt: "desc",

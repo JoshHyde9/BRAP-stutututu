@@ -1,5 +1,5 @@
 import { useSocket } from "@/app/providers/ws-provider";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface SendMessageParams {
   serverId: string;
@@ -10,7 +10,12 @@ interface SendMessageParams {
 }
 
 export const useChatSocket = () => {
-  const { sendChatMessage, editChatMessage, deleteChatMessage } = useSocket();
+  const {
+    sendChatMessage,
+    editChatMessage,
+    deleteChatMessage,
+    createMessageReaction,
+  } = useSocket();
 
   const sendMessage = useMutation({
     mutationFn: async ({
@@ -72,5 +77,27 @@ export const useChatSocket = () => {
     },
   });
 
-  return { sendMessage, editMessage, deleteMessage };
+  const messageReaction = useMutation({
+    mutationFn: async ({
+      channelId,
+      value,
+      serverId,
+      messageId,
+    }: {
+      channelId: string;
+      value: string;
+      serverId: string;
+      messageId: string;
+    }) => {
+      try {
+        createMessageReaction({ channelId, serverId, messageId, value });
+
+        return { success: true };
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
+
+  return { sendMessage, editMessage, deleteMessage, messageReaction };
 };

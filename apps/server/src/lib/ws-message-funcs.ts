@@ -7,6 +7,7 @@ type MessageData = {
   fileUrl?: string | undefined;
   messageId?: string | undefined;
   channelId?: string;
+  value?: string;
 };
 
 export const editMessage = async (
@@ -90,4 +91,85 @@ export const deleteMessage = async (
     where: { id: data.messageId },
     select: { id: true, channelId: true },
   });
+};
+
+export const createReaction = async (
+  prisma: PrismaClient,
+  session: Session,
+  data: MessageData
+) => {
+  const [message, member] = await prisma.$transaction([
+    prisma.message.findUnique({
+      where: { id: data.messageId },
+      include: {
+        reactions: true,
+        member: {
+          omit: { createdAt: true },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                displayName: true,
+                image: true,
+                createdAt: true,
+              },
+            },
+          },
+        },
+      },
+    }),
+    prisma.member.findFirst({
+      where: { serverId: data.serverId, userId: session.user.id },
+    }),
+  ]);
+
+  if (!message || !member || !data.value) {
+    return new Error("Bad Request");
+  }
+
+  const existingReactionFromUser = message.reactions.find(
+    (reaction) =>
+      message.id === data.messageId &&
+      reaction.memberId === member.id &&
+      reaction.value === data.value
+  );
+
+  if (existingReactionFromUser) {
+    let message = await prisma.reaction.delete({
+      where: { id: existingReactionFromUser.id },
+      include: {
+        member: {
+          omit: { createdAt: true },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                displayName: true,
+                image: true,
+                createdAt: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const messageWithChannelId: typeof message & { channelId: string } = {
+      channelId: data.channelId!,
+      ...message,
+    };
+
+    return messageWithChannelId;
+  } else {
+    await prisma.reaction.create({
+      data: {
+        memberId: member.id,
+        messageId: message.id,
+        value: data.value,
+      },
+    });
+    return message;
+  }
 };
