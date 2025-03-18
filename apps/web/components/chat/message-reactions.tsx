@@ -40,6 +40,7 @@ export const MessageReactions: React.FC<MessageReactionsProps> = ({
     messageReaction.mutate({ value: emoji, channelId, serverId, messageId });
   };
 
+  // FIXME: Move to backend
   const sortedReactions: SortedReaction[] = reactions.reduce(
     (sortedArray, reaction) => {
       const existingReaction = sortedArray.findIndex(

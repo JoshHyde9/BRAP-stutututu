@@ -3,10 +3,7 @@
 import type { Emoji } from "@/components/chat/emoji-picker";
 
 import { useState } from "react";
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
 import { SmilePlus } from "lucide-react";
-import { useTheme } from "next-themes";
 
 import {
   Popover,
@@ -18,6 +15,7 @@ import { cn } from "@workspace/ui/lib/utils";
 import { useChatSocket } from "@/hooks/use-chat-socket";
 
 import { ActionTooltip } from "@/components/action-tooltip";
+import { EmojiPicker } from "@/components/chat/emoji-picker";
 
 type AddReactionProps = {
   channelId: string;
@@ -45,8 +43,6 @@ export const AddReaction: React.FC<AddReactionProps> = ({
     setOpen(false);
   };
 
-  const { resolvedTheme } = useTheme();
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger>
@@ -68,11 +64,7 @@ export const AddReaction: React.FC<AddReactionProps> = ({
         </ActionTooltip>
       </PopoverTrigger>
       <PopoverContent side="left" className="w-fit">
-        <Picker
-          theme={resolvedTheme}
-          data={data}
-          onEmojiSelect={(emoji: Emoji) => handleEmojiSelect(emoji)}
-        />
+        <EmojiPicker handleEmojiSelect={handleEmojiSelect} />
       </PopoverContent>
     </Popover>
   );

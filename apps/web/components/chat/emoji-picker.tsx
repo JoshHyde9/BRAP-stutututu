@@ -2,7 +2,6 @@
 
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
-
 import { useTheme } from "next-themes";
 
 export type Emoji = {
@@ -14,7 +13,6 @@ export type Emoji = {
   keywords: string[];
   aliases: string[];
 };
-
 
 type EmojiPickerProps = {
   handleEmojiSelect: (emoji: Emoji) => void;
