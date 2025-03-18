@@ -173,6 +173,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
         </div>
       </div>
       <div className="absolute -top-2 right-5 hidden items-center gap-x-2 rounded-sm border bg-white p-1 group-hover:flex dark:bg-zinc-800">
+        {/* FIXME: component got nuts when cursor is moved away from hover state */}
         <AddReaction
           channelId={channelId}
           messageId={message.id}
