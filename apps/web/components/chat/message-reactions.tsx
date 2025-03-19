@@ -1,10 +1,10 @@
+import { SortedReaction } from "@workspace/api";
 import { Member } from "@workspace/db";
 import { cn } from "@workspace/ui/lib/utils";
 
 import { useChatSocket } from "@/hooks/use-chat-socket";
 
-import { AddReaction } from "./add-reaction";
-import { SortedReaction } from "@workspace/server";
+import { AddReaction } from "@/components/chat/add-reaction";
 
 type MessageReactionsProps = {
   reactions: SortedReaction[];
