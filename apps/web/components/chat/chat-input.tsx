@@ -3,6 +3,7 @@
 import type { QueryParamsKeys } from "@/lib/types";
 import type z from "zod";
 
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Smile } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -14,11 +15,6 @@ import {
   FormItem,
 } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@workspace/ui/components/popover";
 
 import { useChatSocket } from "@/hooks/use-chat-socket";
 import { useModal } from "@/hooks/use-modal-store";
@@ -40,6 +36,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 }) => {
   const { sendMessage } = useChatSocket();
   const { onOpen } = useModal();
+  const [open, setOpen] = useState(false);
   const form = useForm({
     resolver: zodResolver(sendMessageSchema),
     defaultValues: {
@@ -68,6 +65,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     // TODO: Put emoji where cursor is
     // useRef?????
     form.setValue("content", `${form.getValues("content")} ${emoji.native}`);
+    setOpen(false);
   };
 
   return (
@@ -101,16 +99,18 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                     {...field}
                   />
                   <div className="absolute right-8 flex items-center">
-                    <Popover>
-                      <PopoverTrigger>
-                        <ActionTooltip label="Add emoji">
-                          <Smile />
-                        </ActionTooltip>
-                      </PopoverTrigger>
-                      <PopoverContent side="left" className="w-fit">
-                        <EmojiPicker handleEmojiSelect={handleEmojiSelect} />
-                      </PopoverContent>
-                    </Popover>
+                    <EmojiPicker
+                      label="Add Emoji"
+                      side="top"
+                      handleEmojiSelect={handleEmojiSelect}
+                      open={open}
+                      handleOpen={setOpen}
+                    >
+                      <Smile
+                        onClick={() => setOpen(!open)}
+                        className="ml-auto size-[24px] cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300"
+                      />
+                    </EmojiPicker>
                   </div>
                 </div>
               </FormControl>

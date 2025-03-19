@@ -5,6 +5,7 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { Edit, FileIcon, MoreVertical } from "lucide-react";
 
+import { MessageWithSortedReactions } from "@workspace/api";
 import {
   Dialog,
   DialogContent,
@@ -22,13 +23,12 @@ import { DeleteMessage } from "@/components/chat/delete-message";
 import { EditMessage } from "@/components/chat/edit-message";
 import { MessageReactions } from "@/components/chat/message-reactions";
 import { UserAvatar } from "@/components/user-avatar";
-import { MessageWithSortedReactions } from "@workspace/api";
 
 type ChatItemProps = {
   loggedInMember: Member;
   serverId: string;
   channelId: string;
-  message: MessageWithSortedReactions
+  message: MessageWithSortedReactions;
 };
 
 export const ChatItem: React.FC<ChatItemProps> = ({
@@ -150,37 +150,38 @@ export const ChatItem: React.FC<ChatItemProps> = ({
           )}
         </div>
       </div>
-      <div className="absolute -top-2 right-5 hidden items-center gap-x-2 rounded-sm border bg-white p-1 group-hover:flex dark:bg-zinc-800">
-        {/* FIXME: component got nuts when cursor is moved away from hover state */}
-        <AddReaction
-          channelId={channelId}
-          messageId={message.id}
-          serverId={serverId}
-        />
-        {message.member.user.id === loggedInMember.userId &&
-          !message.fileUrl && (
-            <ActionTooltip label="Edit">
-              <Edit
-                className="ml-auto size-4 cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300"
-                onClick={() => setIsEditing(!isEditing)}
-              />
-            </ActionTooltip>
-          )}
-        {message.member.user.id === loggedInMember.userId ||
-        loggedInMember.role === "ADMIN" ||
-        (message.member.role == "GUEST" &&
-          loggedInMember.role === "MODERATOR") ? (
-          <DeleteMessage
+      <div className="absolute -top-2 right-5">
+        <div className="flex items-center rounded-sm border bg-white gap-x-2 p-1 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-zinc-800">
+          <AddReaction
             channelId={channelId}
-            messageId={message.id}
             serverId={serverId}
+            messageId={message.id}
           />
-        ) : (
-          false
-        )}
-        <ActionTooltip label="More">
-          <MoreVertical className="ml-auto size-4 cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300" />
-        </ActionTooltip>
+          {message.member.user.id === loggedInMember.userId &&
+            !message.fileUrl && (
+              <ActionTooltip label="Edit">
+                <Edit
+                  className="ml-auto size-4 cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300"
+                  onClick={() => setIsEditing(!isEditing)}
+                />
+              </ActionTooltip>
+            )}
+          {message.member.user.id === loggedInMember.userId ||
+          loggedInMember.role === "ADMIN" ||
+          (message.member.role == "GUEST" &&
+            loggedInMember.role === "MODERATOR") ? (
+            <DeleteMessage
+              channelId={channelId}
+              messageId={message.id}
+              serverId={serverId}
+            />
+          ) : (
+            false
+          )}
+          <ActionTooltip label="More">
+            <MoreVertical className="ml-auto size-4 cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300" />
+          </ActionTooltip>
+        </div>
       </div>
     </div>
   );
