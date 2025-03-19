@@ -50,7 +50,11 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({
   return (
     <TooltipProvider>
       <Popover open={open} onOpenChange={handleOpen}>
-        <Tooltip open={tooltipOpen} onOpenChange={setTooltipOpen}>
+        <Tooltip
+          delayDuration={50}
+          open={tooltipOpen}
+          onOpenChange={setTooltipOpen}
+        >
           <PopoverTrigger asChild>
             <TooltipTrigger asChild>{children}</TooltipTrigger>
           </PopoverTrigger>
