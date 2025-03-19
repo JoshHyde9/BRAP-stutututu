@@ -10,6 +10,7 @@ import { channelRouter } from "./routers/channel";
 import { conversationRouter } from "./routers/conversation";
 import { messageRouter } from "./routers/message";
 import { wsRouter } from "./routers/ws";
+import { Message, Member, User, Reaction } from "@workspace/db";
 
 const app = new Elysia({ prefix: "/api" })
   .use(elysiaContext)
@@ -36,3 +37,19 @@ console.log(
 
 export type App = typeof app;
 export type ElysiaContext = typeof elysiaContext;
+
+export type MessageWithReactions = Message & {
+  member: Member & {
+    user: Pick<User, "id" | "name" | "displayName" | "image" | "createdAt">;
+  };
+  reactions: Omit<Reaction, "updatedAt">[];
+};
+
+export type SortedReaction = Omit<Reaction, "updatedAt"> & {
+  count: number;
+  memberIds: string[];
+};
+
+export type MessageWithSortedReactions = MessageWithReactions & {
+  reactions: SortedReaction[];
+};

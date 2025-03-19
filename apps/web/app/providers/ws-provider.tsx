@@ -10,9 +10,7 @@ import {
 } from "react";
 import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 
-import { api } from "@workspace/api";
-
-import { WSMessageType } from "@/lib/types";
+import { api, MessageWithSortedReactions } from "@workspace/api";
 
 type ChatMessage = {
   channelId: string;
@@ -50,13 +48,13 @@ type WebSocketContextType = {
 type EdenWebSocket = ReturnType<typeof api.ws.chat.subscribe>;
 
 interface PageData {
-  messages: WSMessageType[];
+  messages: MessageWithSortedReactions[];
   nextCursor?: string | null;
 }
 
 type MessageData = {
   type: WebSocketMessageType;
-  message: WSMessageType;
+  message: MessageWithSortedReactions;
 };
 
 const SocketContext = createContext<WebSocketContextType | undefined>(
@@ -80,7 +78,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       // @ts-ignore
       // FIXME: try work out a way to type the data object????
       const eventData: MessageData = event.data;
-      const newMessage: WSMessageType = eventData.message;
+      const newMessage: MessageWithSortedReactions = eventData.message;
 
       queryClient.invalidateQueries({
         queryKey: ["messages", newMessage.channelId],

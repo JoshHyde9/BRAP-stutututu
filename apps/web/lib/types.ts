@@ -1,4 +1,4 @@
-import { Member, MemberRole, Server, User } from "@workspace/db";
+import { Member, Server, User } from "@workspace/db";
 
 export type UserInfo = Pick<
   User,
@@ -14,39 +14,6 @@ export type ServerWithMembers = Server & {
 };
 
 export type SectionType = "channel" | "member";
-
-export type WSMessageType = {
-  id: string;
-  content: string;
-  fileUrl?: string;
-  memberId: string;
-  channelId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  reactions: {
-    messageId: string;
-    value: string;
-    id: string;
-    createdAt: Date;
-    updatedAt: Date;
-    memberId: string;
-  }[];
-  member: {
-    id: string;
-    nickname?: string;
-    role: MemberRole;
-    serverId: string;
-    userId: string;
-    updatedAt: Date;
-    createdAt: Date;
-    user: {
-      id: string;
-      displayName?: string;
-      image?: string;
-      name: string;
-    };
-  };
-};
 
 // TODO: add support for conversations
 export type QueryParamsKeys = "channelId" | "serverId";

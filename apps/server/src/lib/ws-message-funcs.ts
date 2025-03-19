@@ -1,5 +1,6 @@
 import { Session } from "@workspace/auth";
 import { PrismaClient } from "@workspace/db";
+import { countAndSortReactions } from "./util";
 
 type MessageData = {
   serverId?: string | undefined;
@@ -104,7 +105,6 @@ export const createReaction = async (
       include: {
         reactions: true,
         member: {
-          omit: { createdAt: true },
           include: {
             user: {
               select: {
@@ -113,6 +113,11 @@ export const createReaction = async (
                 displayName: true,
                 image: true,
                 createdAt: true,
+              },
+            },
+            reactions: {
+              omit: {
+                updatedAt: true,
               },
             },
           },
@@ -128,9 +133,11 @@ export const createReaction = async (
     return new Error("Bad Request");
   }
 
+  const sortedMessage = countAndSortReactions(message);
+
   const existingReactionFromUser = message.reactions.find(
     (reaction) =>
-      message.id === data.messageId &&
+      sortedMessage.id === data.messageId &&
       reaction.memberId === member.id &&
       reaction.value === data.value
   );
@@ -170,6 +177,6 @@ export const createReaction = async (
         value: data.value,
       },
     });
-    return message;
+    return sortedMessage;
   }
 };

@@ -4,23 +4,10 @@ import { cn } from "@workspace/ui/lib/utils";
 import { useChatSocket } from "@/hooks/use-chat-socket";
 
 import { AddReaction } from "./add-reaction";
-
-type Reaction = {
-  messageId: string;
-  value: string;
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  memberId: string;
-};
-
-type SortedReaction = Reaction & {
-  count: number;
-  memberIds: string[];
-};
+import { SortedReaction } from "@workspace/server";
 
 type MessageReactionsProps = {
-  reactions: Reaction[];
+  reactions: SortedReaction[];
   channelId: string;
   serverId: string;
   messageId: string;
@@ -40,35 +27,9 @@ export const MessageReactions: React.FC<MessageReactionsProps> = ({
     messageReaction.mutate({ value: emoji, channelId, serverId, messageId });
   };
 
-  // FIXME: Move to backend
-  const sortedReactions: SortedReaction[] = reactions.reduce(
-    (sortedArray, reaction) => {
-      const existingReaction = sortedArray.findIndex(
-        (item) => item.value === reaction.value,
-      );
-
-      if (existingReaction >= 0) {
-        sortedArray[existingReaction].count =
-          (sortedArray[existingReaction].count || 0) + 1;
-
-        sortedArray[existingReaction]?.memberIds.push(reaction.memberId);
-      } else {
-        const newEntry = {
-          ...reaction,
-          count: 1,
-          memberIds: [reaction.memberId],
-        };
-
-        sortedArray.push(newEntry);
-      }
-      return sortedArray;
-    },
-    [] as SortedReaction[],
-  );
-
   return (
     <div className="my-1 flex items-center gap-1">
-      {sortedReactions.map((reaction) => (
+      {reactions.map((reaction) => (
         <button
           key={reaction.id}
           onClick={() => handleReaction(reaction.value, reaction.messageId)}

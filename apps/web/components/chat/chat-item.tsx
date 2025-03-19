@@ -22,35 +22,13 @@ import { DeleteMessage } from "@/components/chat/delete-message";
 import { EditMessage } from "@/components/chat/edit-message";
 import { MessageReactions } from "@/components/chat/message-reactions";
 import { UserAvatar } from "@/components/user-avatar";
+import { MessageWithSortedReactions } from "@workspace/api";
 
 type ChatItemProps = {
   loggedInMember: Member;
   serverId: string;
   channelId: string;
-  message: {
-    member: {
-      nickname: string | null;
-      role: MemberRole;
-      user: {
-        id: string;
-        name: string;
-        displayName: string | null;
-        image: string | null;
-      };
-    };
-    reactions: {
-      messageId: string;
-      value: string;
-      id: string;
-      createdAt: Date;
-      updatedAt: Date;
-      memberId: string;
-    }[];
-    id: string;
-    fileUrl?: string | null;
-    content: string;
-    createdAt: Date;
-  };
+  message: MessageWithSortedReactions
 };
 
 export const ChatItem: React.FC<ChatItemProps> = ({

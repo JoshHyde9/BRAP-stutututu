@@ -1,6 +1,7 @@
 import { t } from "elysia";
 
 import { ElysiaContext } from "..";
+import { countAndSortReactions } from "../lib/util";
 
 export const messageRouter = (app: ElysiaContext) =>
   app.group("/message", (app) =>
@@ -102,12 +103,14 @@ export const messageRouter = (app: ElysiaContext) =>
                   },
                 },
               },
-              reactions: true
+              reactions: { omit: { updatedAt: true } },
             },
             orderBy: {
               createdAt: "desc",
             },
           });
+
+          const messagesWithSortedReactions = countAndSortReactions(messages);
 
           let nextCursor: string | undefined = undefined;
 
@@ -115,7 +118,7 @@ export const messageRouter = (app: ElysiaContext) =>
             nextCursor = messages[MESSAGE_BATCH - 1]?.id;
           }
 
-          return { messages, nextCursor };
+          return { messages: messagesWithSortedReactions, nextCursor };
         },
         {
           auth: true,
