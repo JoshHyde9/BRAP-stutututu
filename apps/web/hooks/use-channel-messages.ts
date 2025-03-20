@@ -64,7 +64,7 @@ export const useChannelMessages = ({ channelId }: ChannelMessagesProps) => {
         groups[dateKey] = [];
       }
 
-      groups[dateKey].push(message);
+      groups[dateKey].unshift(message);
 
       return groups;
     }, {});
