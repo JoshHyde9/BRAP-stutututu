@@ -1,4 +1,4 @@
-import { useSocket } from "@/app/providers/ws-provider";
+import { useSocket } from "@/providers/ws-provider";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface SendMessageParams {

@@ -2,12 +2,12 @@ import { Open_Sans } from "next/font/google";
 
 import "@workspace/ui/globals.css";
 
-import { ThemeProvider } from "@/app/providers/theme-provider";
+import { ThemeProvider } from "@/providers/theme-provider";
 
 import ReactQueryProviders from "@/lib/query-client";
 
-import { ModalProvider } from "./providers/modal-provider";
-import { SocketProvider } from "./providers/ws-provider";
+import { ModalProvider } from "../providers/modal-provider";
+import { SocketProvider } from "../providers/ws-provider";
 
 const fontSans = Open_Sans({
   subsets: ["latin"],

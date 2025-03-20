@@ -1,7 +1,7 @@
 import type { MessageWithSortedReactions } from "@workspace/api";
 
 import { useEffect, useMemo } from "react";
-import { useSocket } from "@/app/providers/ws-provider";
+import { useSocket } from "@/providers/ws-provider";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 
