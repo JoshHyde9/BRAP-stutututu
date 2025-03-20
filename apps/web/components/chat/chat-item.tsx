@@ -71,7 +71,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
         <div className="flex w-full flex-col">
           <div className="flex items-center gap-x-2">
             <div className="flex items-center">
-              <p className="cursor-pointer text-sm font-semibold hover:underline">
+              <p className="cursor-pointer font-semibold hover:underline">
                 {message.member.nickname ??
                   message.member.user.displayName ??
                   message.member.user.name}
@@ -124,8 +124,11 @@ export const ChatItem: React.FC<ChatItemProps> = ({
             </div>
           )}
           {!message.fileUrl && (
-            <p className="text-sm text-zinc-600 dark:text-zinc-300">
-              {message.content}
+            <p className="text-zinc-600 dark:text-zinc-300">
+              {message.content}{" "}
+              {message.updatedAt !== message.createdAt && (
+                <span className="text-xs text-muted-foreground">(edited)</span>
+              )}
             </p>
           )}
           {message.reactions && message.reactions.length > 0 && (
