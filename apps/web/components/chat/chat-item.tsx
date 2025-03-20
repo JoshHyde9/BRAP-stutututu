@@ -1,7 +1,7 @@
 import type { MessageWithSortedReactions } from "@workspace/api";
 import type { Member } from "@workspace/db";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { format } from "date-fns";
 import { Edit, FileIcon, MoreVertical } from "lucide-react";
