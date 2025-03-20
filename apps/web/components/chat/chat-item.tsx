@@ -1,4 +1,4 @@
-import type { Member, MemberRole } from "@workspace/db";
+import type { Member } from "@workspace/db";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -151,7 +151,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
         </div>
       </div>
       <div className="absolute -top-2 right-5">
-        <div className="flex items-center rounded-sm border bg-white gap-x-2 p-1 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-zinc-800">
+        <div className="flex items-center gap-x-2 rounded-sm border bg-white p-1 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-zinc-800">
           <AddReaction
             channelId={channelId}
             serverId={serverId}
