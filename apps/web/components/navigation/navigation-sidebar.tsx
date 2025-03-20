@@ -7,10 +7,9 @@ import { getServerSession } from "@/lib/get-server-session";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 import { NavigationAction } from "@/components/navigation/navigation-action";
-import { NavigationItem } from "@/components/navigation/navigation-item";
 
 import { Separator } from "@workspace/ui/components/separator";
-import { ScrollArea } from "@workspace/ui/components/scroll-area";
+import { ServerList } from "./server-list";
 
 export const NavigationSidebar = async () => {
   const session = await getServerSession();
@@ -28,13 +27,7 @@ export const NavigationSidebar = async () => {
       <NavigationAction />
       <Separator className="mx-auto h-[2px] !w-10 rounded-md bg-zinc-300 dark:bg-zinc-700" />
 
-      <ScrollArea className="flex-1 w-full">
-        {servers?.map((server) => (
-          <div key={server.id} className="mb-4">
-           <NavigationItem id={server.id} imageUrl={server.imageUrl} name={server.name} />
-          </div>
-        ))}
-      </ScrollArea>
+      <ServerList servers={servers} />
       <div className="pb-3 mt-auto flex items-center flex-col gap-y-4">
         <ThemeToggle />
       </div>

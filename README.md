@@ -23,5 +23,4 @@ Fkn idk tbh
 - [ ] Pinned messages
 - [ ] User activity status
 - [ ] Mention users
-- [ ] Notification indicators for server list when a new message is created
 

@@ -13,7 +13,7 @@ import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { api, MessageWithSortedReactions } from "@workspace/api";
 
 type ChatMessage = {
-  channelId: string;
+  channelId?: string;
   serverId?: string;
   content?: string;
   fileUrl?: string;
@@ -34,6 +34,14 @@ export type WebSocketMessage = {
   data: ChatMessage;
 };
 
+interface ServerNotification {
+  hasNotification: boolean;
+}
+
+type NotificationState = {
+  [serverId: string]: ServerNotification;
+};
+
 type WebSocketContextType = {
   isConnected: boolean;
   sendMessage: (message: WebSocketMessage) => boolean;
@@ -43,6 +51,10 @@ type WebSocketContextType = {
   editChatMessage: (data: ChatMessage) => boolean;
   deleteChatMessage: (data: ChatMessage) => boolean;
   createMessageReaction: (data: ChatMessage) => boolean;
+  joinServer: (serverId: string) => boolean;
+  leaveServer: (serverId: string) => boolean;
+  notifications: NotificationState;
+  clearServerNotifications: (serverId: string) => void;
 };
 
 type EdenWebSocket = ReturnType<typeof api.ws.chat.subscribe>;
@@ -64,6 +76,7 @@ const SocketContext = createContext<WebSocketContextType | undefined>(
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const socket = useRef<EdenWebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [notifications, setNotifications] = useState<NotificationState>({});
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -126,7 +139,6 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
           queryClient.setQueryData(
             ["messages", newMessage.channelId],
             (oldMessages: InfiniteData<PageData>) => {
-              console.log(newMessage);
               const newPages = oldMessages.pages.map((page) => ({
                 ...page,
                 messages: page.messages.map((message) =>
@@ -139,6 +151,13 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
           );
           break;
         default:
+          setNotifications((prev) => ({
+            ...prev,
+            [newMessage.serverId]: {
+              hasNotification: true,
+            },
+          }));
+
           queryClient.setQueryData(
             ["messages", newMessage.channelId],
             (oldMessages: InfiniteData<PageData>) => {
@@ -195,11 +214,31 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     [sendMessage],
   );
 
+  const joinServer = useCallback(
+    (serverId: string) => {
+      return sendMessage({
+        type: "join",
+        data: { serverId },
+      });
+    },
+    [sendMessage],
+  );
+
   const leaveChannel = useCallback(
     (channelId: string) => {
       return sendMessage({
         type: "leave",
         data: { channelId },
+      });
+    },
+    [sendMessage],
+  );
+
+  const leaveServer = useCallback(
+    (serverId: string) => {
+      return sendMessage({
+        type: "leave",
+        data: { serverId },
       });
     },
     [sendMessage],
@@ -264,6 +303,16 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     [sendMessage],
   );
 
+  const clearServerNotifications = (serverId: string) => {
+    setNotifications((prev) => ({
+      ...prev,
+      [serverId]: {
+        ...prev[serverId],
+        hasNotification: false,
+      },
+    }));
+  };
+
   const value: WebSocketContextType = {
     isConnected,
     sendMessage,
@@ -273,6 +322,10 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     editChatMessage,
     deleteChatMessage,
     createMessageReaction,
+    joinServer,
+    leaveServer,
+    notifications,
+    clearServerNotifications,
   };
 
   return (

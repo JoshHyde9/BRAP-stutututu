@@ -43,6 +43,7 @@ export type MessageWithReactions = Message & {
     user: Pick<User, "id" | "name" | "displayName" | "image" | "createdAt">;
   };
   reactions: Omit<Reaction, "updatedAt">[];
+  serverId: string;
 };
 
 export type SortedReaction = Omit<Reaction, "updatedAt"> & {

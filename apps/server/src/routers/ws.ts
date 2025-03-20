@@ -9,6 +9,7 @@ import {
 
 const wsConnections = new Map<string, Session>();
 const channels = new Map<string, Set<string>>();
+const servers = new Map<string, Set<string>>();
 
 export const wsRouter = (app: ElysiaContext) =>
   app.group("/ws", (app) =>
@@ -59,17 +60,29 @@ export const wsRouter = (app: ElysiaContext) =>
               channels.set(channelId!, new Set());
             }
 
+            if (!servers.has(serverId!)) {
+              servers.set(serverId!, new Set());
+            }
+
             channels.get(channelId!)?.add(ws.id);
+            servers.get(serverId!)?.add(ws.id);
 
             ws.subscribe(`channel:${channelId}`);
+            ws.subscribe(`server:${serverId}`);
             break;
           case "leave":
             channels.get(channelId!)?.delete(ws.id);
+            servers.get(serverId!)?.delete(ws.id);
 
             if (channels.get(channelId!)?.size === 0) {
               channels.delete(channelId!);
             }
 
+            if (servers.get(serverId!)?.size === 0) {
+              servers.delete(serverId!);
+            }
+
+            ws.unsubscribe(`server:${serverId}`);
             ws.unsubscribe(`channel:${channelId}`);
             break;
           case "create-chat-message":
@@ -132,8 +145,16 @@ export const wsRouter = (app: ElysiaContext) =>
               },
             });
 
-            ws.publish(`channel:${channelId}`, { message: newMessage });
-            ws.send({ message: newMessage });
+            ws.publish(`channel:${channelId}`, {
+              message: {
+                ...newMessage,
+                serverId: server.id,
+              },
+            });
+            ws.send({ message: { ...newMessage, serverId: server.id } });
+            ws.publish(`server:${serverId}`, {
+              message: { newMessage, serverId: server.id },
+            });
             break;
           case "edit-chat-message":
             try {
@@ -207,6 +228,16 @@ export const wsRouter = (app: ElysiaContext) =>
 
             if (channels.size === 0) {
               channels.delete(channelId);
+            }
+          }
+        }
+
+        for (const [serverId, serverMembers] of servers.entries()) {
+          if (serverMembers.has(ws.id)) {
+            serverMembers.delete(ws.id);
+
+            if (servers.size === 0) {
+              servers.delete(serverId);
             }
           }
         }

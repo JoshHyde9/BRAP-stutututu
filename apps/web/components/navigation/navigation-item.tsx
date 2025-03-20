@@ -4,6 +4,9 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 
 import { cn } from "@workspace/ui/lib/utils";
+
+import { useServerNotifications } from "@/hooks/use-server-notifications";
+
 import { ActionTooltip } from "@/components/action-tooltip";
 
 type NavigationItemProps = {
@@ -19,24 +22,33 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
 }) => {
   const params = useParams<{ serverId: string }>();
   const router = useRouter();
+  const { notifications, clearServerNotifications } = useServerNotifications({ serverId: id });
 
   return (
     <ActionTooltip side="right" label={name} align="center">
-      <button onClick={() => router.push(`/server/${id}`)} className="group relative flex items-center">
+      <button
+        onClick={() => {
+          clearServerNotifications(id);
+          router.push(`/server/${id}`);
+        }}
+        className="group relative flex items-center"
+      >
         <div
           className={cn(
-            "absolute left-0 bg-primary rounded-r-full transition-all w-[4px]",
+            "bg-primary absolute left-0 w-[4px] rounded-r-full transition-all",
             params.serverId !== id && "group-hover:h-[20px]",
-            params.serverId === id ? "h-[36px]" : "h-[8px]"
+            notifications[id]?.hasNotification && "h-[8px]",
+            params.serverId === id && "h-[36px]",
           )}
         />
         <div
           className={cn(
-            "relative group flex mx-3 size-[48px] rounded-[24px] group-hover:rounded-[16px] transit overflow-hidden",
-            params.serverId === id && "bg-primary/10 text-primary rounded-[16px]"
+            "transit group relative mx-3 flex size-[48px] overflow-hidden rounded-[24px] group-hover:rounded-[16px]",
+            params.serverId === id &&
+              "bg-primary/10 text-primary rounded-[16px]",
           )}
         >
-            <Image fill src={imageUrl} alt={name} />
+          <Image fill src={imageUrl} alt={name} />
         </div>
       </button>
     </ActionTooltip>
