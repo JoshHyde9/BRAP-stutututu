@@ -1,8 +1,15 @@
-import { useEffect } from "react";
+import type { MessageWithSortedReactions } from "@workspace/api";
+
+import { useEffect, useMemo } from "react";
 import { useSocket } from "@/app/providers/ws-provider";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
 
 import { api } from "@workspace/api";
+
+interface GroupedMessages {
+  [dateKey: string]: MessageWithSortedReactions[];
+}
 
 type ChannelMessagesProps = {
   channelId: string;
@@ -23,7 +30,7 @@ export const useChannelMessages = ({ channelId }: ChannelMessagesProps) => {
     };
   }, [isConnected, channelId, joinChannel, leaveChannel]);
 
-  return useInfiniteQuery({
+  const query = useInfiniteQuery({
     queryKey: ["messages", channelId],
     getNextPageParam: (lastPage) => lastPage?.nextCursor,
     refetchInterval: isConnected ? false : 1000,
@@ -44,4 +51,24 @@ export const useChannelMessages = ({ channelId }: ChannelMessagesProps) => {
     },
     initialPageParam: "",
   });
+
+  const groupedMessages = useMemo<GroupedMessages>(() => {
+    if (!query.data) return {};
+
+    const allMessages = query.data.pages.flatMap((page) => page?.messages!);
+
+    return allMessages.reduce<GroupedMessages>((groups, message) => {
+      const dateKey = format(new Date(message.createdAt), "yyyy-MM-dd");
+
+      if (!groups[dateKey]) {
+        groups[dateKey] = [];
+      }
+
+      groups[dateKey].push(message);
+
+      return groups;
+    }, {});
+  }, [query.data]);
+
+  return { ...query, groupedMessages };
 };

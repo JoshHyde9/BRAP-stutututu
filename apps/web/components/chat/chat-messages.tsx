@@ -2,11 +2,14 @@
 
 import type { Member } from "@workspace/db";
 
-import { ComponentRef, Fragment, useRef } from "react";
+import { ComponentRef, useRef } from "react";
 import { Loader2, ServerCrash } from "lucide-react";
+
+import { Separator } from "@workspace/ui/components/separator";
 
 import { useChannelMessages } from "@/hooks/use-channel-messages";
 import { useChatScroll } from "@/hooks/use-chat-scroll";
+import { formatDateLabel } from "@/lib/helpers";
 
 import { ChatItem } from "@/components/chat/chat-item";
 import { ChatWelcome } from "@/components/chat/chat-welcome";
@@ -31,6 +34,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
     isFetchingNextPage,
     isLoading,
     isError,
+    groupedMessages,
   } = useChannelMessages({
     channelId,
   });
@@ -82,9 +86,15 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
         </div>
       )}
       <div className="mt-auto flex flex-col-reverse">
-        {data?.pages.map((group, i) => (
-          <Fragment key={i}>
-            {group?.messages.map((message) => (
+        {Object.entries(groupedMessages || {}).map(([dateKey, messages]) => (
+          <div key={dateKey}>
+            <div className="relative my-2 text-center text-zinc-600 dark:text-zinc-300">
+              <Separator className="absolute left-0 right-0 top-1/2 border-t border-zinc-700/20 dark:border-zinc-700" />
+              <span className="broder relative inline-block rounded-full border-zinc-700/20 bg-zinc-300 px-4 py-1 text-xs shadow dark:border-zinc-700 dark:bg-zinc-700">
+                {formatDateLabel(dateKey)}
+              </span>
+            </div>
+            {messages.map((message) => (
               <ChatItem
                 key={message.id}
                 message={message}
@@ -93,7 +103,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
                 loggedInMember={loggedInMember}
               />
             ))}
-          </Fragment>
+          </div>
         ))}
       </div>
       <div ref={bottomRef} />
