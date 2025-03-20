@@ -133,7 +133,10 @@ export const createReaction = async (
     return new Error("Bad Request");
   }
 
-  const sortedMessage = countAndSortReactions(message);
+  const sortedMessage = countAndSortReactions({
+    ...message,
+    serverId: member.serverId,
+  });
 
   const existingReactionFromUser = message.reactions.find(
     (reaction) =>

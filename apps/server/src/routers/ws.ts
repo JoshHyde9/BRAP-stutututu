@@ -122,6 +122,7 @@ export const wsRouter = (app: ElysiaContext) =>
 
             const newMessage = await prisma.message.create({
               data: {
+                originalContent: content as string,
                 content: content as string,
                 fileUrl: fileUrl,
                 channelId: channelId!,

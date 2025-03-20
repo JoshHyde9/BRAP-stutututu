@@ -99,7 +99,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
       switch (eventData.type) {
         case "edit-chat-message":
-          // Update existing message instead of adding new one
+          // Only update message content instead of pushing entire new message
           queryClient.setQueryData(
             ["messages", newMessage.channelId],
             (oldMessages: InfiniteData<PageData>) => {
@@ -108,7 +108,9 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
               const newPages = oldMessages.pages.map((page) => ({
                 ...page,
                 messages: page.messages.map((message) =>
-                  message.id === newMessage.id ? newMessage : message,
+                  message.id === newMessage.id
+                    ? { ...message, content: newMessage.content }
+                    : message,
                 ),
               }));
 
@@ -135,10 +137,12 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
           );
           break;
         case "create-message-reaction":
-          // Update reactions to message
+          // Update existing message instead of adding new one
           queryClient.setQueryData(
             ["messages", newMessage.channelId],
             (oldMessages: InfiniteData<PageData>) => {
+              if (!oldMessages?.pages) return oldMessages;
+
               const newPages = oldMessages.pages.map((page) => ({
                 ...page,
                 messages: page.messages.map((message) =>

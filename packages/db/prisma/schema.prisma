@@ -175,8 +175,9 @@ model Ban {
 }
 
 model Message {
-  id      String @id @default(uuid())
-  content String @db.Text
+  id              String @id @default(uuid())
+  originalContent String @db.Text
+  content         String @db.Text
 
   fileUrl String? @db.Text
 

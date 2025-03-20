@@ -1,7 +1,7 @@
 import type { MessageWithSortedReactions } from "@workspace/api";
 import type { Member } from "@workspace/db";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { format } from "date-fns";
 import { Edit, FileIcon, MoreVertical } from "lucide-react";
@@ -48,6 +48,8 @@ export const ChatItem: React.FC<ChatItemProps> = ({
   const isImage = !isPDF && message.fileUrl;
 
   const [isEditing, setIsEditing] = useState(false);
+
+  const isEdited = message.content !== message.originalContent;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -107,7 +109,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
             <Dialog>
               <DialogTrigger>
                 <Image
-                  src={message.fileUrl}
+                  src={message.fileUrl!}
                   alt={message.content}
                   width={400}
                   height={300}
@@ -119,7 +121,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
                   <DialogTitle className="sr-only">Image</DialogTitle>
                   <DialogDescription className="h-screen w-screen">
                     <Image
-                      src={message.fileUrl}
+                      src={message.fileUrl!}
                       alt={message.content}
                       fill
                       className="max-h-[90vh] w-auto max-w-full object-contain"
@@ -133,7 +135,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
             <div className="relative mt-2 flex items-center rounded-md bg-neutral-300/10 p-2">
               <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
               <a
-                href={message.fileUrl}
+                href={message.fileUrl!}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-discord ml-2 text-sm hover:underline dark:text-indigo-400"
@@ -145,9 +147,9 @@ export const ChatItem: React.FC<ChatItemProps> = ({
           {!message.fileUrl && (
             <p className="text-zinc-600 dark:text-zinc-300">
               {message.content}{" "}
-              {message.updatedAt !== message.createdAt && (
+              {isEdited ? (
                 <span className="text-muted-foreground text-xs">(edited)</span>
-              )}
+              ) : null}
             </p>
           )}
           {message.reactions && message.reactions.length > 0 && (
