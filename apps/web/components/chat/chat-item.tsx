@@ -1,3 +1,4 @@
+import type { MessageWithSortedReactions } from "@workspace/api";
 import type { Member } from "@workspace/db";
 
 import { useEffect, useState } from "react";
@@ -5,7 +6,6 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { Edit, FileIcon, MoreVertical } from "lucide-react";
 
-import { MessageWithSortedReactions } from "@workspace/api";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
+import { cn } from "@workspace/ui/lib/utils";
 
+import { formatDate } from "@/lib/helpers";
 import { roleIconMap } from "@/lib/iconMaps";
 
 import { ActionTooltip } from "@/components/action-tooltip";
@@ -29,6 +31,7 @@ type ChatItemProps = {
   serverId: string;
   channelId: string;
   message: MessageWithSortedReactions;
+  isCompact: boolean | undefined;
 };
 
 export const ChatItem: React.FC<ChatItemProps> = ({
@@ -36,6 +39,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
   channelId,
   serverId,
   loggedInMember,
+  isCompact,
 }) => {
   // FIXME: File type rendering
   const fileType = message.fileUrl?.split(".").pop();
@@ -60,30 +64,45 @@ export const ChatItem: React.FC<ChatItemProps> = ({
   }, []);
 
   return (
-    <div className="group relative flex w-full items-center p-4 transition hover:bg-black/5">
-      <div className="group flex w-full items-start gap-x-2">
-        <div className="cursor-pointer transition hover:drop-shadow-md">
-          <UserAvatar
-            name={message.member.user.name}
-            src={message.member.user.image}
-          />
-        </div>
-        <div className="flex w-full flex-col">
-          <div className="flex items-center gap-x-2">
-            <div className="flex items-center">
-              <p className="cursor-pointer font-semibold hover:underline">
-                {message.member.nickname ??
-                  message.member.user.displayName ??
-                  message.member.user.name}
-              </p>
-              <ActionTooltip label={message.member.role}>
-                <p>{roleIconMap[message.member.role]}</p>
-              </ActionTooltip>
-            </div>
-            <span className="text-xs text-zinc-500 dark:text-zinc-400">
-              {format(message.createdAt, "dd/MM/yyyy, HH:mm")}
-            </span>
+    <div
+      className={cn(
+        "group relative flex w-full items-center px-4 py-1 transition hover:bg-black/5",
+        !isCompact && "mt-4",
+      )}
+    >
+      <div className={cn("start group flex w-full gap-x-2")}>
+        {!isCompact ? (
+          <div className="cursor-pointer transition hover:drop-shadow-md">
+            <UserAvatar
+              name={message.member.user.name}
+              src={message.member.user.image}
+            />
           </div>
+        ) : (
+          <span className="text-muted-foreground cursor-default pr-2 pt-1 text-xs opacity-0 group-hover:opacity-100">
+            {format(message.createdAt, "hh:mm")}
+          </span>
+        )}
+        <div className="flex w-full flex-col">
+          {!isCompact ? (
+            <div className="flex items-center gap-x-2">
+              <div className="flex items-center">
+                <p className="cursor-pointer font-semibold hover:underline">
+                  {message.member.nickname ??
+                    message.member.user.displayName ??
+                    message.member.user.name}
+                </p>
+                <ActionTooltip label={message.member.role}>
+                  <p>{roleIconMap[message.member.role]}</p>
+                </ActionTooltip>
+              </div>
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                {formatDate(message.createdAt)}
+              </span>
+            </div>
+          ) : (
+            <span></span>
+          )}
           {isImage && (
             <Dialog>
               <DialogTrigger>
@@ -127,7 +146,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
             <p className="text-zinc-600 dark:text-zinc-300">
               {message.content}{" "}
               {message.updatedAt !== message.createdAt && (
-                <span className="text-xs text-muted-foreground">(edited)</span>
+                <span className="text-muted-foreground text-xs">(edited)</span>
               )}
             </p>
           )}

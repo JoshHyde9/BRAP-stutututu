@@ -3,6 +3,7 @@
 import type { Member } from "@workspace/db";
 
 import { ComponentRef, useRef } from "react";
+import { differenceInMinutes } from "date-fns";
 import { Loader2, ServerCrash } from "lucide-react";
 
 import { Separator } from "@workspace/ui/components/separator";
@@ -20,6 +21,8 @@ type ChatMessagesProps = {
   serverId: string;
   loggedInMember: Member;
 };
+
+const TIME_THRESHOLD = 5;
 
 export const ChatMessages: React.FC<ChatMessagesProps> = ({
   channelId,
@@ -89,20 +92,32 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
         {Object.entries(groupedMessages || {}).map(([dateKey, messages]) => (
           <div key={dateKey}>
             <div className="relative my-2 text-center text-zinc-600 dark:text-zinc-300">
-              <Separator className="absolute left-0 right-0 top-1/2 border-t border-zinc-700/20 dark:border-zinc-700" />
-              <span className="broder relative inline-block rounded-full border-zinc-700/20 bg-zinc-300 px-4 py-1 text-xs shadow dark:border-zinc-700 dark:bg-zinc-700">
+              <Separator className="border absolute left-0 right-0 top-1/2 border-t border-zinc-200/20 dark:border-zinc-700" />
+              <span className="relative inline-block rounded-full bg-zinc-200 px-4 py-1 text-xs shadow dark:bg-zinc-700">
                 {formatDateLabel(dateKey)}
               </span>
             </div>
-            {messages.map((message) => (
-              <ChatItem
-                key={message.id}
-                message={message}
-                channelId={channelId}
-                serverId={serverId}
-                loggedInMember={loggedInMember}
-              />
-            ))}
+            {messages.map((message, i) => {
+              const prevMessage = messages[i - 1];
+              const isCompact =
+                prevMessage &&
+                prevMessage.member.userId === message.member.userId &&
+                differenceInMinutes(
+                  new Date(message.createdAt),
+                  new Date(prevMessage.createdAt),
+                ) < TIME_THRESHOLD;
+
+              return (
+                <ChatItem
+                  key={message.id}
+                  message={message}
+                  channelId={channelId}
+                  serverId={serverId}
+                  loggedInMember={loggedInMember}
+                  isCompact={isCompact}
+                />
+              );
+            })}
           </div>
         ))}
       </div>
