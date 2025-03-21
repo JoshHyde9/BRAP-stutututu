@@ -4,6 +4,7 @@ import { Server } from "@workspace/db";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 
 import { NavigationItem } from "@/components/navigation/navigation-item";
+import { NavigationAction } from "./navigation-action";
 
 type ServerListProps = {
   servers: Server[] | null;
@@ -21,6 +22,7 @@ export const ServerList: React.FC<ServerListProps> = ({ servers }) => {
           />
         </div>
       ))}
+      <NavigationAction />
     </ScrollArea>
   );
 };

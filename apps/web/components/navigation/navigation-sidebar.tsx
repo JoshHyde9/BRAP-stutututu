@@ -1,15 +1,14 @@
-import { redirect } from "next/navigation";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 import { api } from "@workspace/api";
+import { Separator } from "@workspace/ui/components/separator";
+
 import { getServerSession } from "@/lib/get-server-session";
 
+import { DirectMessages } from "@/components/navigation/direct-messages";
+import { ServerList } from "@/components/navigation/server-list";
 import { ThemeToggle } from "@/components/theme-toggle";
-
-import { NavigationAction } from "@/components/navigation/navigation-action";
-
-import { Separator } from "@workspace/ui/components/separator";
-import { ServerList } from "./server-list";
 
 export const NavigationSidebar = async () => {
   const session = await getServerSession();
@@ -23,12 +22,12 @@ export const NavigationSidebar = async () => {
   });
 
   return (
-    <div className="flex h-full w-full flex-col items-center space-y-4 bg-zinc-200 py-3 text-primary dark:bg-[#1e1f22]">
-      <NavigationAction />
+    <div className="text-primary flex h-full w-full flex-col items-center space-y-4 bg-zinc-200 py-3 dark:bg-[#1e1f22]">
+      <DirectMessages />
       <Separator className="mx-auto h-[2px] !w-10 rounded-md bg-zinc-300 dark:bg-zinc-700" />
 
       <ServerList servers={servers} />
-      <div className="pb-3 mt-auto flex items-center flex-col gap-y-4">
+      <div className="mt-auto flex flex-col items-center gap-y-4 pb-3">
         <ThemeToggle />
       </div>
     </div>

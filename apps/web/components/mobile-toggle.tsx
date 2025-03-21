@@ -15,7 +15,7 @@ import { NavigationSidebar } from "./navigation/navigation-sidebar";
 import { ServerSidebar } from "./server/server-sidebar";
 
 type MobileToggleProps = {
-  type: "channel" | "conversation";
+  type: "channel" | "conversation" | "friends";
   serverId?: string;
 };
 
