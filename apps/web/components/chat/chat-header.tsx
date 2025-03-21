@@ -1,6 +1,7 @@
 import { Hash, UserRound } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
+import { Separator } from "@workspace/ui/components/separator";
 
 import { MobileToggle } from "@/components/mobile-toggle";
 import { UserAvatar } from "@/components/user-avatar";
@@ -29,14 +30,17 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
 }) => {
   if (type === "friends") {
     return (
-      <div className="flex h-12 items-center border-b-2 border-neutral-200 px-3 font-semibold dark:border-neutral-800">
+      <div className="flex h-12 items-center border-b-2 border-neutral-200 px-3 dark:border-neutral-800">
         <MobileToggle serverId={serverId} type={type} />
         <div className="flex w-full items-center gap-x-2">
           <UserRound />
           <p className="font-semibold">Friends</p>
-          <Button size="sm" className="ml-auto">
-            Add Friend
-          </Button>
+          <div className="h-6">
+            <Separator orientation="vertical" className="bg-zinc-300 dark:bg-zinc-400" />
+          </div>
+          <Button variant="ghost" size="sm" className="px-4">All</Button>
+          <Button variant="ghost" size="sm" className="px-4">Pending</Button>
+          <Button size="sm">Add Friend</Button>
         </div>
       </div>
     );

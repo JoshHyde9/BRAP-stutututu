@@ -24,10 +24,10 @@ export const DirectMessages = () => {
           className={cn(
             "bg-primary-foreground group relative mx-3 flex size-[48px] items-center justify-center overflow-hidden rounded-[24px] transition group-hover:rounded-[16px] group-hover:bg-discord",
             pathname === "/conversation" &&
-              "bg-discord text-primary rounded-[16px]",
+              "bg-discord text-zinc-100 rounded-[16px]",
           )}
         >
-          <MessageSquare className="text-zinc-600 dark:text-zinc-300 group-hover:text-zinc-200" />
+          <MessageSquare className={cn("text-zinc-600 dark:text-zinc-300 group-hover:text-zinc-200", pathname === "/conversation" && "text-zinc-300")} />
         </div>
       </Link>
     </ActionTooltip>
