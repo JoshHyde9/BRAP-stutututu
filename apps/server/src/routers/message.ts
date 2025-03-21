@@ -45,6 +45,7 @@ export const messageRouter = (app: ElysiaContext) =>
 
           const message = await prisma.message.create({
             data: {
+              originalContent: body.content,
               content: body.content,
               fileUrl: body.fileUrl,
               channelId: params.channelId,
