@@ -43,7 +43,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
         />
         <div
           className={cn(
-            "transit group relative mx-3 flex size-[48px] overflow-hidden rounded-[24px] group-hover:rounded-[16px]",
+            "transition group relative mx-3 flex size-[48px] overflow-hidden rounded-[24px] group-hover:rounded-[16px]",
             params.serverId === id &&
               "bg-primary/10 text-primary rounded-[16px]",
           )}
