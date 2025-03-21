@@ -18,7 +18,7 @@ export const FriendsButton = () => {
       >
         <UserRound className="size-8 text-zinc-600 md:size-8 dark:text-zinc-200" />
         <div className="flex w-full pl-2 text-left">
-          <p className="w-32 truncate font-semibold text-zinc-600 transition group-hover:text-zinc-600 dark:text-zinc-200 dark:group-hover:text-white">
+          <p className="w-32 truncate font-semibold text-zinc-600 transition group-hover:text-zinc-60 dark:text-zinc-300 dark:group-hover:text-white">
             Friends
           </p>
         </div>

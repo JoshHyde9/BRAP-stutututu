@@ -1,3 +1,5 @@
+import type { Message, Member, User, Reaction } from "@workspace/db";
+
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 
@@ -10,7 +12,7 @@ import { channelRouter } from "./routers/channel";
 import { conversationRouter } from "./routers/conversation";
 import { messageRouter } from "./routers/message";
 import { wsRouter } from "./routers/ws";
-import { Message, Member, User, Reaction } from "@workspace/db";
+import { friendRouter } from "./routers/friend";
 
 const app = new Elysia({ prefix: "/api" })
   .use(elysiaContext)
@@ -27,6 +29,7 @@ const app = new Elysia({ prefix: "/api" })
   .use(channelRouter)
   .use(conversationRouter)
   .use(messageRouter)
+  .use(friendRouter)
   .use(wsRouter)
   .all("/auth/*", betterAuthView)
   .listen(5000);
