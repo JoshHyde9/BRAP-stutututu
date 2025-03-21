@@ -273,10 +273,13 @@ model Friend {
   status FriendRequestStatus @default(PENDING)
 
   requesterId String
-  requester User @relation("requester", fields: [requesterId], references: [id], onDelete: Cascade)
+  requester   User   @relation("requester", fields: [requesterId], references: [id], onDelete: Cascade)
 
   addresseeId String
-  addressee User @relation("addressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+  addressee   User   @relation("addressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([requesterId, addresseeId])
   @@map("friend")
