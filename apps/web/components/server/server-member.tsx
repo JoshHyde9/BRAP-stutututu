@@ -23,7 +23,7 @@ type ConversationProps = {
 type MemberProps = ServerMemberProps | ConversationProps;
 
 type ParamsProps = {
-  memberId: string;
+  userId: string;
   serverId: string;
 };
 
@@ -41,8 +41,9 @@ export const ServerMember: React.FC<MemberProps> = ({ member, user }) => {
       className={cn(
         "group mb-1 flex w-full items-center gap-x-2 rounded-md p-2 transition hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50",
         member &&
-          params.memberId === member.id &&
+          params.userId === member.userId &&
           "bg-zinc-700/20 dark:bg-zinc-700",
+        user && params.userId === user.id && "bg-zinc-700/20 dark:bg-zinc-700",
       )}
     >
       <UserAvatar
@@ -59,7 +60,7 @@ export const ServerMember: React.FC<MemberProps> = ({ member, user }) => {
           className={cn(
             "w-32 truncate text-sm font-semibold text-zinc-500 transition group-hover:text-zinc-600 dark:text-zinc-400 dark:group-hover:text-zinc-300",
             member &&
-              params.memberId === member.id &&
+              params.userId === member.userId &&
               "text-primary dark:text-zinc-200 dark:group-hover:text-white",
           )}
         >
