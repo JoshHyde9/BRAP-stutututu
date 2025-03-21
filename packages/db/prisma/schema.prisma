@@ -27,6 +27,8 @@ model User {
   conversationsInitiated Conversation[]  @relation("UserOne")
   conversationsReceived  Conversation[]  @relation("UserTwo")
   directMessages         DirectMessage[]
+  friendsRequested       Friend[]        @relation("requester")
+  friendsReceived        Friend[]        @relation("addressee")
 
   @@unique([email])
   @@map("user")
@@ -255,4 +257,27 @@ model Reaction {
   @@index([messageId])
   @@index([memberId])
   @@map("reaction")
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+
+  @@map("friend_request")
+}
+
+model Friend {
+  id String @id @default(uuid())
+
+  status FriendRequestStatus @default(PENDING)
+
+  requesterId String
+  requester User @relation("requester", fields: [requesterId], references: [id], onDelete: Cascade)
+
+  addresseeId String
+  addressee User @relation("addressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, addresseeId])
+  @@map("friend")
 }
