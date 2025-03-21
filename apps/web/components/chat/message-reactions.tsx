@@ -28,7 +28,7 @@ export const MessageReactions: React.FC<MessageReactionsProps> = ({
   };
 
   return (
-    <div className="my-1 flex items-center gap-1">
+    <div className="my-1 flex items-center gap-1 flex-wrap">
       {reactions.map((reaction) => (
         <button
           key={reaction.id}
