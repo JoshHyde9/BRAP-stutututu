@@ -6,10 +6,13 @@ import {
   deleteMessage,
   editMessage,
 } from "../lib/ws-message-funcs";
+import { getConversationId } from "../lib/util";
+import { dmCreateMessage } from "../lib/ws-conversation-funcs";
 
 const wsConnections = new Map<string, Session>();
 const channels = new Map<string, Set<string>>();
 const servers = new Map<string, Set<string>>();
+const conversations = new Map<string, Set<string>>();
 
 export const wsRouter = (app: ElysiaContext) =>
   app.group("/ws", (app) =>
@@ -22,6 +25,8 @@ export const wsRouter = (app: ElysiaContext) =>
           t.Literal("edit-chat-message"),
           t.Literal("delete-chat-message"),
           t.Literal("create-message-reaction"),
+          t.Literal("conversation-join"),
+          t.Literal("create-conversation-message"),
         ]),
         data: t.Object({
           channelId: t.Optional(t.String()),
@@ -30,6 +35,7 @@ export const wsRouter = (app: ElysiaContext) =>
           fileUrl: t.Optional(t.String()),
           messageId: t.Optional(t.String()),
           value: t.Optional(t.String()),
+          targetId: t.Optional(t.String()),
         }),
       }),
       open: async (ws) => {
@@ -51,8 +57,15 @@ export const wsRouter = (app: ElysiaContext) =>
         }
 
         const { prisma } = ws.data;
-        const { channelId, serverId, content, fileUrl, messageId, value } =
-          message.data;
+        const {
+          channelId,
+          serverId,
+          content,
+          fileUrl,
+          messageId,
+          value,
+          targetId,
+        } = message.data;
 
         switch (message.type) {
           case "join":
@@ -84,6 +97,38 @@ export const wsRouter = (app: ElysiaContext) =>
 
             ws.unsubscribe(`server:${serverId}`);
             ws.unsubscribe(`channel:${channelId}`);
+            break;
+          case "conversation-join":
+            const { conversationId } = await getConversationId(
+              prisma,
+              session.user.id,
+              targetId!
+            );
+
+            if (!conversations.has(conversationId)) {
+              conversations.set(
+                conversationId,
+                new Set([session.user.id, targetId!])
+              );
+            }
+
+            ws.subscribe(`conversation:${conversationId}`);
+            break;
+          case "create-conversation-message":
+            const dmMessage = await dmCreateMessage(prisma, session, {
+              content: content!,
+              conversationId: conversationId!,
+              fileUrl,
+            });
+
+            ws.publish(`conversation:${dmMessage.conversationId}`, {
+              message: dmMessage,
+              type: "create-conversation-message",
+            });
+            ws.send({
+              message: dmMessage,
+              type: "create-conversation-message",
+            });
             break;
           case "create-chat-message":
             const server = await prisma.server.findFirst({

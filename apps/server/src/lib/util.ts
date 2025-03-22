@@ -1,3 +1,4 @@
+import type { PrismaClient } from "@workspace/db";
 import {
   MessageWithReactions,
   SortedReaction,
@@ -49,3 +50,33 @@ export function countAndSortReactions(
 
   return Array.isArray(input) ? sortedMessages : sortedMessages[0]!;
 }
+
+export const getConversationId = async (
+  prisma: PrismaClient,
+  userOneId: string,
+  userTwoId: string
+) => {
+  let conversation = await prisma.conversation.findUnique({
+    where: {
+      userOneId_userTwoId: {
+        userOneId,
+        userTwoId,
+      },
+    },
+    select: { id: true },
+  });
+
+  if (!conversation) {
+    conversation = await prisma.conversation.create({
+      data: {
+        userOneId,
+        userTwoId,
+      },
+      select: {
+        id: true,
+      },
+    });
+  }
+
+  return { conversationId: conversation.id };
+};
