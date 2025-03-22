@@ -16,7 +16,6 @@ type FriendsChatHeaderProps = {
 
 type ChatHeaderProps =
   | {
-      params: string;
       type: "channel" | "conversation";
       serverId?: string;
       imageUrl?: string | null;

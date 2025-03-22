@@ -9,7 +9,7 @@ import { cn } from "@workspace/ui/lib/utils";
 export const FriendsButton = () => {
   const pathname = usePathname();
   return (
-    <Link href="/friends" className="w-full">
+    <Link href="/friends/all" className="w-full">
       <button
         className={cn(
           "group mb-1 flex w-full items-center gap-x-2 rounded-md p-2 transition hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50",
