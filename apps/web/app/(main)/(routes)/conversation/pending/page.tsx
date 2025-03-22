@@ -5,13 +5,14 @@ import { api } from "@workspace/api";
 import { FriendsList } from "@/components/friends/friends-list";
 
 const FriendsPage = async () => {
-  const { data: friends } = await api.friend.all.get({
+  const { data: addressees } = await api.friend.pending.get({
+    // @ts-ignore
     headers: await headers(),
   });
 
   return (
     <div className="flex flex-col bg-white dark:bg-[#313338]">
-      <FriendsList friends={friends} />
+      <FriendsList type="pending" friends={addressees} />
     </div>
   );
 };

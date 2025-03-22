@@ -11,27 +11,35 @@ type Friend = {
 
 type FriendsListProps = {
   friends: Friend[] | null;
+  type: "friends" | "requested" | "pending";
 };
 
-export const FriendsList: React.FC<FriendsListProps> = ({ friends }) => {
-  if (!friends) {
-    return (
-      <div className="flex-1">
-        <h1>You have no friends</h1>
-      </div>
-    );
-  }
+export const FriendsList: React.FC<FriendsListProps> = ({ friends, type }) => {
   return (
     <div className="p-5">
       <ScrollArea className="flex-1">
         <p className="text-sm font-semibold uppercase">
-          All friends - {friends.length}
+          {type === "friends"
+            ? "All friends"
+            : type === "requested"
+              ? "Requests"
+              : "Pending"}{" "}
+          &mdash; {friends?.length}
         </p>
         <div className="mt-6">
-          {friends.map((friendship) => (
-            <FriendItem key={friendship.id} friend={friendship.friend} />
-          ))}
+          {friends &&
+            friends.map((friendship) => (
+              <FriendItem
+                type={type}
+                key={friendship.id}
+                friend={friendship.friend}
+                friendshipId={friendship.id}
+              />
+            ))}
         </div>
+        {type === "friends" && friends && friends.length <= 0 && (
+          <p>You should consider adding a friend</p>
+        )}
       </ScrollArea>
     </div>
   );

@@ -29,3 +29,11 @@ export const messageFileSchema = z.object({
 export const unbanUserSchema = z.object({
   banId: z.string().uuid(),
 });
+
+export const friendRequestSchema = z.object({
+  name: z.string(),
+});
+
+export const ignoreFriendRequestSchema = z.object({
+  requestId: z.string(),
+});

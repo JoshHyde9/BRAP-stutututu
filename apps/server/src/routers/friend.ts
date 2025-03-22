@@ -7,18 +7,31 @@ export const friendRouter = (app: ElysiaContext) =>
     app
       .post(
         "/sendRequest",
-        async ({ user, prisma, body }) => {
-          return await prisma.friend.create({
+        async ({ user, prisma, body, error }) => {
+          const addressedUser = await prisma.user.findFirst({
+            where: {
+              OR: [{ name: body.name }, { displayName: body.name }],
+            },
+            select: { id: true },
+          });
+
+          if (!addressedUser) {
+            return error("Bad Request");
+          }
+
+          await prisma.friend.create({
             data: {
               requesterId: user.id,
-              addresseeId: body.userId,
+              addresseeId: addressedUser.id,
             },
           });
+
+          return { success: true };
         },
         {
           auth: true,
           body: t.Object({
-            userId: t.String(),
+            name: t.String(),
           }),
         }
       )
@@ -70,6 +83,122 @@ export const friendRouter = (app: ElysiaContext) =>
         },
         {
           auth: true,
+        }
+      )
+      .get(
+        "/pending",
+        async ({ user, prisma }) => {
+          const sent = await prisma.friend.findMany({
+            where: {
+              requesterId: user.id,
+              status: "PENDING",
+            },
+            include: {
+              addressee: {
+                omit: {
+                  email: true,
+                  emailVerified: true,
+                  updatedAt: true,
+                },
+              },
+            },
+          });
+
+          return [
+            ...sent.map((friend) => ({
+              id: friend.id,
+              friend: friend.addressee,
+            })),
+          ];
+        },
+        {
+          auth: true,
+        }
+      )
+      .get(
+        "/requested",
+        async ({ user, prisma }) => {
+          const requests = await prisma.friend.findMany({
+            where: {
+              requesterId: { not: user.id },
+              status: "PENDING",
+            },
+            include: {
+              requester: {
+                omit: {
+                  email: true,
+                  emailVerified: true,
+                  updatedAt: true,
+                },
+              },
+            },
+          });
+
+          return [
+            ...requests.map((friend) => ({
+              id: friend.id,
+              friend: friend.requester,
+            })),
+          ];
+        },
+        { auth: true }
+      )
+      .delete(
+        "/cancel",
+        async ({ user, prisma, body }) => {
+          await prisma.friend.delete({
+            where: {
+              id: body.requestId,
+              status: "PENDING",
+              requesterId: user.id,
+            },
+          });
+
+          return { success: true };
+        },
+        {
+          auth: true,
+          body: t.Object({ requestId: t.String() }),
+        }
+      )
+      .delete(
+        "/ignore",
+        async ({ user, prisma, body }) => {
+          await prisma.friend.delete({
+            where: {
+              id: body.requestId,
+              status: "PENDING",
+              addresseeId: user.id,
+            },
+          });
+
+          return { success: true };
+        },
+        {
+          auth: true,
+          body: t.Object({
+            requestId: t.String(),
+          }),
+        }
+      )
+      .patch(
+        "/accept",
+        async ({ user, prisma, body }) => {
+          await prisma.friend.update({
+            where: {
+              id: body.requestId,
+              addresseeId: user.id,
+            },
+            data: {
+              status: "ACCEPTED",
+            },
+          });
+
+          return { success: true };
+        },
+        {
+          auth: true,
+          body: t.Object({ requestId: t.String() }),
         }
       )
   );

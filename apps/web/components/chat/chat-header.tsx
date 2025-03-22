@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Hash, UserRound } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
@@ -15,6 +16,7 @@ type FriendsChatHeaderProps = {
 
 type ChatHeaderProps =
   | {
+      params: string;
       type: "channel" | "conversation";
       serverId?: string;
       imageUrl?: string | null;
@@ -30,17 +32,35 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
 }) => {
   if (type === "friends") {
     return (
-      <div className="flex h-12 items-center border-b-2 border-neutral-200 px-3 dark:border-neutral-800">
+      <div className="mb-4 flex h-12 items-center border-b-2 border-neutral-200 px-3 dark:border-neutral-800">
         <MobileToggle serverId={serverId} type={type} />
         <div className="flex w-full items-center gap-x-2">
           <UserRound />
           <p className="font-semibold">Friends</p>
           <div className="h-6">
-            <Separator orientation="vertical" className="bg-zinc-300 dark:bg-zinc-400" />
+            <Separator
+              orientation="vertical"
+              className="bg-zinc-300 dark:bg-zinc-400"
+            />
           </div>
-          <Button variant="ghost" size="sm" className="px-4">All</Button>
-          <Button variant="ghost" size="sm" className="px-4">Pending</Button>
-          <Button size="sm">Add Friend</Button>
+          <Link href="/conversation/all">
+            <Button variant="ghost" size="sm" className="px-4">
+              All
+            </Button>
+          </Link>
+          <Link href="/conversation/pending">
+            <Button variant="ghost" size="sm" className="px-4">
+              Pending
+            </Button>
+          </Link>
+          <Link href="/conversation/requests">
+            <Button variant="ghost" size="sm" className="px-4">
+              Requests
+            </Button>
+          </Link>
+          <Link href="/conversation/add-friend">
+            <Button size="sm">Add Friend</Button>
+          </Link>
         </div>
       </div>
     );
