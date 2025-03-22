@@ -13,6 +13,7 @@ import { InviteModal } from "@/components/modals/invite-modal";
 import { LeaveServerModal } from "@/components/modals/leave-server-modal";
 import { BanMemberModal } from "@/components/modals/members-modal/ban-member-modal";
 import { MembersModal } from "@/components/modals/members-modal/members-modal";
+import { RemoveFriendModal } from "@/components/modals/remove-friend-modal";
 import { ServerSettingsModal } from "@/components/modals/server-settings/server-settings";
 import { UnbanUserModal } from "@/components/modals/server-settings/unban-user";
 
@@ -40,6 +41,7 @@ export const ModalProvider = () => {
       <DeleteChannelModal />
       <MessageFileModal />
       <UnbanUserModal />
+      <RemoveFriendModal />
     </>
   );
 };

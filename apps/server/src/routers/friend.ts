@@ -201,4 +201,23 @@ export const friendRouter = (app: ElysiaContext) =>
           body: t.Object({ requestId: t.String() }),
         }
       )
+      .delete(
+        "/remove",
+        async ({ prisma, body }) => {
+          await prisma.friend.delete({
+            where: {
+              id: body.friendshipId,
+              status: "ACCEPTED",
+            },
+          });
+
+          return { success: true };
+        },
+        {
+          auth: true,
+          body: t.Object({
+            friendshipId: t.Optional(t.String()),
+          }),
+        }
+      )
   );

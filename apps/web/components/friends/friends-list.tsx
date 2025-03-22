@@ -26,19 +26,24 @@ export const FriendsList: React.FC<FriendsListProps> = ({ friends, type }) => {
               : "Pending"}{" "}
           &mdash; {friends?.length}
         </p>
-        <div className="mt-6">
-          {friends &&
-            friends.map((friendship) => (
-              <FriendItem
-                type={type}
-                key={friendship.id}
-                friend={friendship.friend}
-                friendshipId={friendship.id}
-              />
-            ))}
-        </div>
+        {friends && (
+          <div className="mt-6">
+            {friends &&
+              friends.map((friendship) => (
+                <FriendItem
+                  type={type}
+                  key={friendship.id}
+                  friend={friendship.friend}
+                  friendshipId={friendship.id}
+                />
+              ))}
+          </div>
+        )}
+
         {type === "friends" && friends && friends.length <= 0 && (
-          <p>You should consider adding a friend</p>
+          <div className="text-center">
+            <p>Loner, lol</p>
+          </div>
         )}
       </ScrollArea>
     </div>

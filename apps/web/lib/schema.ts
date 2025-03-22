@@ -37,3 +37,7 @@ export const friendRequestSchema = z.object({
 export const ignoreFriendRequestSchema = z.object({
   requestId: z.string(),
 });
+
+export const removeFriendSchema = z.object({
+  friendshipId: z.string().optional(),
+});

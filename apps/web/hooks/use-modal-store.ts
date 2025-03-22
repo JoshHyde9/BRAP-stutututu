@@ -20,7 +20,8 @@ export type ModalType =
   | "editChannel"
   | "deleteChannel"
   | "messageFile"
-  | "unbanUser";
+  | "unbanUser"
+  | "removeFriend";
 
 type Ban = {
   user: {
@@ -45,6 +46,8 @@ export type ModalData = {
   channel?: Channel;
   ban?: Ban;
   serverId?: string;
+  friendshipId?: string;
+  username?: string;
 };
 
 type ModalStore = {
