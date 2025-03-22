@@ -1,5 +1,10 @@
+"use client";
+
 import type { User } from "@workspace/db";
 
+import { useState } from "react";
+
+import { Input } from "@workspace/ui/components/input";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 
 import { FriendItem } from "@/components/friends/friend-item";
@@ -15,8 +20,27 @@ type FriendsListProps = {
 };
 
 export const FriendsList: React.FC<FriendsListProps> = ({ friends, type }) => {
+  const [query, setQuery] = useState("");
+
+  const filteredFriends = friends?.filter(({ friend }) => {
+    return (
+      friend.name.toLowerCase().includes(query.toLowerCase()) ||
+      friend.displayName?.toLowerCase().includes(query.toLowerCase())
+    );
+  });
+
   return (
-    <div className="p-5">
+    <div className="px-5 pb-5 pt-2">
+      <div className="mb-4">
+        <Input
+          type="text"
+          placeholder="Search items..."
+          className="border-none bg-zinc-200/90 text-zinc-600 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-zinc-700/75 dark:text-zinc-200"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+      </div>
+
       <ScrollArea className="flex-1">
         <p className="text-sm font-semibold uppercase">
           {type === "friends"
@@ -24,27 +48,28 @@ export const FriendsList: React.FC<FriendsListProps> = ({ friends, type }) => {
             : type === "requested"
               ? "Requests"
               : "Pending"}{" "}
-          &mdash; {friends?.length}
+          &mdash; {filteredFriends?.length}
         </p>
-        {friends && (
-          <div className="mt-6">
-            {friends &&
-              friends.map((friendship) => (
-                <FriendItem
-                  type={type}
-                  key={friendship.id}
-                  friend={friendship.friend}
-                  friendshipId={friendship.id}
-                />
-              ))}
-          </div>
-        )}
 
-        {type === "friends" && friends && friends.length <= 0 && (
-          <div className="text-center">
-            <p>Loner, lol</p>
-          </div>
-        )}
+        <div className="mt-6">
+          {filteredFriends &&
+            filteredFriends.map((friendship) => (
+              <FriendItem
+                type={type}
+                key={friendship.id}
+                friend={friendship.friend}
+                friendshipId={friendship.id}
+              />
+            ))}
+        </div>
+
+        {type === "friends" &&
+          filteredFriends &&
+          filteredFriends.length <= 0 && (
+            <div className="text-center">
+              <p>Loner, lol</p>
+            </div>
+          )}
       </ScrollArea>
     </div>
   );
