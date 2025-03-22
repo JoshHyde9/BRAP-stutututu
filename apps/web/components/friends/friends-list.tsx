@@ -37,7 +37,7 @@ export const FriendsList: React.FC<FriendsListProps> = ({ friends, type }) => {
         <Input
           type="text"
           placeholder="Search..."
-          className="pl-8 border-none bg-zinc-200/90 text-zinc-600 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-zinc-700/75 dark:text-zinc-200"
+          className="pl-8 font-semibold border-none bg-zinc-200/90 text-zinc-600 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-zinc-700/75 dark:text-zinc-200"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
