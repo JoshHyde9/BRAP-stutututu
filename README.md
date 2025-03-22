@@ -38,6 +38,8 @@ Fkn idk tbh
 - Admins and moderators can edit a channel's settings (name and type)
 - Admins and moerators can delete a channel
 - Admins can delete server
+- Admin can promote user to moderator
+- Admin can demote moderator
 - Server member can edit their server profile
 - Leave server
 - Search server's channels and members
