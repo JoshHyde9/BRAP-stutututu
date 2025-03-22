@@ -18,7 +18,6 @@ Fkn idk tbh
 
 - [ ] Users can DM eachother
 - [ ] Server member profile popover thing
-- [ ] Friends
 - [ ] Message replies 
 - [ ] Pinned messages
 - [ ] User activity status

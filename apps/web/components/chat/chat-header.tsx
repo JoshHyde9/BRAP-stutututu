@@ -1,11 +1,11 @@
-import Link from "next/link";
 import { Hash, UserRound } from "lucide-react";
 
-import { Button } from "@workspace/ui/components/button";
 import { Separator } from "@workspace/ui/components/separator";
 
 import { MobileToggle } from "@/components/mobile-toggle";
 import { UserAvatar } from "@/components/user-avatar";
+
+import { FriendsLinks } from "@/components/friends/friends-links";
 
 type FriendsChatHeaderProps = {
   type: "friends";
@@ -42,24 +42,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
               className="bg-zinc-300 dark:bg-zinc-400"
             />
           </div>
-          <Link href="/friends/all">
-            <Button variant="ghost" size="sm" className="px-4">
-              All
-            </Button>
-          </Link>
-          <Link href="/friends/pending">
-            <Button variant="ghost" size="sm" className="px-4">
-              Pending
-            </Button>
-          </Link>
-          <Link href="/friends/requests">
-            <Button variant="ghost" size="sm" className="px-4">
-              Requests
-            </Button>
-          </Link>
-          <Link href="/friends/add-friend">
-            <Button size="sm">Add Friend</Button>
-          </Link>
+          <FriendsLinks />
         </div>
       </div>
     );
