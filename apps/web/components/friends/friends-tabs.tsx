@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
 
-export const FriendsLinks = () => {
+export const FriendsTabs = () => {
   const pathname = usePathname();
   return (
     <div className="flex gap-x-2">

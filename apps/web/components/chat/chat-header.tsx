@@ -5,7 +5,7 @@ import { Separator } from "@workspace/ui/components/separator";
 import { MobileToggle } from "@/components/mobile-toggle";
 import { UserAvatar } from "@/components/user-avatar";
 
-import { FriendsLinks } from "@/components/friends/friends-links";
+import { FriendsTabs } from "@/components/friends/friends-tabs";
 
 type FriendsChatHeaderProps = {
   type: "friends";
@@ -42,7 +42,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
               className="bg-zinc-300 dark:bg-zinc-400"
             />
           </div>
-          <FriendsLinks />
+          <FriendsTabs />
         </div>
       </div>
     );
