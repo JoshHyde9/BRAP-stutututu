@@ -27,7 +27,7 @@ Fkn idk tbh
 
 ## Features
 
-# Server Related
+### Server Related
 
 - Create a server
 - Invite users to server
@@ -42,7 +42,7 @@ Fkn idk tbh
 - Leave server
 - Search server's channels and members
 
-# Message Related
+### Message Related
 
 - Create a message
   - Upload an image, gif and PDF (PDF file viewing is currently broken)
@@ -54,7 +54,7 @@ Fkn idk tbh
 - Admins and moderators can delete a message
 - Indicator if there is a new message in the server when focused on another server
 
-# Friend Related
+### Friend Related
 
 - View all friends
 - Search all friends
@@ -65,5 +65,5 @@ Fkn idk tbh
 - User can ignore incoming friend requests
 - User can accept incoming friend requests
 
-# Direct message Related
+### Direct message Related
 - User can search users they have messaged
