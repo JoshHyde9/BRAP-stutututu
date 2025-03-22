@@ -34,7 +34,7 @@ export const FriendsList: React.FC<FriendsListProps> = ({ friends, type }) => {
       <div className="mb-4">
         <Input
           type="text"
-          placeholder="Search items..."
+          placeholder="Search..."
           className="border-none bg-zinc-200/90 text-zinc-600 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-zinc-700/75 dark:text-zinc-200"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
