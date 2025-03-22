@@ -8,6 +8,7 @@ import { Input } from "@workspace/ui/components/input";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 
 import { FriendItem } from "@/components/friends/friend-item";
+import { Search } from "lucide-react";
 
 type Friend = {
   id: string;
@@ -31,11 +32,12 @@ export const FriendsList: React.FC<FriendsListProps> = ({ friends, type }) => {
 
   return (
     <div className="px-5 pb-5 pt-2">
-      <div className="mb-4">
+      <div className="mb-4 relative">
+        <Search className="absolute top-2.5 left-2.5 size-4 text-zinc-400 dark:text-zinc-400" />
         <Input
           type="text"
           placeholder="Search..."
-          className="border-none bg-zinc-200/90 text-zinc-600 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-zinc-700/75 dark:text-zinc-200"
+          className="pl-8 border-none bg-zinc-200/90 text-zinc-600 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-zinc-700/75 dark:text-zinc-200"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
