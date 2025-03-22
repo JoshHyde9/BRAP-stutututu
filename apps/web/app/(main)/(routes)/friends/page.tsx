@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
-const ConversationPage = async () => {
+const FriendsPage = async () => {
   return redirect("/friends/all");
 };
 
-export default ConversationPage;
+export default FriendsPage;

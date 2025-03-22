@@ -43,22 +43,22 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
               className="bg-zinc-300 dark:bg-zinc-400"
             />
           </div>
-          <Link href="/conversation/all">
+          <Link href="/friends/all">
             <Button variant="ghost" size="sm" className="px-4">
               All
             </Button>
           </Link>
-          <Link href="/conversation/pending">
+          <Link href="/friends/pending">
             <Button variant="ghost" size="sm" className="px-4">
               Pending
             </Button>
           </Link>
-          <Link href="/conversation/requests">
+          <Link href="/friends/requests">
             <Button variant="ghost" size="sm" className="px-4">
               Requests
             </Button>
           </Link>
-          <Link href="/conversation/add-friend">
+          <Link href="/friends/add-friend">
             <Button size="sm">Add Friend</Button>
           </Link>
         </div>

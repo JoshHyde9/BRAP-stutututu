@@ -5,11 +5,11 @@ import { getServerSession } from "@/lib/get-server-session";
 import { ChatHeader } from "@/components/chat/chat-header";
 import { ConversationSidebar } from "@/components/chat/conversation-sidebar";
 
-type ConversationLayoutProps = {
+type FriendsLayoutProps = {
   children: React.ReactNode;
 };
 
-const ConversationLayout = async ({ children }: ConversationLayoutProps) => {
+const FriendsLayout = async ({ children }: FriendsLayoutProps) => {
   const session = await getServerSession();
 
   if (!session) {
@@ -22,11 +22,11 @@ const ConversationLayout = async ({ children }: ConversationLayoutProps) => {
         <ConversationSidebar />
       </div>
       <main className="h-full md:pl-64">
-        <ChatHeader type="friends"  />
+        <ChatHeader type="friends" />
         {children}
       </main>
     </div>
   );
 };
 
-export default ConversationLayout;
+export default FriendsLayout;

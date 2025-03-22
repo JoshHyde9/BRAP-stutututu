@@ -12,7 +12,7 @@ export const DirectMessages = () => {
   const pathname = usePathname();
   return (
     <ActionTooltip side="right" label="Direct Messages" align="center">
-      <Link href="/conversation/all" className="group relative flex items-center">
+      <Link href="/friends/all" className="group relative flex items-center">
         <div
           className={cn(
             "bg-primary absolute left-0 w-[4px] rounded-r-full transition-all",
