@@ -1,10 +1,10 @@
+import Link from "next/link";
 import { MessageCircle, MoreVertical } from "lucide-react";
 
 import { User } from "@workspace/db";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 
@@ -44,11 +44,13 @@ export const FriendItem: React.FC<FriendItemProps> = ({
         <div className="ml-auto flex items-center gap-x-2">
           {type === "friends" && (
             <>
-              <ActionTooltip label="Message">
-                <div className="flex items-center rounded-full bg-zinc-200 p-2.5 outline-none dark:bg-zinc-800/40">
-                  <MessageCircle className="fill-zinc-600 stroke-zinc-600 dark:fill-zinc-300 dark:stroke-zinc-300" />
-                </div>
-              </ActionTooltip>
+              <Link href={`/conversation/${friend.id}`}>
+                <ActionTooltip label="Message">
+                  <div className="flex items-center rounded-full bg-zinc-200 p-2.5 outline-none dark:bg-zinc-800/40">
+                    <MessageCircle className="fill-zinc-600 stroke-zinc-600 dark:fill-zinc-300 dark:stroke-zinc-300" />
+                  </div>
+                </ActionTooltip>
+              </Link>
               <DropdownMenu>
                 <DropdownMenuTrigger>
                   <ActionTooltip label="More">
