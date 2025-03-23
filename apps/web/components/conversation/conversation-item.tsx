@@ -19,9 +19,9 @@ import { cn } from "@workspace/ui/lib/utils";
 import { formatDate } from "@/lib/helpers";
 
 import { ActionTooltip } from "@/components/action-tooltip";
-import { DeleteMessage } from "@/components/chat/delete-message";
-import { EditMessage } from "@/components/chat/edit-message";
 import { UserAvatar } from "@/components/user-avatar";
+
+import { DeleteConversationMessage } from "./delete-conversation-message";
 import { EditConversationMessage } from "./edit-conversation-message";
 
 type ConversationItem = {
@@ -159,10 +159,7 @@ export const ConversationItem: React.FC<ConversationItem> = ({
                   onClick={() => setIsEditing(!isEditing)}
                 />
               </ActionTooltip>
-              <DeleteMessage
-                messageId={message.id}
-                conversationId={conversationId}
-              />
+              <DeleteConversationMessage messageId={message.id} />
             </>
           )}
           <ActionTooltip label="More">

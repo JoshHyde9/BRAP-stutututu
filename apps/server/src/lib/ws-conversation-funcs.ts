@@ -12,6 +12,10 @@ type DMEditMessage = {
   content: string;
 };
 
+type DMDeleteMessage = {
+  messageId: string;
+};
+
 export const dmCreateMessage = async (
   prisma: PrismaClient,
   session: Session,
@@ -51,6 +55,24 @@ export const dmEditMesage = async (
     },
     data: {
       content: data.content,
+    },
+    include: {
+      user: {
+        omit: { createdAt: true, email: true, emailVerified: true },
+      },
+    },
+  });
+};
+
+export const dmDeleteMessage = async (
+  prisma: PrismaClient,
+  session: Session,
+  data: DMDeleteMessage
+) => {
+  return await prisma.directMessage.delete({
+    where: {
+      id: data.messageId,
+      userId: session.user.id,
     },
     include: {
       user: {

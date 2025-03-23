@@ -7,7 +7,11 @@ import {
   editMessage,
 } from "../lib/ws-message-funcs";
 import { getConversationId } from "../lib/util";
-import { dmCreateMessage, dmEditMesage } from "../lib/ws-conversation-funcs";
+import {
+  dmCreateMessage,
+  dmDeleteMessage,
+  dmEditMesage,
+} from "../lib/ws-conversation-funcs";
 import { ElysiaWS } from "elysia/ws";
 
 const wsConnections = new Map<string, ElysiaWS>();
@@ -30,6 +34,7 @@ export const wsRouter = (app: ElysiaContext) =>
           t.Literal("conversation-join"),
           t.Literal("create-conversation-message"),
           t.Literal("edit-conversation-message"),
+          t.Literal("delete-conversation-message"),
         ]),
         data: t.Object({
           channelId: t.Optional(t.String()),
@@ -250,6 +255,27 @@ export const wsRouter = (app: ElysiaContext) =>
                 ws.send({
                   message: editedMessage,
                   type: "edit-conversation-message",
+                });
+              }
+            } catch (error) {
+              console.log(error);
+            }
+
+            break;
+          case "delete-conversation-message":
+            try {
+              const deletedMessage = await dmDeleteMessage(prisma, session, {
+                messageId: messageId!,
+              });
+
+              if (deletedMessage) {
+                ws.publish(`conversation:${deletedMessage.conversationId}`, {
+                  message: deletedMessage,
+                  type: "delete-conversation-message",
+                });
+                ws.send({
+                  message: deletedMessage,
+                  type: "delete-conversation-message",
                 });
               }
             } catch (error) {

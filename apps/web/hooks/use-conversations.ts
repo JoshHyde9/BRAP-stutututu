@@ -15,8 +15,13 @@ type ConversationMessage = {
 };
 
 export const useConversations = ({ targetId }: ConversationsProps) => {
-  const { isConnected, joinConversation, sendConversationMessage, editConversationMessage } =
-    useSocket();
+  const {
+    isConnected,
+    joinConversation,
+    sendConversationMessage,
+    editConversationMessage,
+    deleteConversationMessage,
+  } = useSocket();
 
   useEffect(() => {
     if (targetId && isConnected) {
@@ -42,10 +47,7 @@ export const useConversations = ({ targetId }: ConversationsProps) => {
   });
 
   const editMessage = useMutation({
-    mutationFn: async ({
-      content,
-      messageId,
-    }: ConversationMessage) => {
+    mutationFn: async ({ content, messageId }: ConversationMessage) => {
       try {
         editConversationMessage({ content, messageId });
 
@@ -56,5 +58,17 @@ export const useConversations = ({ targetId }: ConversationsProps) => {
     },
   });
 
-  return { sendMessage, editMessage };
+  const deleteMessage = useMutation({
+    mutationFn: async ({ messageId }: ConversationMessage) => {
+      try {
+        deleteConversationMessage({ messageId });
+
+        return { success: true };
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
+
+  return { sendMessage, editMessage, deleteMessage };
 };
