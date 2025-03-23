@@ -4,6 +4,7 @@ import { getOrCreateConversation } from "@/lib/conversation";
 import { getServerSession } from "@/lib/get-server-session";
 
 import { ChatHeader } from "@/components/chat/chat-header";
+import { ConversationChatInput } from "@/components/conversation/conversation-chat-input";
 
 type ConversationUserPageProps = {
   params: Promise<{ userId: string }>;
@@ -38,6 +39,12 @@ const ConversationUserPage: React.FC<ConversationUserPageProps> = async ({
         type="conversation"
         name={otherMember.displayName ?? otherMember.name}
         imageUrl={otherMember.image}
+      />
+      <ConversationChatInput
+        type="conversation"
+        targetId={otherMember.id}
+        name={otherMember.name}
+        queryParams={{ conversationId: conversation.id! }}
       />
     </div>
   );

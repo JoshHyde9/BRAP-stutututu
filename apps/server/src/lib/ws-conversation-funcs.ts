@@ -16,6 +16,7 @@ export const dmCreateMessage = async (
     data: {
       conversationId: data.conversationId,
       content: data.content,
+      fileUrl: data.fileUrl,
       userId: session.user.id,
     },
   });

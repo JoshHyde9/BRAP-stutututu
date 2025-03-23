@@ -16,7 +16,7 @@ import {
 } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 
-import { useChatSocket } from "@/hooks/use-chat-socket";
+import { useConversations } from "@/hooks/use-conversations";
 import { useModal } from "@/hooks/use-modal-store";
 import { sendMessageSchema } from "@/lib/schema";
 
@@ -27,14 +27,16 @@ type ChatInputProps = {
   queryParams: QueryParamsKeys;
   name: string;
   type: "conversation" | "channel";
+  targetId: string;
 };
 
-export const ChatInput: React.FC<ChatInputProps> = ({
+export const ConversationChatInput: React.FC<ChatInputProps> = ({
   queryParams,
   type,
   name,
+  targetId,
 }) => {
-  const { sendMessage } = useChatSocket();
+  const { sendMessage } = useConversations({ targetId });
   const { onOpen } = useModal();
   const [open, setOpen] = useState(false);
   const form = useForm({
@@ -49,9 +51,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     const parsedData = await sendMessageSchema.parseAsync(values);
     sendMessage.mutate(
       {
-        channelId: queryParams.channelId!,
-        serverId: queryParams.serverId!,
         ...parsedData,
+        targetId,
+        conversationId: queryParams.conversationId!
       },
       {
         onSuccess: () => {

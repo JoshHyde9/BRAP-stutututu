@@ -21,17 +21,26 @@ type ChatMessage = {
   value?: string;
 };
 
+type ConversationMessage = {
+  targetId?: string;
+  content?: string;
+  fileUrl?: string;
+  conversationId?: string;
+};
+
 type WebSocketMessageType =
   | "join"
   | "leave"
   | "create-chat-message"
   | "edit-chat-message"
   | "delete-chat-message"
-  | "create-message-reaction";
+  | "create-message-reaction"
+  | "create-conversation-message"
+  | "conversation-join"
 
 export type WebSocketMessage = {
   type: WebSocketMessageType;
-  data: ChatMessage;
+  data: ChatMessage | ConversationMessage;
 };
 
 interface ServerNotification {
@@ -55,6 +64,8 @@ type WebSocketContextType = {
   leaveServer: (serverId: string) => boolean;
   notifications: NotificationState;
   clearServerNotifications: (serverId: string) => void;
+  sendConversationMessage: (data: ConversationMessage) => void;
+  joinConversation: (targetId: string) => boolean;
 };
 
 type EdenWebSocket = ReturnType<typeof api.ws.chat.subscribe>;
@@ -317,6 +328,31 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     }));
   };
 
+  const joinConversation = useCallback(
+    (targetId: string) => {
+      return sendMessage({
+        type: "conversation-join",
+        data: { targetId },
+      });
+    },
+    [sendMessage],
+  );
+
+  const sendConversationMessage = useCallback(
+    ({ targetId, content, fileUrl, conversationId }: ConversationMessage) => {
+      return sendMessage({
+        type: "create-conversation-message",
+        data: {
+          targetId,
+          content,
+          fileUrl,
+          conversationId
+        },
+      });
+    },
+    [sendMessage],
+  );
+
   const value: WebSocketContextType = {
     isConnected,
     sendMessage,
@@ -330,6 +366,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     leaveServer,
     notifications,
     clearServerNotifications,
+    sendConversationMessage,
+    joinConversation,
   };
 
   return (

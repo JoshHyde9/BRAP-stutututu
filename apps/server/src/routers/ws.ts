@@ -8,8 +8,10 @@ import {
 } from "../lib/ws-message-funcs";
 import { getConversationId } from "../lib/util";
 import { dmCreateMessage } from "../lib/ws-conversation-funcs";
+import { ElysiaWS } from "elysia/ws";
 
-const wsConnections = new Map<string, Session>();
+const wsConnections = new Map<string, ElysiaWS>();
+const userSessions = new Map<string, Session>();
 const channels = new Map<string, Set<string>>();
 const servers = new Map<string, Set<string>>();
 const conversations = new Map<string, Set<string>>();
@@ -36,6 +38,7 @@ export const wsRouter = (app: ElysiaContext) =>
           messageId: t.Optional(t.String()),
           value: t.Optional(t.String()),
           targetId: t.Optional(t.String()),
+          conversationId: t.Optional(t.String()),
         }),
       }),
       open: async (ws) => {
@@ -47,10 +50,11 @@ export const wsRouter = (app: ElysiaContext) =>
           return ws.close(3000, "Unauthorized");
         }
 
-        wsConnections.set(ws.id, session);
+        wsConnections.set(session.user.id, ws);
+        userSessions.set(ws.id, session);
       },
       message: async (ws, message) => {
-        const session = wsConnections.get(ws.id);
+        const session = userSessions.get(ws.id);
 
         if (!session) {
           return ws.close(3000, "Unauthorized");
@@ -65,6 +69,7 @@ export const wsRouter = (app: ElysiaContext) =>
           messageId,
           value,
           targetId,
+          conversationId,
         } = message.data;
 
         switch (message.type) {
@@ -99,20 +104,28 @@ export const wsRouter = (app: ElysiaContext) =>
             ws.unsubscribe(`channel:${channelId}`);
             break;
           case "conversation-join":
-            const { conversationId } = await getConversationId(
+            const conversation = await getConversationId(
               prisma,
               session.user.id,
               targetId!
             );
 
-            if (!conversations.has(conversationId)) {
+            if (!conversations.has(conversation.conversationId)) {
               conversations.set(
-                conversationId,
+                conversation.conversationId,
                 new Set([session.user.id, targetId!])
               );
             }
+            
+            ws.subscribe(`conversation:${conversation.conversationId}`);
+            const targetSocket = wsConnections.get(targetId!);
 
-            ws.subscribe(`conversation:${conversationId}`);
+            if (targetSocket) {
+              targetSocket.subscribe(
+                `conversation:${conversation.conversationId}`
+              );
+            }
+
             break;
           case "create-conversation-message":
             const dmMessage = await dmCreateMessage(prisma, session, {
@@ -289,6 +302,7 @@ export const wsRouter = (app: ElysiaContext) =>
         }
 
         wsConnections.delete(ws.id);
+        userSessions.delete(ws.id);
       },
     })
   );

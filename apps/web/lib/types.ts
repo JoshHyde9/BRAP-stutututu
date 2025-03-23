@@ -15,5 +15,10 @@ export type ServerWithMembers = Server & {
 
 export type SectionType = "channel" | "member";
 
-// TODO: add support for conversations
-export type QueryParamsKeys = "channelId" | "serverId";
+export type ChannelServerParams = Record<'channelId' | 'serverId', string> & 
+  Partial<Record<'conversationId', string>>;
+
+export type ConversationParams = Record<'conversationId', string> & 
+  Partial<Record<'channelId' | 'serverId', string>>;
+
+export type QueryParamsKeys = ChannelServerParams | ConversationParams;
