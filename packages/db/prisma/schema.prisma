@@ -24,11 +24,12 @@ model User {
   members                Member[]
   channels               Channel[]
   bans                   Ban[]
-  conversationsInitiated Conversation[]  @relation("UserOne")
-  conversationsReceived  Conversation[]  @relation("UserTwo")
+  conversationsInitiated Conversation[]          @relation("UserOne")
+  conversationsReceived  Conversation[]          @relation("UserTwo")
   directMessages         DirectMessage[]
-  friendsRequested       Friend[]        @relation("requester")
-  friendsReceived        Friend[]        @relation("addressee")
+  friendsRequested       Friend[]                @relation("requester")
+  friendsReceived        Friend[]                @relation("addressee")
+  directMessageReactions DirectMessageReaction[]
 
   @@unique([email])
   @@unique([name])
@@ -234,6 +235,8 @@ model DirectMessage {
   conversationId String
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
+  directMessageReactions DirectMessageReaction[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -285,4 +288,23 @@ model Friend {
 
   @@unique([requesterId, addresseeId])
   @@map("friend")
+}
+
+model DirectMessageReaction {
+  id String @id @default(uuid())
+
+  directMessageId String
+  directMessage   DirectMessage @relation(fields: [directMessageId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  value String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([directMessageId])
+  @@map("direct_message_reaction")
 }
