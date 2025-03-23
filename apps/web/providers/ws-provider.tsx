@@ -30,6 +30,7 @@ type ConversationMessage = {
   content?: string;
   fileUrl?: string;
   conversationId?: string;
+  messageId?: string;
 };
 
 type WebSocketMessageType =
@@ -40,7 +41,8 @@ type WebSocketMessageType =
   | "delete-chat-message"
   | "create-message-reaction"
   | "create-conversation-message"
-  | "conversation-join";
+  | "conversation-join"
+  | "edit-conversation-message";
 
 export type WebSocketMessage = {
   type: WebSocketMessageType;
@@ -70,6 +72,7 @@ type WebSocketContextType = {
   clearServerNotifications: (serverId: string) => void;
   sendConversationMessage: (data: ConversationMessage) => void;
   joinConversation: (targetId: string) => boolean;
+  editConversationMessage: (data: ConversationMessage) => void;
 };
 
 type EdenWebSocket = ReturnType<typeof api.ws.chat.subscribe>;
@@ -195,6 +198,26 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
               }
 
               return newData;
+            },
+          );
+          break;
+        case "edit-conversation-message":
+          // Only update message content instead of pushing entire new message
+          queryClient.setQueryData(
+            ["conversation", newMessage.conversationId],
+            (oldMessages: InfiniteData<ConversationPageData>) => {
+              if (!oldMessages?.pages) return oldMessages;
+
+              const newPages = oldMessages.pages.map((page) => ({
+                ...page,
+                messages: page.messages.map((message) =>
+                  message.id === newMessage.id
+                    ? { ...message, content: newMessage.content }
+                    : message,
+                ),
+              }));
+
+              return { ...oldMessages, pages: newPages };
             },
           );
           break;
@@ -386,6 +409,19 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     [sendMessage],
   );
 
+  const editConversationMessage = useCallback(
+    ({ content, messageId }: ConversationMessage) => {
+      return sendMessage({
+        type: "edit-conversation-message",
+        data: {
+          content,
+          messageId,
+        },
+      });
+    },
+    [sendMessage],
+  );
+
   const value: WebSocketContextType = {
     isConnected,
     sendMessage,
@@ -401,6 +437,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     clearServerNotifications,
     sendConversationMessage,
     joinConversation,
+    editConversationMessage,
   };
 
   return (

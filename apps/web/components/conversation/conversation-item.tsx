@@ -22,6 +22,7 @@ import { ActionTooltip } from "@/components/action-tooltip";
 import { DeleteMessage } from "@/components/chat/delete-message";
 import { EditMessage } from "@/components/chat/edit-message";
 import { UserAvatar } from "@/components/user-avatar";
+import { EditConversationMessage } from "./edit-conversation-message";
 
 type ConversationItem = {
   message: DirectMessageWithUser;
@@ -140,10 +141,7 @@ export const ConversationItem: React.FC<ConversationItem> = ({
             </p>
           )}
           {isEditing && (
-            <EditMessage
-              queryParams={{
-                conversationId,
-              }}
+            <EditConversationMessage
               messageId={message.id}
               content={message.content}
               setIsEditing={setIsEditing}

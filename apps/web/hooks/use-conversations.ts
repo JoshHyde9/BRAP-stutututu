@@ -3,7 +3,7 @@ import { useSocket } from "@/providers/ws-provider";
 import { useMutation } from "@tanstack/react-query";
 
 type ConversationsProps = {
-  targetId: string;
+  targetId?: string;
 };
 
 type ConversationMessage = {
@@ -11,10 +11,11 @@ type ConversationMessage = {
   content?: string;
   fileUrl?: string;
   conversationId?: string;
+  messageId?: string;
 };
 
 export const useConversations = ({ targetId }: ConversationsProps) => {
-  const { isConnected, joinConversation, sendConversationMessage } =
+  const { isConnected, joinConversation, sendConversationMessage, editConversationMessage } =
     useSocket();
 
   useEffect(() => {
@@ -40,5 +41,20 @@ export const useConversations = ({ targetId }: ConversationsProps) => {
     },
   });
 
-  return { sendMessage };
+  const editMessage = useMutation({
+    mutationFn: async ({
+      content,
+      messageId,
+    }: ConversationMessage) => {
+      try {
+        editConversationMessage({ content, messageId });
+
+        return { success: true };
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
+
+  return { sendMessage, editMessage };
 };

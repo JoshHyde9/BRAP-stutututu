@@ -7,6 +7,11 @@ type DMCreateMessage = {
   conversationId: string;
 };
 
+type DMEditMessage = {
+  messageId: string;
+  content: string;
+};
+
 export const dmCreateMessage = async (
   prisma: PrismaClient,
   session: Session,
@@ -29,6 +34,27 @@ export const dmCreateMessage = async (
           image: true,
           createdAt: true,
         },
+      },
+    },
+  });
+};
+
+export const dmEditMesage = async (
+  prisma: PrismaClient,
+  session: Session,
+  data: DMEditMessage
+) => {
+  return await prisma.directMessage.update({
+    where: {
+      id: data.messageId,
+      userId: session.user.id,
+    },
+    data: {
+      content: data.content,
+    },
+    include: {
+      user: {
+        omit: { createdAt: true, email: true, emailVerified: true },
       },
     },
   });

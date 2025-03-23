@@ -7,7 +7,7 @@ import {
   editMessage,
 } from "../lib/ws-message-funcs";
 import { getConversationId } from "../lib/util";
-import { dmCreateMessage } from "../lib/ws-conversation-funcs";
+import { dmCreateMessage, dmEditMesage } from "../lib/ws-conversation-funcs";
 import { ElysiaWS } from "elysia/ws";
 
 const wsConnections = new Map<string, ElysiaWS>();
@@ -29,6 +29,7 @@ export const wsRouter = (app: ElysiaContext) =>
           t.Literal("create-message-reaction"),
           t.Literal("conversation-join"),
           t.Literal("create-conversation-message"),
+          t.Literal("edit-conversation-message"),
         ]),
         data: t.Object({
           channelId: t.Optional(t.String()),
@@ -116,7 +117,7 @@ export const wsRouter = (app: ElysiaContext) =>
                 new Set([session.user.id, targetId!])
               );
             }
-            
+
             ws.subscribe(`conversation:${conversation.conversationId}`);
             const targetSocket = wsConnections.get(targetId!);
 
@@ -228,6 +229,28 @@ export const wsRouter = (app: ElysiaContext) =>
                   type: "edit-chat-message",
                 });
                 ws.send({ message: editedMessage, type: "edit-chat-message" });
+              }
+            } catch (error) {
+              console.log(error);
+            }
+
+            break;
+          case "edit-conversation-message":
+            try {
+              const editedMessage = await dmEditMesage(prisma, session, {
+                content: content!,
+                messageId: messageId!,
+              });
+
+              if (editedMessage) {
+                ws.publish(`conversation:${editedMessage.conversationId}`, {
+                  message: editedMessage,
+                  type: "edit-conversation-message",
+                });
+                ws.send({
+                  message: editedMessage,
+                  type: "edit-conversation-message",
+                });
               }
             } catch (error) {
               console.log(error);
