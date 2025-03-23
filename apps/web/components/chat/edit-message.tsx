@@ -13,7 +13,7 @@ import { useChatSocket } from "@/hooks/use-chat-socket";
 import { QueryParamsKeys } from "@/lib/types";
 
 type EditMessageProps = {
-  queryParams: Record<QueryParamsKeys, string>;
+  queryParams: QueryParamsKeys;
   messageId: string;
   content: string;
   setIsEditing: (isEditing: boolean) => void;
@@ -36,8 +36,8 @@ export const EditMessage: React.FC<EditMessageProps> = ({
   const onSubmit = async (values: { content: string }) => {
     editMessage.mutate(
       {
-        channelId: queryParams.channelId,
-        serverId: queryParams.serverId,
+        channelId: queryParams.channelId!,
+        serverId: queryParams.serverId!,
         content: values.content,
         messageId: messageId,
       },

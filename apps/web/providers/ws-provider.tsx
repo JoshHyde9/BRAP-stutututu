@@ -10,7 +10,11 @@ import {
 } from "react";
 import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 
-import { api, MessageWithSortedReactions } from "@workspace/api";
+import {
+  api,
+  DirectMessageWithUser,
+  MessageWithSortedReactions,
+} from "@workspace/api";
 
 type ChatMessage = {
   channelId?: string;
@@ -36,7 +40,7 @@ type WebSocketMessageType =
   | "delete-chat-message"
   | "create-message-reaction"
   | "create-conversation-message"
-  | "conversation-join"
+  | "conversation-join";
 
 export type WebSocketMessage = {
   type: WebSocketMessageType;
@@ -72,6 +76,11 @@ type EdenWebSocket = ReturnType<typeof api.ws.chat.subscribe>;
 
 interface PageData {
   messages: MessageWithSortedReactions[];
+  nextCursor?: string | null;
+}
+
+interface ConversationPageData {
+  messages: DirectMessageWithUser[];
   nextCursor?: string | null;
 }
 
@@ -162,6 +171,30 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
               }));
 
               return { ...oldMessages, pages: newPages };
+            },
+          );
+          break;
+        case "create-conversation-message":
+          queryClient.setQueryData(
+            ["conversation", newMessage.conversationId],
+            (oldMessages: InfiniteData<ConversationPageData>) => {
+              if (!oldMessages || !oldMessages.pages[0]) return oldMessages;
+
+              const newData = {
+                ...oldMessages,
+                pages: [...oldMessages.pages.map((page) => ({ ...page }))],
+              };
+
+              if (newData && newData.pages[0]?.messages) {
+                newData.pages[0].messages = [
+                  newMessage,
+                  ...oldMessages.pages[0].messages,
+                ];
+              } else {
+                newData.pages[0]!.messages = [newMessage];
+              }
+
+              return newData;
             },
           );
           break;
@@ -346,7 +379,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
           targetId,
           content,
           fileUrl,
-          conversationId
+          conversationId,
         },
       });
     },

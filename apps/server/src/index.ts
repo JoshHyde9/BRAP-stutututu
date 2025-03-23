@@ -1,4 +1,4 @@
-import type { Message, Member, User, Reaction } from "@workspace/db";
+import type { Message, Member, User, Reaction, DirectMessage } from "@workspace/db";
 
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
@@ -40,6 +40,10 @@ console.log(
 
 export type App = typeof app;
 export type ElysiaContext = typeof elysiaContext;
+
+export type DirectMessageWithUser = DirectMessage & {
+  user: Pick<User, "id" | "name" | "displayName" | "image" | "createdAt">;
+}
 
 export type MessageWithReactions = Message & {
   member: Member & {

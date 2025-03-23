@@ -5,6 +5,7 @@ import { getServerSession } from "@/lib/get-server-session";
 
 import { ChatHeader } from "@/components/chat/chat-header";
 import { ConversationChatInput } from "@/components/conversation/conversation-chat-input";
+import { ConversationMessages } from "@/components/conversation/conversation-messages";
 
 type ConversationUserPageProps = {
   params: Promise<{ userId: string }>;
@@ -31,20 +32,25 @@ const ConversationUserPage: React.FC<ConversationUserPageProps> = async ({
 
   const { userOne, userTwo } = conversation;
 
-  const otherMember = userOne.id === session.user.id ? userTwo : userOne;
+  const otherUser = userOne.id === session.user.id ? userTwo : userOne;
 
   return (
-    <div className="flex flex-col bg-white dark:bg-[#313338]">
+    <div className="flex h-full flex-col bg-white dark:bg-[#313338]">
       <ChatHeader
         type="conversation"
-        name={otherMember.displayName ?? otherMember.name}
-        imageUrl={otherMember.image}
+        name={otherUser.displayName ?? otherUser.name}
+        imageUrl={otherUser.image}
+      />
+      <ConversationMessages
+        loggedInUser={session.user}
+        otherUsername={otherUser.displayName ?? otherUser.name}
+        conversationId={conversation.id}
       />
       <ConversationChatInput
         type="conversation"
-        targetId={otherMember.id}
-        name={otherMember.name}
-        queryParams={{ conversationId: conversation.id! }}
+        targetId={otherUser.id}
+        name={otherUser.displayName ?? otherUser.name}
+        queryParams={{ conversationId: conversation.id }}
       />
     </div>
   );

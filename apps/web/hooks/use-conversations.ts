@@ -14,17 +14,13 @@ type ConversationMessage = {
 };
 
 export const useConversations = ({ targetId }: ConversationsProps) => {
-  const {
-    isConnected,
-    joinConversation,
-    sendConversationMessage,
-  } = useSocket();
+  const { isConnected, joinConversation, sendConversationMessage } =
+    useSocket();
 
   useEffect(() => {
     if (targetId && isConnected) {
       joinConversation(targetId);
     }
-
   }, [targetId, isConnected]);
 
   const sendMessage = useMutation({

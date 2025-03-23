@@ -15,9 +15,21 @@ export const dmCreateMessage = async (
   return await prisma.directMessage.create({
     data: {
       conversationId: data.conversationId,
+      originalContent: data.content,
       content: data.content,
       fileUrl: data.fileUrl,
       userId: session.user.id,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          displayName: true,
+          image: true,
+          createdAt: true,
+        },
+      },
     },
   });
 };

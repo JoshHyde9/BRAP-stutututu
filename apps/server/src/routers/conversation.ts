@@ -10,8 +10,9 @@ export const conversationRouter = (app: ElysiaContext) =>
         async ({ prisma, params }) => {
           return await prisma.conversation.findFirst({
             where: {
-              AND: [
+              OR: [
                 { userOneId: params.userOneId, userTwoId: params.userTwoId },
+                { userOneId: params.userTwoId, userTwoId: params.userOneId },
               ],
             },
             include: {
@@ -103,5 +104,48 @@ export const conversationRouter = (app: ElysiaContext) =>
           });
         },
         { auth: true }
+      )
+      .get(
+        "/messages",
+        async ({ prisma, query }) => {
+          const MESSAGE_BATCH = 25;
+          const messages = await prisma.directMessage.findMany({
+            take: MESSAGE_BATCH,
+            skip: query.cursor ? 1 : undefined,
+            cursor: query.cursor ? { id: query.cursor } : undefined,
+            where: {
+              conversationId: query.conversationId,
+            },
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  displayName: true,
+                  image: true,
+                  createdAt: true,
+                },
+              },
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+          });
+
+          let nextCursor: string | undefined = undefined;
+
+          if (messages.length === MESSAGE_BATCH) {
+            nextCursor = messages[MESSAGE_BATCH - 1]?.id;
+          }
+
+          return { messages, nextCursor };
+        },
+        {
+          auth: true,
+          query: t.Object({
+            conversationId: t.String(),
+            cursor: t.Optional(t.String()),
+          }),
+        }
       )
   );
