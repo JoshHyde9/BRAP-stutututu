@@ -1,6 +1,7 @@
 import { t } from "elysia";
 
 import { ElysiaContext } from "..";
+import { countAndSortDirectMessageReactions } from "../lib/util";
 
 export const conversationRouter = (app: ElysiaContext) =>
   app.group("/conversation", (app) =>
@@ -117,6 +118,11 @@ export const conversationRouter = (app: ElysiaContext) =>
               conversationId: query.conversationId,
             },
             include: {
+              directMessageReactions: {
+                omit: {
+                  updatedAt: true,
+                },
+              },
               user: {
                 select: {
                   id: true,
@@ -132,13 +138,16 @@ export const conversationRouter = (app: ElysiaContext) =>
             },
           });
 
+          const directMessagesWithSortedReactions =
+            countAndSortDirectMessageReactions(messages);
+
           let nextCursor: string | undefined = undefined;
 
           if (messages.length === MESSAGE_BATCH) {
             nextCursor = messages[MESSAGE_BATCH - 1]?.id;
           }
 
-          return { messages, nextCursor };
+          return { messages: directMessagesWithSortedReactions, nextCursor };
         },
         {
           auth: true,

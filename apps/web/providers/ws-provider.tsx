@@ -12,6 +12,7 @@ import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 
 import {
   api,
+  DirectMessageWithSortedReactions,
   DirectMessageWithUser,
   MessageWithSortedReactions,
 } from "@workspace/api";
@@ -31,6 +32,7 @@ type ConversationMessage = {
   fileUrl?: string;
   conversationId?: string;
   messageId?: string;
+  value?: string;
 };
 
 type WebSocketMessageType =
@@ -43,7 +45,8 @@ type WebSocketMessageType =
   | "create-conversation-message"
   | "conversation-join"
   | "edit-conversation-message"
-  | "delete-conversation-message";
+  | "delete-conversation-message"
+  | "create-direct-message-reaction";
 
 export type WebSocketMessage = {
   type: WebSocketMessageType;
@@ -75,6 +78,7 @@ type WebSocketContextType = {
   joinConversation: (targetId: string) => boolean;
   editConversationMessage: (data: ConversationMessage) => void;
   deleteConversationMessage: (data: ConversationMessage) => void;
+  createDirectMessageReaction: (data: ConversationMessage) => void;
 };
 
 type EdenWebSocket = ReturnType<typeof api.ws.chat.subscribe>;
@@ -85,7 +89,7 @@ interface PageData {
 }
 
 interface ConversationPageData {
-  messages: DirectMessageWithUser[];
+  messages: DirectMessageWithSortedReactions[];
   nextCursor?: string | null;
 }
 
@@ -235,6 +239,24 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
                 messages: page.messages.filter((message) => {
                   return message.id !== newMessage.id;
                 }),
+              }));
+
+              return { ...oldMessages, pages: newPages };
+            },
+          );
+          break;
+        case "create-direct-message-reaction":
+          // Update existing message instead of adding new one
+          queryClient.setQueryData(
+            ["conversation", newMessage.conversationId],
+            (oldMessages: InfiniteData<ConversationPageData>) => {
+              if (!oldMessages?.pages) return oldMessages;
+
+              const newPages = oldMessages.pages.map((page) => ({
+                ...page,
+                messages: page.messages.map((message) =>
+                  message.id === newMessage.id ? newMessage : message,
+                ),
               }));
 
               return { ...oldMessages, pages: newPages };
@@ -454,6 +476,20 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     [sendMessage],
   );
 
+  const createDirectMessageReaction = useCallback(
+    ({ conversationId, messageId, value }: ConversationMessage) => {
+      return sendMessage({
+        type: "create-direct-message-reaction",
+        data: {
+          conversationId,
+          messageId,
+          value,
+        },
+      });
+    },
+    [sendMessage],
+  );
+
   const value: WebSocketContextType = {
     isConnected,
     sendMessage,
@@ -471,6 +507,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     joinConversation,
     editConversationMessage,
     deleteConversationMessage,
+    createDirectMessageReaction,
   };
 
   return (

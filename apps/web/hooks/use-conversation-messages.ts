@@ -3,10 +3,10 @@ import { useSocket } from "@/providers/ws-provider";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 
-import { api, DirectMessageWithUser } from "@workspace/api";
+import { api, DirectMessageWithSortedReactions } from "@workspace/api";
 
 type GroupedMessages = {
-  [dateKey: string]: DirectMessageWithUser[];
+  [dateKey: string]: DirectMessageWithSortedReactions[];
 };
 
 type ConversationMessagesProps = {

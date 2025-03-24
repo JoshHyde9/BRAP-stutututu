@@ -1,5 +1,10 @@
-import { Session } from "@workspace/auth";
-import { PrismaClient } from "@workspace/db";
+import type { Session } from "@workspace/auth";
+import type { PrismaClient } from "@workspace/db";
+import type { DirectMesageSortedReaction } from "..";
+import {
+  countAndSortDirectMessageReactions,
+  fetchMessageWithReactions,
+} from "./util";
 
 type DMCreateMessage = {
   content: string;
@@ -14,6 +19,12 @@ type DMEditMessage = {
 
 type DMDeleteMessage = {
   messageId: string;
+};
+
+type DMMessageReaction = {
+  conversationId: string;
+  messageId: string;
+  value: string;
 };
 
 export const dmCreateMessage = async (
@@ -80,4 +91,50 @@ export const dmDeleteMessage = async (
       },
     },
   });
+};
+
+export const dmMessageReaction = async (
+  prisma: PrismaClient,
+  session: Session,
+  data: DMMessageReaction
+) => {
+  const messageWithReactions = await fetchMessageWithReactions(
+    prisma,
+    data.messageId
+  );
+
+  const existingReactionFromUser =
+    messageWithReactions?.directMessageReactions.find(
+      (reaction) =>
+        messageWithReactions.id === data.messageId &&
+        reaction.userId === session.user.id &&
+        reaction.value === data.value
+    );
+
+  if (existingReactionFromUser) {
+    let message = await prisma.directMessageReaction.delete({
+      where: { id: existingReactionFromUser.id },
+      include: {
+        user: {
+          omit: { createdAt: true, emailVerified: true, email: true },
+        },
+      },
+    });
+
+    return { conversationId: data.conversationId, ...message };
+  } else {
+    await prisma.directMessageReaction.create({
+      data: {
+        value: data.value,
+        userId: session.user.id,
+        directMessageId: data.messageId,
+      },
+    });
+  }
+
+  const updatedMessage = await fetchMessageWithReactions(
+    prisma,
+    data.messageId
+  );
+  return { conversationId: data.conversationId, ...updatedMessage };
 };

@@ -1,4 +1,11 @@
-import type { Message, Member, User, Reaction, DirectMessage } from "@workspace/db";
+import type {
+  Message,
+  Member,
+  User,
+  Reaction,
+  DirectMessage,
+  DirectMessageReaction,
+} from "@workspace/db";
 
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
@@ -43,7 +50,7 @@ export type ElysiaContext = typeof elysiaContext;
 
 export type DirectMessageWithUser = DirectMessage & {
   user: Pick<User, "id" | "name" | "displayName" | "image" | "createdAt">;
-}
+};
 
 export type MessageWithReactions = Message & {
   member: Member & {
@@ -60,4 +67,19 @@ export type SortedReaction = Omit<Reaction, "updatedAt"> & {
 
 export type MessageWithSortedReactions = MessageWithReactions & {
   reactions: SortedReaction[];
+};
+
+export type DirectMessageWithReactions = DirectMessage & {
+  user: Pick<User, "id" | "name" | "displayName" | "image" | "createdAt">;
+  directMessageReactions: Omit<DirectMessageReaction, "updatedAt">[];
+  conversationId: string;
+};
+
+export type DirectMessageSortedReaction = Omit<DirectMessageReaction, "updatedAt"> & {
+  count: number;
+  userIds: string[];
+};
+
+export type DirectMessageWithSortedReactions = DirectMessageWithReactions & {
+  directMessageReactions: DirectMessageSortedReaction[];
 };

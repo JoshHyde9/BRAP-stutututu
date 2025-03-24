@@ -3,6 +3,9 @@ import {
   MessageWithReactions,
   SortedReaction,
   MessageWithSortedReactions,
+  DirectMessageSortedReaction,
+  DirectMessageWithReactions,
+  DirectMessageWithSortedReactions,
 } from "..";
 
 export function countAndSortReactions(
@@ -24,8 +27,8 @@ export function countAndSortReactions(
         );
 
         if (existingReaction >= 0) {
-          sortedArray[existingReaction].count =
-            (sortedArray[existingReaction].count || 0) + 1;
+          sortedArray[existingReaction]!.count =
+            (sortedArray[existingReaction]!.count || 0) + 1;
 
           sortedArray[existingReaction]?.memberIds.push(reaction.memberId);
         } else {
@@ -46,6 +49,52 @@ export function countAndSortReactions(
       ...message,
       reactions: sortedReactions,
     } as MessageWithSortedReactions;
+  });
+
+  return Array.isArray(input) ? sortedMessages : sortedMessages[0]!;
+}
+
+export function countAndSortDirectMessageReactions(
+  input: DirectMessageWithReactions[]
+): DirectMessageWithSortedReactions[];
+export function countAndSortDirectMessageReactions(
+  input: DirectMessageWithReactions
+): DirectMessageWithSortedReactions;
+export function countAndSortDirectMessageReactions(
+  input: DirectMessageWithReactions | DirectMessageWithReactions[]
+): DirectMessageWithSortedReactions | DirectMessageWithSortedReactions[] {
+  const messages = Array.isArray(input) ? input : [input];
+
+  const sortedMessages = messages.map((message) => {
+    const sortedReactions = message.directMessageReactions.reduce(
+      (sortedArray, reaction) => {
+        const existingReaction = sortedArray.findIndex(
+          (item) => item.value === reaction.value
+        );
+
+        if (existingReaction >= 0) {
+          sortedArray[existingReaction]!.count =
+            (sortedArray[existingReaction]!.count || 0) + 1;
+
+          sortedArray[existingReaction]?.userIds.push(reaction.userId);
+        } else {
+          const newEntry: DirectMessageSortedReaction = {
+            ...reaction,
+            count: 1,
+            userIds: [reaction.userId],
+          };
+
+          sortedArray.push(newEntry);
+        }
+        return sortedArray;
+      },
+      [] as DirectMessageSortedReaction[]
+    );
+
+    return {
+      ...message,
+      directMessageReactions: sortedReactions,
+    } as DirectMessageWithSortedReactions;
   });
 
   return Array.isArray(input) ? sortedMessages : sortedMessages[0]!;
@@ -79,4 +128,25 @@ export const getConversationId = async (
   }
 
   return { conversationId: conversation.id };
+};
+
+export const fetchMessageWithReactions = async (prisma: PrismaClient, messageId: string) => {
+  const message = await prisma.directMessage.findUnique({
+    where: {
+      id: messageId,
+    },
+    include: {
+      directMessageReactions: {
+        include: {
+          user: {
+            omit: { emailVerified: true, email: true, updatedAt: true },
+          },
+        },
+        omit: { updatedAt: true },
+      },
+      user: { omit: { emailVerified: true, email: true, updatedAt: true } },
+    },
+  });
+  
+  return message ? countAndSortDirectMessageReactions(message) : null;
 };

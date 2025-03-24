@@ -11,6 +11,7 @@ import {
   dmCreateMessage,
   dmDeleteMessage,
   dmEditMesage,
+  dmMessageReaction,
 } from "../lib/ws-conversation-funcs";
 import { ElysiaWS } from "elysia/ws";
 
@@ -35,6 +36,7 @@ export const wsRouter = (app: ElysiaContext) =>
           t.Literal("create-conversation-message"),
           t.Literal("edit-conversation-message"),
           t.Literal("delete-conversation-message"),
+          t.Literal("create-direct-message-reaction"),
         ]),
         data: t.Object({
           channelId: t.Optional(t.String()),
@@ -321,6 +323,28 @@ export const wsRouter = (app: ElysiaContext) =>
                 ws.send({
                   message: messageReaction,
                   type: "create-message-reaction",
+                });
+              }
+            } catch (error) {
+              console.log(error);
+            }
+            break;
+            case "create-direct-message-reaction":
+            try {
+              const messageReaction = await dmMessageReaction(prisma, session, {
+                conversationId: conversationId!,
+                messageId: messageId!,
+                value: value!
+              });
+
+              if (messageReaction) {
+                ws.publish(`conversation:${conversationId}`, {
+                  message: messageReaction,
+                  type: "create-direct-message-reaction",
+                });
+                ws.send({
+                  message: messageReaction,
+                  type: "create-direct-message-reaction",
                 });
               }
             } catch (error) {
