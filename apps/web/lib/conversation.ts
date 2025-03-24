@@ -24,6 +24,7 @@ export const getOrCreateConversation = async ({
     return (
       await api.conversation.create.post(
         { userOneId, userTwoId },
+        // @ts-ignore
         { headers: headerStore },
       )
     ).data;
