@@ -22,7 +22,6 @@ export const useConversations = ({ targetId }: ConversationsProps) => {
     sendConversationMessage,
     editConversationMessage,
     deleteConversationMessage,
-    createDirectMessageReaction,
   } = useSocket();
 
   useEffect(() => {
@@ -72,17 +71,5 @@ export const useConversations = ({ targetId }: ConversationsProps) => {
     },
   });
 
-  const messageReaction = useMutation({
-    mutationFn: async ({ conversationId, value, messageId }: ConversationMessage) => {
-      try {
-        createDirectMessageReaction({ conversationId, value, messageId });
-
-        return { success: true };
-      } catch (error) {
-        throw error;
-      }
-    },
-  });
-
-  return { sendMessage, editMessage, deleteMessage, messageReaction };
+  return { sendMessage, editMessage, deleteMessage };
 };

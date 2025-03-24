@@ -7,30 +7,28 @@ import { SmilePlus } from "lucide-react";
 
 import { cn } from "@workspace/ui/lib/utils";
 
-import { useChatSocket } from "@/hooks/use-chat-socket";
+import { useReactions } from "@/hooks/message/use-reaction";
+import { QueryParamsKeys } from "@/lib/types";
 
 import { EmojiPicker } from "@/components/chat/emoji-picker";
 
 type AddReactionProps = {
-  channelId: string;
-  serverId: string;
+  queryParams: QueryParamsKeys;
   messageId: string;
   variant?: "button" | "icon";
 };
 
 export const AddReaction: React.FC<AddReactionProps> = ({
-  channelId,
-  serverId,
+  queryParams,
   messageId,
   variant = "icon",
 }) => {
-  const { messageReaction } = useChatSocket();
+  const messageReaction = useReactions();
   const [open, setOpen] = useState(false);
 
   const handleEmojiSelect = (emoji: Emoji) => {
     messageReaction.mutate({
-      channelId,
-      serverId,
+      queryParams,
       messageId,
       value: emoji.native,
     });

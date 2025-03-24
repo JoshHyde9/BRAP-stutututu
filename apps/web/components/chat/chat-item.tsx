@@ -156,8 +156,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
             <MessageReactions
               loggedInMember={loggedInMember}
               messageId={message.id}
-              serverId={serverId}
-              channelId={channelId}
+              queryParams={{ channelId, serverId }}
               reactions={message.reactions}
             />
           )}
@@ -177,8 +176,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
       <div className="absolute -top-2 right-5">
         <div className="flex items-center gap-x-2 rounded-sm border bg-white p-1 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-zinc-800">
           <AddReaction
-            channelId={channelId}
-            serverId={serverId}
+            queryParams={{ channelId, serverId }}
             messageId={message.id}
           />
           {message.member.user.id === loggedInMember.userId &&

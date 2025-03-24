@@ -1,7 +1,4 @@
-import type {
-  DirectMessageWithSortedReactions,
-  DirectMessageWithUser,
-} from "@workspace/api";
+import type { DirectMessageWithSortedReactions } from "@workspace/api";
 import type { Session } from "@workspace/auth";
 
 import { useEffect, useState } from "react";
@@ -24,9 +21,9 @@ import { formatDate } from "@/lib/helpers";
 import { ActionTooltip } from "@/components/action-tooltip";
 import { UserAvatar } from "@/components/user-avatar";
 
-import { AddDirectMessageReaction } from "./add-reaction";
+import { AddReaction } from "../chat/add-reaction";
+import { MessageReactions } from "../chat/message-reactions";
 import { DeleteConversationMessage } from "./delete-conversation-message";
-import { DirectMessageReactions } from "./direct-message-reactions";
 import { EditConversationMessage } from "./edit-conversation-message";
 
 type ConversationItem = {
@@ -147,9 +144,9 @@ export const ConversationItem: React.FC<ConversationItem> = ({
           )}
           {message.directMessageReactions &&
             message.directMessageReactions.length > 0 && (
-              <DirectMessageReactions
-                conversationId={conversationId}
-                userId={loggedInUser.id}
+              <MessageReactions
+                loggedInMember={loggedInUser}
+                queryParams={{ conversationId }}
                 messageId={message.id}
                 reactions={message.directMessageReactions}
               />
@@ -165,8 +162,8 @@ export const ConversationItem: React.FC<ConversationItem> = ({
       </div>
       <div className="absolute -top-2 right-5">
         <div className="flex items-center gap-x-2 rounded-sm border bg-white p-1 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-zinc-800">
-          <AddDirectMessageReaction
-            conversationId={conversationId}
+          <AddReaction
+            queryParams={{ conversationId }}
             messageId={message.id}
           />
           {message.user.id === loggedInUser.id && !message.fileUrl && (
