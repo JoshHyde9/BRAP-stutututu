@@ -16,7 +16,6 @@ Fkn idk tbh
 
 ## TODO
 
-- [ ] Users can DM eachother
 - [ ] Server member profile popover thing
 - [ ] Message replies
 - [ ] Pinned messages
@@ -43,6 +42,7 @@ Fkn idk tbh
 - Server member can edit their server profile
 - Leave server
 - Search server's channels and members
+- New message indicator next to server icon in server list
 
 ### Message Related
 
@@ -69,3 +69,7 @@ Fkn idk tbh
 
 ### Direct message Related
 - User can search users they have messaged
+- User can direct message another user
+- User can delete their direct message
+- User can edit their direct message
+- User can react to another user's direct message
