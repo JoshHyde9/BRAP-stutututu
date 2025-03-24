@@ -72,7 +72,9 @@ type WebSocketContextType = {
   joinServer: (serverId: string) => boolean;
   leaveServer: (serverId: string) => boolean;
   notifications: NotificationState;
+  currentServerId: string | null;
   clearServerNotifications: (serverId: string) => void;
+  setCurrentServer: (serverId: string) => void;
   sendConversationMessage: (data: ConversationMessage) => void;
   joinConversation: (targetId: string) => boolean;
   editConversationMessage: (data: ConversationMessage) => void;
@@ -105,6 +107,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const socket = useRef<EdenWebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [notifications, setNotifications] = useState<NotificationState>({});
+  const [currentServerId, setCurrentServerId] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -265,12 +268,18 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
           );
           break;
         default:
-          setNotifications((prev) => ({
-            ...prev,
-            [newMessage.serverId]: {
-              hasNotification: true,
-            },
-          }));
+          setNotifications((prev) => {
+            if (newMessage.serverId === currentServerId) {
+              return prev;
+            }
+
+            return {
+              ...prev,
+              [newMessage.serverId]: {
+                hasNotification: true,
+              },
+            };
+          });
 
           queryClient.setQueryData(
             ["messages", newMessage.channelId],
@@ -418,13 +427,19 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   );
 
   const clearServerNotifications = (serverId: string) => {
-    setNotifications((prev) => ({
-      ...prev,
-      [serverId]: {
-        ...prev[serverId],
-        hasNotification: false,
-      },
-    }));
+    setNotifications((prev) => {
+      const updated = { ...prev };
+      if (updated[serverId]) {
+        updated[serverId] = {
+          hasNotification: false,
+        };
+      }
+      return updated;
+    });
+  };
+
+  const setCurrentServer = (serverId: string) => {
+    setCurrentServerId(serverId);
   };
 
   const joinConversation = useCallback(
@@ -504,6 +519,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     leaveServer,
     notifications,
     clearServerNotifications,
+    currentServerId,
+    setCurrentServer,
     sendConversationMessage,
     joinConversation,
     editConversationMessage,

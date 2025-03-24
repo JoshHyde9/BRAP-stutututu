@@ -14,6 +14,8 @@ export const useServerNotifications = ({
     leaveServer,
     notifications,
     clearServerNotifications,
+    setCurrentServer,
+    currentServerId,
   } = useSocket();
 
   useEffect(() => {
@@ -28,5 +30,10 @@ export const useServerNotifications = ({
     };
   }, [isConnected, serverId, joinServer, leaveServer]);
 
-  return { notifications, clearServerNotifications };
+  return {
+    notifications,
+    clearServerNotifications,
+    setCurrentServer,
+    currentServerId,
+  };
 };

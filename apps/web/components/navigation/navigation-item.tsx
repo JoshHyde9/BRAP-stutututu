@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 
@@ -22,13 +23,26 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
 }) => {
   const params = useParams<{ serverId: string }>();
   const router = useRouter();
-  const { notifications, clearServerNotifications } = useServerNotifications({ serverId: id });
+  const {
+    notifications,
+    clearServerNotifications,
+    currentServerId,
+    setCurrentServer,
+  } = useServerNotifications({
+    serverId: id,
+  });
+
+  useEffect(() => {
+    if (currentServerId !== params.serverId) {
+      setCurrentServer(params.serverId);
+    }
+  }, [setCurrentServer, params.serverId]);
 
   return (
     <ActionTooltip side="right" label={name} align="center">
       <button
         onClick={() => {
-          clearServerNotifications(id);
+          clearServerNotifications(params.serverId);
           router.push(`/server/${id}`);
         }}
         className="group relative flex items-center"
@@ -43,7 +57,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
         />
         <div
           className={cn(
-            "transition group relative mx-3 flex size-[48px] overflow-hidden rounded-[24px] group-hover:rounded-[16px]",
+            "group relative mx-3 flex size-[48px] overflow-hidden rounded-[24px] transition group-hover:rounded-[16px]",
             params.serverId === id &&
               "bg-primary/10 text-primary rounded-[16px]",
           )}
