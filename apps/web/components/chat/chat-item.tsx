@@ -193,9 +193,8 @@ export const ChatItem: React.FC<ChatItemProps> = ({
           (message.member.role == "GUEST" &&
             loggedInMember.role === "MODERATOR") ? (
             <DeleteMessage
-              channelId={channelId}
+              queryParams={{ channelId, serverId }}
               messageId={message.id}
-              serverId={serverId}
             />
           ) : (
             false

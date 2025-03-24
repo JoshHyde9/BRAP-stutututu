@@ -1,40 +1,28 @@
 import { Trash } from "lucide-react";
 
-import { useChatSocket } from "@/hooks/use-chat-socket";
+import { useDeleteMessage } from "@/hooks/message/use-delete";
+import { QueryParamsKeys } from "@/lib/types";
 
 import { ActionTooltip } from "@/components/action-tooltip";
 
-type DeleteConversationMessage = {
-  conversationId: string;
+type DeleteMessageProps = {
+  queryParams?: Pick<QueryParamsKeys, "channelId" | "serverId">;
   messageId: string;
-  channelId?: never;
-  serverId?: never;
-}
-
-type DeleteChannelMessage = {
-  channelId: string;
-  messageId: string;
-  serverId: string;
-  conversationId?: never;
 };
 
-type DeleteMessageProps = DeleteChannelMessage | DeleteConversationMessage;
-
 export const DeleteMessage: React.FC<DeleteMessageProps> = ({
-  channelId,
+  queryParams,
   messageId,
-  serverId,
 }) => {
-  const { deleteMessage } = useChatSocket();
+  const deleteMessage = useDeleteMessage();
 
   return (
     <ActionTooltip label="Delete">
       <Trash
         onClick={() =>
           deleteMessage.mutate({
-            channelId: channelId!,
+            queryParams,
             messageId,
-            serverId: serverId!,
           })
         }
         className="ml-auto size-4 cursor-pointer text-rose-500 transition hover:text-rose-600 dark:hover:text-rose-300"

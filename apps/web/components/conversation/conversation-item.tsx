@@ -22,8 +22,8 @@ import { ActionTooltip } from "@/components/action-tooltip";
 import { UserAvatar } from "@/components/user-avatar";
 
 import { AddReaction } from "../chat/add-reaction";
+import { DeleteMessage } from "../chat/delete-message";
 import { MessageReactions } from "../chat/message-reactions";
-import { DeleteConversationMessage } from "./delete-conversation-message";
 import { EditConversationMessage } from "./edit-conversation-message";
 
 type ConversationItem = {
@@ -174,7 +174,7 @@ export const ConversationItem: React.FC<ConversationItem> = ({
                   onClick={() => setIsEditing(!isEditing)}
                 />
               </ActionTooltip>
-              <DeleteConversationMessage messageId={message.id} />
+              <DeleteMessage messageId={message.id} />
             </>
           )}
           <ActionTooltip label="More">
