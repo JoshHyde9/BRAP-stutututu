@@ -111,6 +111,7 @@ export const messageRouter = (app: ElysiaContext) =>
             },
           });
 
+          // @ts-ignore
           const messagesWithSortedReactions = countAndSortReactions(messages);
 
           let nextCursor: string | undefined = undefined;

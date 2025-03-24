@@ -1,10 +1,6 @@
 import type { Session } from "@workspace/auth";
 import type { PrismaClient } from "@workspace/db";
-import type { DirectMesageSortedReaction } from "..";
-import {
-  countAndSortDirectMessageReactions,
-  fetchMessageWithReactions,
-} from "./util";
+import { fetchMessageWithReactions } from "./util";
 
 type DMCreateMessage = {
   content: string;
