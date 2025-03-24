@@ -1,6 +1,7 @@
 import type { Session } from "@workspace/auth";
 import type { PrismaClient } from "@workspace/db";
 import { fetchMessageWithReactions } from "./util";
+import { DirectMessageSortedReaction } from "..";
 
 type DMCreateMessage = {
   content: string;
@@ -89,7 +90,6 @@ export const dmDeleteMessage = async (
   });
 };
 
-// FIXME: When the other user reacts to a message, logged in user is able to react to the message with the same value indefinitely
 export const dmMessageReaction = async (
   prisma: PrismaClient,
   session: Session,
@@ -100,9 +100,9 @@ export const dmMessageReaction = async (
   if (!message) return;
 
   const existingReactionFromUser = message.directMessageReactions.find(
-    (reaction) =>
+    (reaction: DirectMessageSortedReaction) =>
       message.id === data.messageId &&
-      reaction.userId === session.user.id &&
+      reaction.userIds.includes(session.user.id) &&
       reaction.value === data.value
   );
 
