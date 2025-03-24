@@ -17,9 +17,41 @@ import { ElysiaWS } from "elysia/ws";
 
 const wsConnections = new Map<string, ElysiaWS>();
 const userSessions = new Map<string, Session>();
+const userConversations = new Map<string, Set<string>>();
 const channels = new Map<string, Set<string>>();
 const servers = new Map<string, Set<string>>();
 const conversations = new Map<string, Set<string>>();
+
+const handleConversationsDisconnect = (userId: string) => {
+  const userConvos = userConversations.get(userId);
+  if (!userConvos) return;
+
+  for (const convoId of userConvos) {
+    const convoUsers = conversations.get(convoId);
+    if (!convoUsers) continue;
+
+    convoUsers.delete(userId);
+
+    if (convoUsers.size === 0) {
+      conversations.delete(convoId);
+    }
+  }
+
+  userConversations.delete(userId);
+};
+
+const addUserToConversation = (userId: string, convoId: string) => {
+  if (!conversations.has(convoId)) {
+    conversations.set(convoId, new Set());
+  }
+
+  conversations.get(convoId)!.add(userId);
+
+  if (!userConversations.has(userId)) {
+    userConversations.set(userId, new Set());
+  }
+  userConversations.get(userId)!.add(convoId);
+};
 
 export const wsRouter = (app: ElysiaContext) =>
   app.group("/ws", (app) =>
@@ -118,12 +150,7 @@ export const wsRouter = (app: ElysiaContext) =>
               targetId!
             );
 
-            if (!conversations.has(conversation.conversationId)) {
-              conversations.set(
-                conversation.conversationId,
-                new Set([session.user.id, targetId!])
-              );
-            }
+            addUserToConversation(session.user.id, conversation.conversationId);
 
             ws.subscribe(`conversation:${conversation.conversationId}`);
             const targetSocket = wsConnections.get(targetId!);
@@ -373,6 +400,12 @@ export const wsRouter = (app: ElysiaContext) =>
             }
           }
         }
+
+        const session = userSessions.get(ws.id);
+
+        if (!session) return;
+
+        handleConversationsDisconnect(session.user.id);
 
         wsConnections.delete(ws.id);
         userSessions.delete(ws.id);
