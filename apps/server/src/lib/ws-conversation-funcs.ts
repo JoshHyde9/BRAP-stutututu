@@ -89,26 +89,25 @@ export const dmDeleteMessage = async (
   });
 };
 
+// FIXME: When the other user reacts to a message, logged in user is able to react to the message with the same value indefinitely
 export const dmMessageReaction = async (
   prisma: PrismaClient,
   session: Session,
   data: DMMessageReaction
 ) => {
-  const messageWithReactions = await fetchMessageWithReactions(
-    prisma,
-    data.messageId
+  const message = await fetchMessageWithReactions(prisma, data.messageId);
+
+  if (!message) return;
+
+  const existingReactionFromUser = message.directMessageReactions.find(
+    (reaction) =>
+      message.id === data.messageId &&
+      reaction.userId === session.user.id &&
+      reaction.value === data.value
   );
 
-  const existingReactionFromUser =
-    messageWithReactions?.directMessageReactions.find(
-      (reaction) =>
-        messageWithReactions.id === data.messageId &&
-        reaction.userId === session.user.id &&
-        reaction.value === data.value
-    );
-
   if (existingReactionFromUser) {
-    let message = await prisma.directMessageReaction.delete({
+    await prisma.directMessageReaction.delete({
       where: { id: existingReactionFromUser.id },
       include: {
         user: {
@@ -117,7 +116,9 @@ export const dmMessageReaction = async (
       },
     });
 
-    return { conversationId: data.conversationId, ...message };
+    const updatedMessage = await fetchMessageWithReactions(prisma, message.id);
+
+    return { conversationId: data.conversationId, ...updatedMessage };
   } else {
     await prisma.directMessageReaction.create({
       data: {
@@ -128,9 +129,6 @@ export const dmMessageReaction = async (
     });
   }
 
-  const updatedMessage = await fetchMessageWithReactions(
-    prisma,
-    data.messageId
-  );
+  const updatedMessage = await fetchMessageWithReactions(prisma, message.id);
   return { conversationId: data.conversationId, ...updatedMessage };
 };

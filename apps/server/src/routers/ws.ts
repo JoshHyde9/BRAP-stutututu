@@ -329,12 +329,12 @@ export const wsRouter = (app: ElysiaContext) =>
               console.log(error);
             }
             break;
-            case "create-direct-message-reaction":
+          case "create-direct-message-reaction":
             try {
               const messageReaction = await dmMessageReaction(prisma, session, {
                 conversationId: conversationId!,
                 messageId: messageId!,
-                value: value!
+                value: value!,
               });
 
               if (messageReaction) {
