@@ -42,7 +42,6 @@ Fkn idk tbh
 - Server member can edit their server profile
 - Leave server
 - Search server's channels and members
-- New message indicator next to server icon in server list
 
 ### Message Related
 
