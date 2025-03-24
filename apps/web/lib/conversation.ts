@@ -14,20 +14,14 @@ export const getOrCreateConversation = async ({
   "use server";
   const headerStore = await headers();
 
-  let { data: conversation } =
-    (await api.conversation
-      .getInitialConversation({ userOneId })({
-        userTwoId,
-      })
-      .get({ fetch: { headers: headerStore } })) ??
-    (await api.conversation
-      .getInitialConversation({ userOneId: userTwoId })({
-        userTwoId: userOneId,
-      })
-      .get({ fetch: { headers: headerStore } }));
+  const { data: conversation } =
+    await api.conversation.getInitialConversation.get({
+      query: { userOneId, userTwoId },
+      fetch: { headers: headerStore },
+    });
 
   if (!conversation) {
-    conversation = (
+    return (
       await api.conversation.create.post(
         { userOneId, userTwoId },
         { headers: headerStore },

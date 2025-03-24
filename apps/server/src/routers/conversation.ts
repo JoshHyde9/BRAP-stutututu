@@ -7,13 +7,13 @@ export const conversationRouter = (app: ElysiaContext) =>
   app.group("/conversation", (app) =>
     app
       .get(
-        "/getInitialConversation/:userOneId/:userTwoId",
-        async ({ prisma, params }) => {
+        "/getInitialConversation",
+        async ({ prisma, query }) => {
           return await prisma.conversation.findFirst({
             where: {
               OR: [
-                { userOneId: params.userOneId, userTwoId: params.userTwoId },
-                { userOneId: params.userTwoId, userTwoId: params.userOneId },
+                { userOneId: query.userOneId, userTwoId: query.userTwoId },
+                { userOneId: query.userTwoId, userTwoId: query.userOneId },
               ],
             },
             include: {
@@ -40,34 +40,69 @@ export const conversationRouter = (app: ElysiaContext) =>
         },
         {
           auth: true,
-          params: t.Object({ userOneId: t.String(), userTwoId: t.String() }),
+          query: t.Object({ userOneId: t.String(), userTwoId: t.String() }),
         }
       )
       .post(
         "/create",
         async ({ prisma, body }) => {
-          return await prisma.conversation.create({
-            data: { userOneId: body.userOneId, userTwoId: body.userTwoId },
-            include: {
-              userOne: {
-                select: {
-                  id: true,
-                  name: true,
-                  displayName: true,
-                  image: true,
-                  createdAt: true,
+          return await prisma.$transaction(async (tx) => {
+            const existingConversation = await tx.conversation.findFirst({
+              where: {
+                OR: [
+                  { userOneId: body.userOneId, userTwoId: body.userTwoId },
+                  { userOneId: body.userTwoId, userTwoId: body.userOneId },
+                ],
+              },
+              include: {
+                userOne: {
+                  select: {
+                    id: true,
+                    name: true,
+                    displayName: true,
+                    image: true,
+                    createdAt: true,
+                  },
+                },
+                userTwo: {
+                  select: {
+                    id: true,
+                    name: true,
+                    displayName: true,
+                    image: true,
+                    createdAt: true,
+                  },
                 },
               },
-              userTwo: {
-                select: {
-                  id: true,
-                  name: true,
-                  displayName: true,
-                  image: true,
-                  createdAt: true,
+            });
+
+            if (existingConversation) {
+              return existingConversation;
+            }
+
+            return await prisma.conversation.create({
+              data: { userOneId: body.userOneId, userTwoId: body.userTwoId },
+              include: {
+                userOne: {
+                  select: {
+                    id: true,
+                    name: true,
+                    displayName: true,
+                    image: true,
+                    createdAt: true,
+                  },
+                },
+                userTwo: {
+                  select: {
+                    id: true,
+                    name: true,
+                    displayName: true,
+                    image: true,
+                    createdAt: true,
+                  },
                 },
               },
-            },
+            });
           });
         },
         {
