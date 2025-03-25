@@ -19,12 +19,11 @@ import { cn } from "@workspace/ui/lib/utils";
 import { formatDate } from "@/lib/helpers";
 
 import { ActionTooltip } from "@/components/action-tooltip";
+import { AddReaction } from "@/components/chat/add-reaction";
+import { DeleteMessage } from "@/components/chat/delete-message";
+import { EditMessage } from "@/components/chat/edit-message";
+import { MessageReactions } from "@/components/chat/message-reactions";
 import { UserAvatar } from "@/components/user-avatar";
-
-import { AddReaction } from "../chat/add-reaction";
-import { DeleteMessage } from "../chat/delete-message";
-import { MessageReactions } from "../chat/message-reactions";
-import { EditConversationMessage } from "./edit-conversation-message";
 
 type ConversationItem = {
   message: DirectMessageWithSortedReactions;
@@ -152,10 +151,10 @@ export const ConversationItem: React.FC<ConversationItem> = ({
               />
             )}
           {isEditing && (
-            <EditConversationMessage
+            <EditMessage
+              setIsEditing={setIsEditing}
               messageId={message.id}
               content={message.content}
-              setIsEditing={setIsEditing}
             />
           )}
         </div>

@@ -9,11 +9,11 @@ import {
 } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 
-import { useChatSocket } from "@/hooks/use-chat-socket";
+import { useEditMessage } from "@/hooks/message/use-edit";
 import { QueryParamsKeys } from "@/lib/types";
 
 type EditMessageProps = {
-  queryParams: QueryParamsKeys;
+  queryParams?: Pick<QueryParamsKeys, "channelId" | "serverId">;
   messageId: string;
   content: string;
   setIsEditing: (isEditing: boolean) => void;
@@ -25,7 +25,7 @@ export const EditMessage: React.FC<EditMessageProps> = ({
   content,
   setIsEditing,
 }) => {
-  const { editMessage } = useChatSocket();
+  const editMessage = useEditMessage();
 
   const form = useForm({
     defaultValues: {
@@ -36,10 +36,12 @@ export const EditMessage: React.FC<EditMessageProps> = ({
   const onSubmit = async (values: { content: string }) => {
     editMessage.mutate(
       {
-        channelId: queryParams.channelId!,
-        serverId: queryParams.serverId!,
         content: values.content,
         messageId: messageId,
+        queryParams: {
+          channelId: queryParams?.channelId,
+          serverId: queryParams?.serverId,
+        },
       },
       {
         onSuccess: () => {
