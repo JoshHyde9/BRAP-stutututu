@@ -4,7 +4,7 @@ import { getOrCreateConversation } from "@/lib/conversation";
 import { getServerSession } from "@/lib/get-server-session";
 
 import { ChatHeader } from "@/components/chat/chat-header";
-import { ConversationChatInput } from "@/components/conversation/conversation-chat-input";
+import { ChatInput } from "@/components/chat/chat-input";
 import { ConversationMessages } from "@/components/conversation/conversation-messages";
 
 type ConversationUserPageProps = {
@@ -46,11 +46,11 @@ const ConversationUserPage: React.FC<ConversationUserPageProps> = async ({
         otherUsername={otherUser.displayName ?? otherUser.name}
         conversationId={conversation.id}
       />
-      <ConversationChatInput
+      <ChatInput
         type="conversation"
         targetId={otherUser.id}
-        name={otherUser.displayName ?? otherUser.name}
         queryParams={{ conversationId: conversation.id }}
+        name={otherUser.name}
       />
     </div>
   );

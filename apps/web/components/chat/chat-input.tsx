@@ -16,7 +16,7 @@ import {
 } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 
-import { useChatSocket } from "@/hooks/use-chat-socket";
+import { useSendMessage } from "@/hooks/message/use-send";
 import { useModal } from "@/hooks/use-modal-store";
 import { sendMessageSchema } from "@/lib/schema";
 
@@ -26,15 +26,24 @@ import { Emoji, EmojiPicker } from "@/components/chat/emoji-picker";
 type ChatInputProps = {
   queryParams: QueryParamsKeys;
   name: string;
-  type: "conversation" | "channel";
-};
+} & (
+  | {
+      type: "conversation";
+      targetId: string;
+    }
+  | {
+      type: "channel";
+      targetId?: never;
+    }
+);
 
 export const ChatInput: React.FC<ChatInputProps> = ({
   queryParams,
   type,
+  targetId,
   name,
 }) => {
-  const { sendMessage } = useChatSocket();
+  const sendMessage = useSendMessage();
   const { onOpen } = useModal();
   const [open, setOpen] = useState(false);
   const form = useForm({
@@ -49,8 +58,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     const parsedData = await sendMessageSchema.parseAsync(values);
     sendMessage.mutate(
       {
-        channelId: queryParams.channelId!,
-        serverId: queryParams.serverId!,
+        queryParams: { ...queryParams },
+        targetId,
         ...parsedData,
       },
       {
@@ -84,6 +93,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                       onClick={() =>
                         onOpen("messageFile", {
                           query: queryParams,
+                          userId: targetId,
                         })
                       }
                       className="absolute left-8 top-7 flex size-[24px] items-center justify-center rounded-full bg-zinc-500 p-1 transition hover:bg-zinc-600 dark:bg-zinc-400 dark:hover:bg-zinc-300"

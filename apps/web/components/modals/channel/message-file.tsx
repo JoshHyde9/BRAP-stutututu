@@ -23,14 +23,14 @@ import {
   FormItem,
 } from "@workspace/ui/components/form";
 
-import { useChatSocket } from "@/hooks/use-chat-socket";
+import { useSendMessage } from "@/hooks/message/use-send";
 import { useModal } from "@/hooks/use-modal-store";
 import { messageFileSchema } from "@/lib/schema";
 
 import { FileUpload } from "@/components/file-upload";
 
 export const MessageFileModal = () => {
-  const { sendMessage } = useChatSocket();
+  const sendMessage = useSendMessage();
   const { isOpen, onClose, type, props } = useModal();
 
   const form = useForm({
@@ -44,8 +44,8 @@ export const MessageFileModal = () => {
     const parsedData = await messageFileSchema.parseAsync(values);
     sendMessage.mutate(
       {
-        channelId: props.query!.channelId,
-        serverId: props.query!.serverId,
+        queryParams: { ...props.query! },
+        targetId: props.userId,
         content: parsedData.fileUrl,
         fileUrl: parsedData.fileUrl,
       },

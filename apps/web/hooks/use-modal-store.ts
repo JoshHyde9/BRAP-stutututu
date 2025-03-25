@@ -42,7 +42,7 @@ export type ModalData = {
   userId?: string;
   member?: MemberWithUser;
   channelType?: ChannelType;
-  query?: Record<QueryParamsKeys, string>;
+  query?: QueryParamsKeys;
   channel?: Channel;
   ban?: Ban;
   serverId?: string;
