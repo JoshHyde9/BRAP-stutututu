@@ -17,8 +17,6 @@ export const useSendMessage = () => {
     mutationFn: async (params: SendMessageParams<QueryParamsKeys>) => {
       const { content, targetId, fileUrl, queryParams } = params;
 
-      console.log(targetId);
-
       if (targetId) {
         sendConversationMessage({
           targetId,
