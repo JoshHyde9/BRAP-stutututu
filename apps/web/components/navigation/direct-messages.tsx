@@ -10,6 +10,7 @@ import { ActionTooltip } from "@/components/action-tooltip";
 
 export const DirectMessages = () => {
   const pathname = usePathname();
+
   return (
     <ActionTooltip side="right" label="Direct Messages" align="center">
       <Link href="/friends/all" className="group relative flex items-center">
@@ -22,12 +23,17 @@ export const DirectMessages = () => {
         />
         <div
           className={cn(
-            "bg-primary-foreground group relative mx-3 flex size-[48px] items-center justify-center overflow-hidden rounded-[24px] transition group-hover:rounded-[16px] group-hover:bg-discord",
+            "bg-primary-foreground group-hover:bg-discord group relative mx-3 flex size-[48px] items-center justify-center overflow-hidden rounded-[24px] transition group-hover:rounded-[16px]",
             pathname === "/conversation" &&
-              "bg-discord text-zinc-100 rounded-[16px]",
+              "bg-discord rounded-[16px] text-zinc-100",
           )}
         >
-          <MessageSquare className={cn("text-zinc-600 dark:text-zinc-300 group-hover:text-zinc-200", pathname === "/conversation" && "text-zinc-300")} />
+          <MessageSquare
+            className={cn(
+              "text-zinc-600 group-hover:text-zinc-200 dark:text-zinc-300",
+              pathname === "/conversation" && "text-zinc-300",
+            )}
+          />
         </div>
       </Link>
     </ActionTooltip>

@@ -21,12 +21,14 @@ type ConversationMessagesProps = {
   conversationId: string;
   otherUsername: string;
   loggedInUser: Session["user"];
+  targetId: string;
 };
 
 export const ConversationMessages: React.FC<ConversationMessagesProps> = ({
   conversationId,
   otherUsername,
-  loggedInUser
+  loggedInUser,
+  targetId,
 }) => {
   const {
     data,
@@ -36,7 +38,7 @@ export const ConversationMessages: React.FC<ConversationMessagesProps> = ({
     isLoading,
     isError,
     groupedMessages,
-  } = useConversationMessages({ conversationId });
+  } = useConversationMessages({ conversationId, targetId });
 
   const chatRef = useRef<ComponentRef<"div">>(null);
   const bottomRef = useRef<ComponentRef<"div">>(null);

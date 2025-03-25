@@ -60,6 +60,13 @@ type NotificationState = {
   [serverId: string]: ServerNotification;
 };
 
+type ConversationNotification = {
+  [userId: string]: {
+    image: string;
+    count: number;
+  };
+};
+
 type WebSocketContextType = {
   isConnected: boolean;
   sendMessage: (message: WebSocketMessage) => boolean;
@@ -80,6 +87,8 @@ type WebSocketContextType = {
   editConversationMessage: (data: ConversationMessage) => void;
   deleteConversationMessage: (data: ConversationMessage) => void;
   createDirectMessageReaction: (data: ConversationMessage) => void;
+  conversationNotifications: ConversationNotification;
+  clearConversationNotifications: (targetId: string) => void;
 };
 
 type EdenWebSocket = ReturnType<typeof api.ws.chat.subscribe>;
@@ -103,10 +112,18 @@ const SocketContext = createContext<WebSocketContextType | undefined>(
   undefined,
 );
 
-export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
+export const SocketProvider = ({
+  children,
+  currentUserId,
+}: {
+  children: React.ReactNode;
+  currentUserId: string | undefined;
+}) => {
   const socket = useRef<EdenWebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [notifications, setNotifications] = useState<NotificationState>({});
+  const [conversationNotifications, setConversationNotifications] =
+    useState<ConversationNotification>({});
   const [currentServerId, setCurrentServerId] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
@@ -186,6 +203,29 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
           );
           break;
         case "create-conversation-message":
+          setConversationNotifications((prev) => {
+            if (newMessage.userId !== currentUserId) {
+              if (!prev[newMessage.userId]) {
+                return {
+                  ...prev,
+                  [newMessage.userId]: {
+                    image: newMessage.user.image,
+                    count: 1,
+                  },
+                };
+              }
+              return {
+                ...prev,
+                [newMessage.userId]: {
+                  ...prev[newMessage.userId],
+                  count: (prev[newMessage.userId]?.count || 0) + 1,
+                },
+              };
+            }
+
+            return prev;
+          });
+
           queryClient.setQueryData(
             ["conversation", newMessage.conversationId],
             (oldMessages: InfiniteData<ConversationPageData>) => {
@@ -438,6 +478,14 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
+  const clearConversationNotifications = (targetId: string) => {
+    setConversationNotifications((prev) => {
+      const updatedNotifications = { ...prev };
+      delete updatedNotifications[targetId];
+      return updatedNotifications;
+    });
+  };
+
   const setCurrentServer = (serverId: string) => {
     setCurrentServerId(serverId);
   };
@@ -526,6 +574,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     editConversationMessage,
     deleteConversationMessage,
     createDirectMessageReaction,
+    conversationNotifications,
+    clearConversationNotifications,
   };
 
   return (

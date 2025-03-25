@@ -4,8 +4,10 @@ import "@workspace/ui/globals.css";
 
 import { ThemeProvider } from "@/providers/theme-provider";
 
+import { useSession } from "@workspace/auth";
 import { Toaster } from "@workspace/ui/components/sonner";
 
+import { getServerSession } from "@/lib/get-server-session";
 import ReactQueryProviders from "@/lib/query-client";
 
 import { ModalProvider } from "../providers/modal-provider";
@@ -16,11 +18,13 @@ const fontSans = Open_Sans({
   variable: "--font-sans",
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -28,7 +32,7 @@ export default function RootLayout({
       >
         <ReactQueryProviders>
           <ThemeProvider>
-            <SocketProvider>
+            <SocketProvider currentUserId={session!.user.id}>
               <ModalProvider />
               <Toaster
                 toastOptions={{

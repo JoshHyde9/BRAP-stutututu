@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useSocket } from "@/providers/ws-provider";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -11,12 +11,20 @@ type GroupedMessages = {
 
 type ConversationMessagesProps = {
   conversationId: string;
+  targetId: string;
 };
 
 export const useConversationMessages = ({
   conversationId,
+  targetId,
 }: ConversationMessagesProps) => {
-  const { isConnected } = useSocket();
+  const { isConnected, joinConversation } = useSocket();
+
+  useEffect(() => {
+    if (targetId && isConnected) {
+      joinConversation(targetId);
+    }
+  }, [targetId, isConnected])
 
   const query = useInfiniteQuery({
     queryKey: ["conversation", conversationId],

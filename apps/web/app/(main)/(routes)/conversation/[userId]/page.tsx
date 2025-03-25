@@ -45,6 +45,7 @@ const ConversationUserPage: React.FC<ConversationUserPageProps> = async ({
         loggedInUser={session.user}
         otherUsername={otherUser.displayName ?? otherUser.name}
         conversationId={conversation.id}
+        targetId={otherUser.id}
       />
       <ChatInput
         type="conversation"
