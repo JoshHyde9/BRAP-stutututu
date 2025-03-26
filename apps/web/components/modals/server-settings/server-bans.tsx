@@ -15,7 +15,7 @@ type ServerBansProps = {
 export const ServerBans: React.FC<ServerBansProps> = ({ serverId }) => {
   const { onOpen } = useModal();
   const serverBans = async () => {
-    const { data, error } = await api.server.bans({ serverId }).get();
+    const { data, error } = await api.server.bans({ serverId: serverId! }).get();
 
     if (error) {
       throw error;

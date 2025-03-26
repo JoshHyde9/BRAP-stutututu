@@ -8,7 +8,7 @@ type InviteCodePageProps = {
   params: Promise<{ inviteCode: string }>;
 };
 
-export const InviteCodePage = async ({ params }: InviteCodePageProps) => {
+const InviteCodePage = async ({ params }: InviteCodePageProps) => {
   const session = await getServerSession();
   const { inviteCode } = await params;
   const headerStore = await headers();
@@ -32,6 +32,7 @@ export const InviteCodePage = async ({ params }: InviteCodePageProps) => {
   const { data: server } = await api.server.addNewMember.put(
     { inviteCode },
     {
+      // @ts-expect-error
       headers: headerStore,
     }
   );

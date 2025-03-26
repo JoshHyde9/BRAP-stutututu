@@ -4,7 +4,7 @@ export type {
   MessageWithSortedReactions,
   SortedReaction,
   DirectMessageWithUser,
-  DirectMesageSortedReaction,
+  DirectMessageSortedReaction,
   DirectMessageWithReactions,
   DirectMessageWithSortedReactions,
 } from "@workspace/server";

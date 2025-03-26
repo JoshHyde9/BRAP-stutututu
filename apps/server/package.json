@@ -9,7 +9,9 @@
     }
   },
   "scripts": {
-    "dev": "bun run --watch src/index.ts"
+    "dev": "bun run --watch src/index.ts",
+    "build": "bun build src/index.ts --outfile dist/index.js --target bun",
+    "start": "bun run dist/index.js"
   },
   "devDependencies": {
     "@types/bun": "latest",

@@ -31,7 +31,7 @@ export const UnbanUserModal = () => {
   const onUnbanUser = async (values: z.infer<typeof unbanUserSchema>) => {
     const parsedData = await unbanUserSchema.parseAsync(values);
     const { data, error } = await api.server
-      .unBan({ serverId })
+      .unBan({ serverId: serverId! })
       .patch(parsedData);
 
     if (error) throw error;
@@ -71,7 +71,7 @@ export const UnbanUserModal = () => {
           <div className="flex w-full items-center justify-between">
             <Button
               variant="destructive"
-              onClick={() => unbanUser({ banId: ban.id })}
+              onClick={() => unbanUser({ banId: ban!.id })}
             >
               Revoke Ban
             </Button>

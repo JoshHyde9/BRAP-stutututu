@@ -25,7 +25,7 @@ export const DeleteChannelModal = () => {
 
   const onDeleteChannel = async () => {
     const { data, error } = await api.channel
-      .deleteChannel({ serverId: server?.id })({ channelId: channel?.id })
+      .deleteChannel({ serverId: server!.id })({ channelId: channel!.id })
       .delete();
 
     if (error) throw error;

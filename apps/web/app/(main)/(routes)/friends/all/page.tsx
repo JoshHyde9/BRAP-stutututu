@@ -6,6 +6,7 @@ import { FriendsList } from "@/components/friends/friends-list";
 
 const FriendsPage = async () => {
   const { data: friends } = await api.friend.all.get({
+    //@ts-ignore
     headers: await headers(),
   });
 

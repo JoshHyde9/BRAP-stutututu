@@ -24,7 +24,7 @@ export const LeaveServerModal = () => {
 
   const onLeaveServer = async () => {
     const { data, error } = await api.server
-      .leave({ serverId: server?.id })
+      .leave({ serverId: server!.id })
       .patch();
 
     if (error) throw error;

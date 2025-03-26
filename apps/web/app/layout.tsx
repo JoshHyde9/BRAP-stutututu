@@ -4,7 +4,6 @@ import "@workspace/ui/globals.css";
 
 import { ThemeProvider } from "@/providers/theme-provider";
 
-import { useSession } from "@workspace/auth";
 import { Toaster } from "@workspace/ui/components/sonner";
 
 import { getServerSession } from "@/lib/get-server-session";
@@ -32,7 +31,8 @@ export default async function RootLayout({
       >
         <ReactQueryProviders>
           <ThemeProvider>
-            <SocketProvider currentUserId={session!.user.id}>
+            {session?.user ? (
+            <SocketProvider currentUserId={session.user.id}>
               <ModalProvider />
               <Toaster
                 toastOptions={{
@@ -44,6 +44,11 @@ export default async function RootLayout({
               />
               {children}
             </SocketProvider>
+            ): (
+              <>
+                {children}
+              </>
+            )}
           </ThemeProvider>
         </ReactQueryProviders>
       </body>

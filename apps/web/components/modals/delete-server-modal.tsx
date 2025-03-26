@@ -24,7 +24,7 @@ export const DeleteServerModal = () => {
 
   const onDeleteServer = async () => {
     const { data, error } = await api.server
-      .deleteServer({ serverId: server?.id })
+      .deleteServer({ serverId: server!.id })
       .delete();
 
     if (error) throw error;

@@ -46,7 +46,7 @@ export const BanMemberModal = () => {
 
   const banMember = async (values: BanMemberSchema) => {
     const { data, error } = await api.member
-      .ban({ serverId: server.id })({ userId: props.member?.userId })
+      .ban({ serverId: server.id })({ userId: props.member!.userId })
       .patch(values);
 
     if (error) throw error;
