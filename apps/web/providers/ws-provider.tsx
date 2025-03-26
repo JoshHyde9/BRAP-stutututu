@@ -11,6 +11,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -252,11 +253,16 @@ export const SocketProvider = ({
   const socket = useRef<EdenWebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [currentServerId, setCurrentServerId] = useState<string | null>(null);
+  const currentServerIdRef = useRef<string | null>(null);
   const [notifications, setNotifications] = useState<NotificationState>({
     servers: {},
     conversations: {},
   });
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    currentServerIdRef.current = currentServerId;
+  }, [currentServerId])
 
   const handleConversationNotification = useCallback(
     ({
@@ -287,7 +293,7 @@ export const SocketProvider = ({
 
   const handleServerNotification = useCallback(
     ({ serverId }: { serverId: string }) => {
-      if (serverId === currentServerId) return;
+      if (serverId === currentServerIdRef.current) return;
 
       setNotifications((prev) => ({
         ...prev,
@@ -343,20 +349,23 @@ export const SocketProvider = ({
     };
   }, [queryClient, handleConversationNotification, handleServerNotification]);
 
-  const sendMessage = <T extends WebSocketMessageType>({
-    type,
-    data,
-  }: {
-    type: T;
-    data: MessageTypeMap[T];
-  }): boolean => {
-    if (!socket.current) return false;
+  const sendMessage = useMemo(
+    () =>
+      <T extends WebSocketMessageType>({
+        type,
+        data,
+      }: {
+        type: T;
+        data: MessageTypeMap[T];
+      }): boolean => {
+        if (!socket.current) return false;
 
-    const message: WebSocketMessage<T> = { type, data };
-    socket.current.send(message);
-    return true;
-  };
-
+        const message: WebSocketMessage<T> = { type, data };
+        socket.current.send(message);
+        return true;
+      },
+    [],
+  );
   const leave = useCallback(
     (params: { channelId?: string; serverId?: string }) => {
       return sendMessage({
@@ -410,19 +419,32 @@ export const SocketProvider = ({
     setCurrentServerId(serverId);
   }, []);
 
-  const value: WebSocketContextType = {
-    isConnected,
-    actions: {
+  const value = useMemo<WebSocketContextType>(
+    () => ({
+      isConnected,
+      actions: {
+        join,
+        leave,
+        sendMessage,
+        clearServerNotifications,
+        setCurrentServer,
+        clearConversationNotifications,
+      },
+      notifications,
+      currentServerId,
+    }),
+    [
+      isConnected,
       join,
       leave,
       sendMessage,
       clearServerNotifications,
       setCurrentServer,
       clearConversationNotifications,
-    },
-    notifications,
-    currentServerId,
-  };
+      notifications,
+      currentServerId,
+    ],
+  );
 
   return (
     <SocketContext.Provider value={value}>{children}</SocketContext.Provider>
