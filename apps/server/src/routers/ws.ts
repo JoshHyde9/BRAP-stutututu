@@ -1,4 +1,3 @@
-//@ts-nocheck
 import { auth, type Session } from "@workspace/auth";
 import { ElysiaContext } from "..";
 import { t } from "elysia";
@@ -16,8 +15,10 @@ import {
 } from "../lib/ws-conversation-funcs";
 import { ElysiaWS } from "elysia/ws";
 
+type NonNullableSession = NonNullable<Session>;
+
 const wsConnections = new Map<string, ElysiaWS>();
-const userSessions = new Map<string, Session>();
+const userSessions = new Map<string, NonNullableSession>();
 const userConversations = new Map<string, Set<string>>();
 const channels = new Map<string, Set<string>>();
 const servers = new Map<string, Set<string>>();
@@ -95,11 +96,7 @@ export const wsRouter = (app: ElysiaContext) =>
         userSessions.set(ws.id, session);
       },
       message: async (ws, message) => {
-        const session = userSessions.get(ws.id);
-
-        // if (!session) {
-        //   return ws.close(3000, "Unauthorized");
-        // }
+        const session = userSessions.get(ws.id) as NonNullableSession;
 
         const { prisma } = ws.data;
         const {
