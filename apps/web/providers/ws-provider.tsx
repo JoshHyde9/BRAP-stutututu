@@ -8,7 +8,11 @@ import {
   useRef,
   useState,
 } from "react";
-import { InfiniteData, useQueryClient } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  QueryClient,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import {
   api,
@@ -16,22 +20,25 @@ import {
   MessageWithSortedReactions,
 } from "@workspace/api";
 
-type ChatMessage = {
-  channelId?: string;
-  serverId?: string;
+type MessageBase = {
+  messageId?: string;
   content?: string;
   fileUrl?: string;
-  messageId?: string;
   value?: string;
+  user?: {
+    id: string;
+    image: string;
+  };
 };
 
-type ConversationMessage = {
-  targetId?: string;
-  content?: string;
-  fileUrl?: string;
+type ChatMessage = MessageBase & {
+  serverId?: string;
+  channelId?: string;
+};
+
+type ConversationMessage = MessageBase & {
   conversationId?: string;
-  messageId?: string;
-  value?: string;
+  targetId?: string;
 };
 
 type WebSocketMessageType =
@@ -54,7 +61,7 @@ export type WebSocketMessage = {
 
 type NotificationState = {
   servers: Record<string, { hasNotification: boolean }>;
-  conversations: Record<string, { count: number; image: string }>;
+  conversations: Record<string, { count: number; image?: string }>;
 };
 
 type WebSocketContextType = {
@@ -87,6 +94,33 @@ type WebSocketContextType = {
 
 type EdenWebSocket = ReturnType<typeof api.ws.chat.subscribe>;
 
+const updateMessageData = <T extends PageData | ConversationPageData>(
+  oldData: InfiniteData<T> | undefined,
+  updater: (messages: T["messages"]) => T["messages"],
+): InfiniteData<T> | undefined => {
+  if (!oldData?.pages) return oldData;
+
+  return {
+    ...oldData,
+    pages: oldData.pages.map((page) => ({
+      ...page,
+      messages: updater(page.messages),
+    })),
+  };
+};
+
+const prependMessage = <T extends PageData | ConversationPageData>(
+  oldData: InfiniteData<T> | undefined,
+  newMessage: any,
+) => {
+  if (!oldData?.pages[0]) return oldData;
+
+  const newPages = [...oldData.pages.map((page) => ({ ...page }))];
+  newPages[0]!.messages = [newMessage, ...newPages[0]!.messages];
+
+  return { ...oldData, pages: newPages };
+};
+
 interface PageData {
   messages: MessageWithSortedReactions[];
   nextCursor?: string | null;
@@ -97,9 +131,104 @@ interface ConversationPageData {
   nextCursor?: string | null;
 }
 
-type MessageData = {
+type IncomingWebSocketMessage = {
   type: WebSocketMessageType;
-  message: MessageWithSortedReactions & { conversationId?: string };
+  message: MessageWithSortedReactions & {
+    conversationId?: string;
+    user?: { id: string; image: string };
+  };
+};
+
+type MessageHandler = (
+  message: IncomingWebSocketMessage["message"],
+  queryClient: QueryClient,
+  handlers: {
+    handleConversationNotification: (params: {
+      userId: string;
+      image: string;
+    }) => void;
+    handleServerNotification: (params: { serverId: string }) => void;
+  },
+) => void;
+
+type HandlerMap = {
+  [K in WebSocketMessageType]?: MessageHandler;
+};
+
+const handleEditMessage: MessageHandler = (message, queryClient) => {
+  const queryKey = message.conversationId
+    ? ["conversation", message.conversationId]
+    : ["messages", message.channelId];
+
+  queryClient.setQueryData(queryKey, (oldMessages: InfiniteData<PageData>) => {
+    updateMessageData(oldMessages, (messages) =>
+      messages.map((msg) =>
+        msg.id === message.id ? { ...msg, content: message.content } : msg,
+      ),
+    );
+  });
+};
+
+const handleDeleteMessage: MessageHandler = (message, queryClient) => {
+  const queryKey = message.conversationId
+    ? ["conversation", message.conversationId]
+    : ["messages", message.channelId];
+
+  queryClient.setQueryData(queryKey, (oldMessages: InfiniteData<PageData>) => {
+    updateMessageData(oldMessages, (messages) =>
+      messages.filter((msg) => msg.id === message.id),
+    );
+  });
+};
+
+const handleCreateMessage: MessageHandler = (
+  message,
+  queryClient,
+  { handleConversationNotification, handleServerNotification },
+) => {
+  if (message.conversationId) {
+    handleConversationNotification({
+      userId: message.user!.id,
+      image: message.user!.image,
+    });
+
+    queryClient.setQueryData(
+      ["conversation", message.conversationId],
+      (oldMessages: InfiniteData<ConversationPageData>) =>
+        prependMessage(oldMessages, message),
+    );
+  } else {
+    handleServerNotification({ serverId: message.serverId });
+
+    queryClient.setQueryData(
+      ["messages", message.channelId],
+      (oldMessages: InfiniteData<PageData>) =>
+        prependMessage(oldMessages, message),
+    );
+  }
+};
+
+const handleUpdateReaction: MessageHandler = (message, queryClient) => {
+  const queryKey = message.conversationId
+    ? ["conversation", message.conversationId]
+    : ["messages", message.channelId];
+
+  queryClient.setQueryData(queryKey, (oldMessages: InfiniteData<any>) =>
+    updateMessageData(oldMessages, (messages) =>
+      messages.map((msg) => (msg.id === message.id ? message : msg)),
+    ),
+  );
+};
+
+const messageHandlers: HandlerMap = {
+  "edit-message-chat": handleEditMessage,
+  "edit-message-conversation": handleEditMessage,
+  "delete-message-chat": handleDeleteMessage,
+  "delete-message-conversation": handleDeleteMessage,
+  "create-message-chat": handleCreateMessage,
+  "create-message-conversation": handleCreateMessage,
+  "create-message-reaction": handleUpdateReaction,
+  "create-reaction-conversation": handleUpdateReaction,
 };
 
 const SocketContext = createContext<WebSocketContextType | undefined>(
@@ -123,7 +252,7 @@ export const SocketProvider = ({
   const queryClient = useQueryClient();
 
   const handleConversationNotification = useCallback(
-    ({ userId, image }: { userId: string; image: string }) => {
+    ({ userId, image }: { userId: string; image?: string }) => {
       if (userId === currentUserId) return;
 
       setNotifications((prev) => ({
@@ -143,7 +272,7 @@ export const SocketProvider = ({
   const handleServerNotification = useCallback(
     ({ serverId }: { serverId: string }) => {
       if (serverId === currentServerId) return;
-        
+
       setNotifications((prev) => ({
         ...prev,
         servers: {
@@ -165,188 +294,26 @@ export const SocketProvider = ({
       setIsConnected(true);
     });
 
-    socketInstance.on("message", (event) => {
-      // @ts-ignore
-      // FIXME: try work out a way to type the data object????
-      const eventData: MessageData = event.data;
-      const newMessage = eventData.message;
+    const handleSocketMessage = (event: { data: IncomingWebSocketMessage }) => {
+      const { type, message: newMessage } = event.data;
 
       queryClient.invalidateQueries({
-        queryKey: ["messages", newMessage.channelId],
+        queryKey: newMessage.conversationId
+          ? ["conversation", newMessage.conversationId]
+          : ["messages", newMessage.channelId],
       });
 
-      switch (eventData.type) {
-        case "edit-message-chat":
-          // Only update message content instead of pushing entire new message
-          queryClient.setQueryData(
-            ["messages", newMessage.channelId],
-            (oldMessages: InfiniteData<PageData>) => {
-              if (!oldMessages?.pages) return oldMessages;
+      const handler = messageHandlers[type];
 
-              const newPages = oldMessages.pages.map((page) => ({
-                ...page,
-                messages: page.messages.map((message) =>
-                  message.id === newMessage.id
-                    ? { ...message, content: newMessage.content }
-                    : message,
-                ),
-              }));
-
-              return { ...oldMessages, pages: newPages };
-            },
-          );
-          break;
-        case "delete-message-chat":
-          // Delete the existing message instead of pushing it to the queue
-          queryClient.setQueryData(
-            ["messages", newMessage.channelId],
-            (oldMessages: InfiniteData<PageData>) => {
-              if (!oldMessages?.pages) return oldMessages;
-
-              const newPages = oldMessages.pages.map((page) => ({
-                ...page,
-                messages: page.messages.filter((message) => {
-                  return message.id !== newMessage.id;
-                }),
-              }));
-
-              return { ...oldMessages, pages: newPages };
-            },
-          );
-          break;
-        case "create-message-reaction":
-          // Update existing message instead of adding new one
-          queryClient.setQueryData(
-            ["messages", newMessage.channelId],
-            (oldMessages: InfiniteData<PageData>) => {
-              if (!oldMessages?.pages) return oldMessages;
-
-              const newPages = oldMessages.pages.map((page) => ({
-                ...page,
-                messages: page.messages.map((message) =>
-                  message.id === newMessage.id ? newMessage : message,
-                ),
-              }));
-
-              return { ...oldMessages, pages: newPages };
-            },
-          );
-          break;
-        case "create-message-conversation":
-          handleConversationNotification({
-            userId: newMessage.userId,
-            image: newMessage.user.image,
-          });
-
-          queryClient.setQueryData(
-            ["conversation", newMessage.conversationId],
-            (oldMessages: InfiniteData<ConversationPageData>) => {
-              if (!oldMessages || !oldMessages.pages[0]) return oldMessages;
-
-              const newData = {
-                ...oldMessages,
-                pages: [...oldMessages.pages.map((page) => ({ ...page }))],
-              };
-
-              if (newData && newData.pages[0]?.messages) {
-                newData.pages[0].messages = [
-                  // @ts-ignore
-                  newMessage,
-                  ...oldMessages.pages[0].messages,
-                ];
-              } else {
-                // @ts-ignore
-                newData.pages[0]!.messages = [newMessage];
-              }
-
-              return newData;
-            },
-          );
-          break;
-        case "edit-message-conversation":
-          // Only update message content instead of pushing entire new message
-          queryClient.setQueryData(
-            ["conversation", newMessage.conversationId],
-            (oldMessages: InfiniteData<ConversationPageData>) => {
-              if (!oldMessages?.pages) return oldMessages;
-
-              const newPages = oldMessages.pages.map((page) => ({
-                ...page,
-                messages: page.messages.map((message) =>
-                  message.id === newMessage.id
-                    ? { ...message, content: newMessage.content }
-                    : message,
-                ),
-              }));
-
-              return { ...oldMessages, pages: newPages };
-            },
-          );
-          break;
-        case "delete-message-conversation":
-          // Delete the existing message instead of pushing it to the queue
-          queryClient.setQueryData(
-            ["conversation", newMessage.conversationId],
-            (oldMessages: InfiniteData<ConversationPageData>) => {
-              if (!oldMessages?.pages) return oldMessages;
-
-              const newPages = oldMessages.pages.map((page) => ({
-                ...page,
-                messages: page.messages.filter((message) => {
-                  return message.id !== newMessage.id;
-                }),
-              }));
-
-              return { ...oldMessages, pages: newPages };
-            },
-          );
-          break;
-        case "create-reaction-conversation":
-          // Update existing message instead of adding new one
-          queryClient.setQueryData(
-            ["conversation", newMessage.conversationId],
-            (oldMessages: InfiniteData<ConversationPageData>) => {
-              if (!oldMessages?.pages) return oldMessages;
-
-              const newPages = oldMessages.pages.map((page) => ({
-                ...page,
-                messages: page.messages.map((message) =>
-                  message.id === newMessage.id ? newMessage : message,
-                ),
-              }));
-
-              return { ...oldMessages, pages: newPages };
-            },
-          );
-          break;
-        default:
-          handleServerNotification({ serverId: newMessage.serverId });
-
-          queryClient.setQueryData(
-            ["messages", newMessage.channelId],
-            (oldMessages: InfiniteData<PageData>) => {
-              if (!oldMessages || !oldMessages.pages[0]) return oldMessages;
-
-              const newData = {
-                ...oldMessages,
-                pages: [...oldMessages.pages.map((page) => ({ ...page }))],
-              };
-
-              if (newData && newData.pages[0]?.messages) {
-                newData.pages[0].messages = [
-                  newMessage,
-                  ...oldMessages.pages[0].messages,
-                ];
-              } else {
-                newData.pages[0]!.messages = [newMessage];
-              }
-
-              return newData;
-            },
-          );
-          break;
+      if (handler) {
+        handler(newMessage, queryClient, {
+          handleConversationNotification,
+          handleServerNotification,
+        });
       }
-    });
+    };
+
+    socketInstance.on("message", (event) => handleSocketMessage(event));
 
     socketInstance.on("close", () => {
       setIsConnected(false);
@@ -357,15 +324,10 @@ export const SocketProvider = ({
         socket.current.close();
       }
     };
-  }, [queryClient]);
+  }, [queryClient, handleConversationNotification, handleServerNotification]);
 
   const sendMessage = useCallback((message: WebSocketMessage) => {
-    if (socket.current) {
-      socket.current.send(message);
-      return true;
-    }
-
-    return false;
+    return !!socket.current?.send(message);
   }, []);
 
   const leave = useCallback(
