@@ -51,7 +51,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
           className={cn(
             "bg-primary absolute left-0 w-[4px] rounded-r-full transition-all",
             params.serverId !== id && "group-hover:h-[20px]",
-            notifications[id]?.hasNotification && "h-[8px]",
+            notifications.servers[id]?.hasNotification && "h-[8px]",
             params.serverId === id && "h-[36px]",
           )}
         />

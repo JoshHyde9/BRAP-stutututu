@@ -52,19 +52,9 @@ export type WebSocketMessage = {
   data: ChatMessage | ConversationMessage;
 };
 
-interface ServerNotification {
-  hasNotification: boolean;
-}
-
 type NotificationState = {
-  [serverId: string]: ServerNotification;
-};
-
-type ConversationNotification = {
-  [userId: string]: {
-    image: string;
-    count: number;
-  };
+  servers: Record<string, { hasNotification: boolean }>;
+  conversations: Record<string, { count: number; image: string }>;
 };
 
 type WebSocketContextType = {
@@ -92,7 +82,6 @@ type WebSocketContextType = {
   editConversationMessage: (data: ConversationMessage) => void;
   deleteConversationMessage: (data: ConversationMessage) => void;
   createDirectMessageReaction: (data: ConversationMessage) => void;
-  conversationNotifications: ConversationNotification;
   clearConversationNotifications: (targetId: string) => void;
 };
 
@@ -126,11 +115,47 @@ export const SocketProvider = ({
 }) => {
   const socket = useRef<EdenWebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [notifications, setNotifications] = useState<NotificationState>({});
-  const [conversationNotifications, setConversationNotifications] =
-    useState<ConversationNotification>({});
   const [currentServerId, setCurrentServerId] = useState<string | null>(null);
+  const [notifications, setNotifications] = useState<NotificationState>({
+    servers: {},
+    conversations: {},
+  });
   const queryClient = useQueryClient();
+
+  const handleConversationNotification = useCallback(
+    ({ userId, image }: { userId: string; image: string }) => {
+      if (userId === currentUserId) return;
+
+      setNotifications((prev) => ({
+        ...prev,
+        conversations: {
+          ...prev.conversations,
+          [userId]: {
+            count: (prev.conversations[userId]?.count || 0) + 1,
+            image,
+          },
+        },
+      }));
+    },
+    [currentUserId],
+  );
+
+  const handleServerNotification = useCallback(
+    ({ serverId }: { serverId: string }) => {
+      if (serverId === currentServerId) return;
+        
+      setNotifications((prev) => ({
+        ...prev,
+        servers: {
+          ...prev.servers,
+          [serverId]: {
+            hasNotification: true,
+          },
+        },
+      }));
+    },
+    [],
+  );
 
   useEffect(() => {
     const socketInstance = api.ws.chat.subscribe();
@@ -208,27 +233,9 @@ export const SocketProvider = ({
           );
           break;
         case "create-message-conversation":
-          setConversationNotifications((prev) => {
-            if (newMessage.userId !== currentUserId) {
-              if (!prev[newMessage.userId]) {
-                return {
-                  ...prev,
-                  [newMessage.userId]: {
-                    image: newMessage.user.image,
-                    count: 1,
-                  },
-                };
-              }
-              return {
-                ...prev,
-                [newMessage.userId]: {
-                  ...prev[newMessage.userId],
-                  count: (prev[newMessage.userId]?.count || 0) + 1,
-                },
-              };
-            }
-
-            return prev;
+          handleConversationNotification({
+            userId: newMessage.userId,
+            image: newMessage.user.image,
           });
 
           queryClient.setQueryData(
@@ -295,7 +302,6 @@ export const SocketProvider = ({
           );
           break;
         case "create-reaction-conversation":
-          console.log("I AM HERE")
           // Update existing message instead of adding new one
           queryClient.setQueryData(
             ["conversation", newMessage.conversationId],
@@ -314,18 +320,7 @@ export const SocketProvider = ({
           );
           break;
         default:
-          setNotifications((prev) => {
-            if (newMessage.serverId === currentServerId) {
-              return prev;
-            }
-
-            return {
-              ...prev,
-              [newMessage.serverId]: {
-                hasNotification: true,
-              },
-            };
-          });
+          handleServerNotification({ serverId: newMessage.serverId });
 
           queryClient.setQueryData(
             ["messages", newMessage.channelId],
@@ -463,29 +458,27 @@ export const SocketProvider = ({
     [sendMessage],
   );
 
-  const clearServerNotifications = (serverId: string) => {
+  const clearServerNotifications = useCallback((serverId: string) => {
+    setNotifications((prev) => ({
+      ...prev,
+      servers: {
+        ...prev.servers,
+        [serverId]: { hasNotification: false },
+      },
+    }));
+  }, []);
+
+  const clearConversationNotifications = useCallback((userId: string) => {
     setNotifications((prev) => {
       const updated = { ...prev };
-      if (updated[serverId]) {
-        updated[serverId] = {
-          hasNotification: false,
-        };
-      }
+      delete updated.conversations[userId];
       return updated;
     });
-  };
+  }, []);
 
-  const clearConversationNotifications = (targetId: string) => {
-    setConversationNotifications((prev) => {
-      const updatedNotifications = { ...prev };
-      delete updatedNotifications[targetId];
-      return updatedNotifications;
-    });
-  };
-
-  const setCurrentServer = (serverId: string) => {
+  const setCurrentServer = useCallback((serverId: string) => {
     setCurrentServerId(serverId);
-  };
+  }, []);
 
   const sendConversationMessage = useCallback(
     ({ targetId, content, fileUrl, conversationId }: ConversationMessage) => {
@@ -558,7 +551,6 @@ export const SocketProvider = ({
     editConversationMessage,
     deleteConversationMessage,
     createDirectMessageReaction,
-    conversationNotifications,
     clearConversationNotifications,
   };
 

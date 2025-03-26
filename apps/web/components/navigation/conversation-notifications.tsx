@@ -7,13 +7,13 @@ import { useSocket } from "@/providers/ws-provider";
 import { cn } from "@workspace/ui/lib/utils";
 
 export const ConversationNotifications = () => {
-  const { conversationNotifications, clearConversationNotifications } =
+  const { notifications, clearConversationNotifications } =
     useSocket();
   const router = useRouter();
   const pathname = usePathname();
 
   const filteredNotifications = Object.entries(
-    conversationNotifications,
+    notifications.conversations,
   ).filter(([userId]) => {
     return !pathname.includes(`/conversation/${userId}`);
   });
