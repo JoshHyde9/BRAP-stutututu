@@ -9,7 +9,9 @@ type DeleteMessageParams = {
 };
 
 export const useDeleteMessage = () => {
-  const { deleteChatMessage, deleteConversationMessage } = useSocket();
+  const {
+    actions: { sendMessage },
+  } = useSocket();
 
   return useMutation({
     mutationFn: async (params: DeleteMessageParams) => {
@@ -17,12 +19,18 @@ export const useDeleteMessage = () => {
         const { messageId, queryParams } = params;
 
         if (!queryParams) {
-          deleteConversationMessage({ messageId });
+          sendMessage({
+            type: "delete-message-conversation",
+            data: { messageId },
+          });
         } else {
-          deleteChatMessage({
-            messageId,
-            channelId: queryParams.channelId,
-            serverId: queryParams.serverId,
+          sendMessage({
+            type: "delete-message-chat",
+            data: {
+              messageId,
+              channelId: queryParams.channelId,
+              serverId: queryParams.serverId,
+            },
           });
         }
 

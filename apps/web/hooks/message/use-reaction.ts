@@ -10,7 +10,9 @@ type MessageReactionParams = {
 };
 
 export const useReactions = () => {
-  const { createMessageReaction, createDirectMessageReaction } = useSocket();
+  const {
+    actions: { sendMessage },
+  } = useSocket();
   return useMutation({
     mutationFn: async (params: MessageReactionParams) => {
       try {
@@ -21,19 +23,25 @@ export const useReactions = () => {
         } = params;
 
         if (conversationId) {
-          createDirectMessageReaction({
-            conversationId,
-            messageId,
-            value,
+          sendMessage({
+            type: "create-reaction-conversation",
+            data: {
+              conversationId,
+              messageId,
+              value,
+            },
           });
         }
 
         if (channelId && serverId) {
-          createMessageReaction({
-            channelId,
-            serverId,
-            messageId,
-            value,
+          sendMessage({
+            type: "create-message-reaction",
+            data: {
+              channelId,
+              serverId,
+              messageId,
+              value,
+            },
           });
         }
 

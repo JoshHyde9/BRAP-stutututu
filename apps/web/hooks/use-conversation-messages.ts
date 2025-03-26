@@ -18,7 +18,10 @@ export const useConversationMessages = ({
   conversationId,
   targetId,
 }: ConversationMessagesProps) => {
-  const { isConnected, join } = useSocket();
+  const {
+    isConnected,
+    actions: { join },
+  } = useSocket();
 
   useEffect(() => {
     if (targetId && isConnected) {

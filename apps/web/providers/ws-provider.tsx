@@ -1,5 +1,11 @@
 "use client";
 
+import type { InfiniteData, QueryClient } from "@tanstack/react-query";
+import type {
+  DirectMessageWithSortedReactions,
+  MessageWithSortedReactions,
+} from "@workspace/api";
+
 import {
   createContext,
   useCallback,
@@ -8,27 +14,15 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  InfiniteData,
-  QueryClient,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
-import {
-  api,
-  DirectMessageWithSortedReactions,
-  MessageWithSortedReactions,
-} from "@workspace/api";
+import { api } from "@workspace/api";
 
 type MessageBase = {
   messageId?: string;
   content?: string;
   fileUrl?: string;
   value?: string;
-  user?: {
-    id: string;
-    image: string;
-  };
 };
 
 type ChatMessage = MessageBase & {
@@ -39,57 +33,68 @@ type ChatMessage = MessageBase & {
 type ConversationMessage = MessageBase & {
   conversationId?: string;
   targetId?: string;
+  user?: {
+    id: string;
+    image: string;
+    name: string;
+  };
 };
 
-type WebSocketMessageType =
-  | "join-chat"
-  | "leave-chat"
-  | "create-message-chat"
-  | "edit-message-chat"
-  | "delete-message-chat"
-  | "create-message-reaction"
-  | "join-conversation"
-  | "create-message-conversation"
-  | "edit-message-conversation"
-  | "delete-message-conversation"
-  | "create-reaction-conversation";
+type MessageTypeMap = {
+  "join-chat": { channelId?: string; serverId?: string };
+  "leave-chat": { channelId?: string; serverId?: string };
+  "create-message-chat": ChatMessage;
+  "edit-message-chat": ChatMessage;
+  "delete-message-chat": ChatMessage;
+  "create-message-reaction": ChatMessage;
+  "join-conversation": { targetId: string };
+  "create-message-conversation": ConversationMessage;
+  "edit-message-conversation": ConversationMessage;
+  "delete-message-conversation": ConversationMessage;
+  "create-reaction-conversation": ConversationMessage;
+};
 
-export type WebSocketMessage = {
-  type: WebSocketMessageType;
-  data: ChatMessage | ConversationMessage;
+type WebSocketMessageType = keyof MessageTypeMap;
+
+type WebSocketMessage<T extends WebSocketMessageType> = {
+  type: T;
+  data: MessageTypeMap[T];
 };
 
 type NotificationState = {
   servers: Record<string, { hasNotification: boolean }>;
-  conversations: Record<string, { count: number; image?: string }>;
+  conversations: Record<
+    string,
+    { count: number; image?: string; name: string }
+  >;
 };
 
 type WebSocketContextType = {
   isConnected: boolean;
-  sendMessage: (message: WebSocketMessage) => boolean;
-  leave: (params: {
-    channelId?: string;
-    serverId?: string;
-    targetId?: string;
-  }) => boolean;
-  join: (params: {
-    channelId?: string;
-    serverId?: string;
-    targetId?: string;
-  }) => boolean;
-  sendChatMessage: (data: ChatMessage) => boolean;
-  editChatMessage: (data: ChatMessage) => boolean;
-  deleteChatMessage: (data: ChatMessage) => boolean;
-  createMessageReaction: (data: ChatMessage) => boolean;
+  actions: {
+    sendMessage: <T extends WebSocketMessageType>({
+      type,
+      data,
+    }: {
+      type: T;
+      data: MessageTypeMap[T];
+    }) => boolean;
+    leave: (params: {
+      channelId?: string;
+      serverId?: string;
+      targetId?: string;
+    }) => boolean;
+    join: (params: {
+      channelId?: string;
+      serverId?: string;
+      targetId?: string;
+    }) => boolean;
+    clearServerNotifications: (serverId: string) => void;
+    setCurrentServer: (serverId: string) => void;
+    clearConversationNotifications: (targetId: string) => void;
+  };
   notifications: NotificationState;
   currentServerId: string | null;
-  clearServerNotifications: (serverId: string) => void;
-  setCurrentServer: (serverId: string) => void;
-  sendConversationMessage: (data: ConversationMessage) => void;
-  editConversationMessage: (data: ConversationMessage) => void;
-  deleteConversationMessage: (data: ConversationMessage) => void;
-  createDirectMessageReaction: (data: ConversationMessage) => void;
-  clearConversationNotifications: (targetId: string) => void;
 };
 
 type EdenWebSocket = ReturnType<typeof api.ws.chat.subscribe>;
@@ -135,7 +140,7 @@ type IncomingWebSocketMessage = {
   type: WebSocketMessageType;
   message: MessageWithSortedReactions & {
     conversationId?: string;
-    user?: { id: string; image: string };
+    user?: { id: string; image: string; name: string };
   };
 };
 
@@ -146,6 +151,7 @@ type MessageHandler = (
     handleConversationNotification: (params: {
       userId: string;
       image: string;
+      name: string;
     }) => void;
     handleServerNotification: (params: { serverId: string }) => void;
   },
@@ -190,6 +196,7 @@ const handleCreateMessage: MessageHandler = (
     handleConversationNotification({
       userId: message.user!.id,
       image: message.user!.image,
+      name: message.user!.name,
     });
 
     queryClient.setQueryData(
@@ -213,7 +220,7 @@ const handleUpdateReaction: MessageHandler = (message, queryClient) => {
     ? ["conversation", message.conversationId]
     : ["messages", message.channelId];
 
-  queryClient.setQueryData(queryKey, (oldMessages: InfiniteData<any>) =>
+  queryClient.setQueryData(queryKey, (oldMessages: InfiniteData<PageData>) =>
     updateMessageData(oldMessages, (messages) =>
       messages.map((msg) => (msg.id === message.id ? message : msg)),
     ),
@@ -252,7 +259,15 @@ export const SocketProvider = ({
   const queryClient = useQueryClient();
 
   const handleConversationNotification = useCallback(
-    ({ userId, image }: { userId: string; image?: string }) => {
+    ({
+      userId,
+      image,
+      name,
+    }: {
+      userId: string;
+      image?: string;
+      name: string;
+    }) => {
       if (userId === currentUserId) return;
 
       setNotifications((prev) => ({
@@ -262,6 +277,7 @@ export const SocketProvider = ({
           [userId]: {
             count: (prev.conversations[userId]?.count || 0) + 1,
             image,
+            name,
           },
         },
       }));
@@ -313,6 +329,7 @@ export const SocketProvider = ({
       }
     };
 
+    // @ts-ignore I will never be able to fix this
     socketInstance.on("message", (event) => handleSocketMessage(event));
 
     socketInstance.on("close", () => {
@@ -326,9 +343,19 @@ export const SocketProvider = ({
     };
   }, [queryClient, handleConversationNotification, handleServerNotification]);
 
-  const sendMessage = useCallback((message: WebSocketMessage) => {
-    return !!socket.current?.send(message);
-  }, []);
+  const sendMessage = <T extends WebSocketMessageType>({
+    type,
+    data,
+  }: {
+    type: T;
+    data: MessageTypeMap[T];
+  }): boolean => {
+    if (!socket.current) return false;
+
+    const message: WebSocketMessage<T> = { type, data };
+    socket.current.send(message);
+    return true;
+  };
 
   const leave = useCallback(
     (params: { channelId?: string; serverId?: string }) => {
@@ -361,65 +388,6 @@ export const SocketProvider = ({
     [sendMessage],
   );
 
-  const sendChatMessage = useCallback(
-    ({ channelId, serverId, content, fileUrl }: ChatMessage) => {
-      return sendMessage({
-        type: "create-message-chat",
-        data: {
-          serverId,
-          channelId,
-          content,
-          fileUrl,
-        },
-      });
-    },
-    [sendMessage],
-  );
-
-  const editChatMessage = useCallback(
-    ({ channelId, content, serverId, messageId }: ChatMessage) => {
-      return sendMessage({
-        type: "edit-message-chat",
-        data: {
-          serverId,
-          channelId,
-          content,
-          messageId,
-        },
-      });
-    },
-    [sendMessage],
-  );
-
-  const deleteChatMessage = useCallback(
-    ({ serverId, messageId, channelId }: ChatMessage) => {
-      return sendMessage({
-        type: "delete-message-chat",
-        data: {
-          channelId,
-          serverId,
-          messageId,
-        },
-      });
-    },
-    [sendMessage],
-  );
-
-  const createMessageReaction = useCallback(
-    ({ channelId, serverId, messageId, value }: ChatMessage) => {
-      return sendMessage({
-        type: "create-message-reaction",
-        data: {
-          channelId,
-          serverId,
-          messageId,
-          value,
-        },
-      });
-    },
-    [sendMessage],
-  );
-
   const clearServerNotifications = useCallback((serverId: string) => {
     setNotifications((prev) => ({
       ...prev,
@@ -442,78 +410,18 @@ export const SocketProvider = ({
     setCurrentServerId(serverId);
   }, []);
 
-  const sendConversationMessage = useCallback(
-    ({ targetId, content, fileUrl, conversationId }: ConversationMessage) => {
-      return sendMessage({
-        type: "create-message-conversation",
-        data: {
-          targetId,
-          content,
-          fileUrl,
-          conversationId,
-        },
-      });
-    },
-    [sendMessage],
-  );
-
-  const editConversationMessage = useCallback(
-    ({ content, messageId }: ConversationMessage) => {
-      return sendMessage({
-        type: "edit-message-conversation",
-        data: {
-          content,
-          messageId,
-        },
-      });
-    },
-    [sendMessage],
-  );
-
-  const deleteConversationMessage = useCallback(
-    ({ messageId }: ConversationMessage) => {
-      return sendMessage({
-        type: "delete-message-conversation",
-        data: {
-          messageId,
-        },
-      });
-    },
-    [sendMessage],
-  );
-
-  const createDirectMessageReaction = useCallback(
-    ({ conversationId, messageId, value }: ConversationMessage) => {
-      return sendMessage({
-        type: "create-reaction-conversation",
-        data: {
-          conversationId,
-          messageId,
-          value,
-        },
-      });
-    },
-    [sendMessage],
-  );
-
   const value: WebSocketContextType = {
     isConnected,
-    sendMessage,
-    leave,
-    join,
-    sendChatMessage,
-    editChatMessage,
-    deleteChatMessage,
-    createMessageReaction,
+    actions: {
+      join,
+      leave,
+      sendMessage,
+      clearServerNotifications,
+      setCurrentServer,
+      clearConversationNotifications,
+    },
     notifications,
-    clearServerNotifications,
     currentServerId,
-    setCurrentServer,
-    sendConversationMessage,
-    editConversationMessage,
-    deleteConversationMessage,
-    createDirectMessageReaction,
-    clearConversationNotifications,
   };
 
   return (

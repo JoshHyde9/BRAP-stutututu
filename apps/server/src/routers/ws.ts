@@ -244,10 +244,21 @@ export const wsRouter = (app: ElysiaContext) =>
                 ...newMessage,
                 serverId: server.id,
               },
+              type: "create-message-chat",
             });
-            ws.send({ message: { ...newMessage, serverId: server.id } });
+            ws.send({
+              message: {
+                ...newMessage,
+                serverId: server.id,
+              },
+              type: "create-message-chat",
+            });
             ws.publish(`server:${serverId}`, {
-              message: { newMessage, serverId: server.id },
+              message: {
+                newMessage,
+                serverId: server.id,
+              },
+              type: "create-message-chat",
             });
             break;
           case "edit-message-chat":

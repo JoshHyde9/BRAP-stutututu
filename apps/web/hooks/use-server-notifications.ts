@@ -10,11 +10,8 @@ export const useServerNotifications = ({
 }: ServerNotificationsProps) => {
   const {
     isConnected,
-    join,
-    leave,
+    actions: { leave, join, setCurrentServer, clearServerNotifications },
     notifications,
-    clearServerNotifications,
-    setCurrentServer,
     currentServerId,
   } = useSocket();
 

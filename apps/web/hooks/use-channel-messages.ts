@@ -16,16 +16,19 @@ type ChannelMessagesProps = {
 };
 
 export const useChannelMessages = ({ channelId }: ChannelMessagesProps) => {
-  const { isConnected, join, leave } = useSocket();
+  const {
+    isConnected,
+    actions: { join, leave },
+  } = useSocket();
 
   useEffect(() => {
     if (isConnected && channelId) {
-      join({channelId});
+      join({ channelId });
     }
 
     return () => {
       if (isConnected && channelId) {
-        leave({channelId});
+        leave({ channelId });
       }
     };
   }, [isConnected, channelId, join, leave]);

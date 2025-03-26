@@ -11,25 +11,33 @@ type SendMessageParams<T extends QueryParamsKeys> = {
 };
 
 export const useSendMessage = () => {
-  const { sendChatMessage, sendConversationMessage } = useSocket();
+  const {
+    actions: { sendMessage },
+  } = useSocket();
 
   return useMutation({
     mutationFn: async (params: SendMessageParams<QueryParamsKeys>) => {
       const { content, targetId, fileUrl, queryParams } = params;
 
       if (targetId) {
-        sendConversationMessage({
-          targetId,
-          content,
-          fileUrl,
-          conversationId: queryParams.conversationId,
+        sendMessage({
+          type: "create-message-conversation",
+          data: {
+            targetId,
+            content,
+            fileUrl,
+            conversationId: queryParams.conversationId,
+          },
         });
       } else {
-        sendChatMessage({
-          channelId: queryParams.channelId,
-          serverId: queryParams.serverId,
-          content,
-          fileUrl,
+        sendMessage({
+          type: "create-message-chat",
+          data: {
+            channelId: queryParams.channelId,
+            serverId: queryParams.serverId,
+            content,
+            fileUrl,
+          },
         });
       }
 

@@ -6,9 +6,13 @@ import { useSocket } from "@/providers/ws-provider";
 
 import { cn } from "@workspace/ui/lib/utils";
 
+import { UserAvatar } from "../user-avatar";
+
 export const ConversationNotifications = () => {
-  const { notifications, clearConversationNotifications } =
-    useSocket();
+  const {
+    notifications,
+    actions: { clearConversationNotifications },
+  } = useSocket();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -36,16 +40,22 @@ export const ConversationNotifications = () => {
             clearConversationNotifications(userId);
             router.push(`/conversation/${userId}`);
           }}
-          className="relative size-[48px] cursor-pointer rounded-full transition-opacity"
+          className="group relative flex items-center"
         >
-          <Image
-            src={notification.image}
-            alt={`Notification for user ${userId}`}
-            className="rounded-full"
-            fill
+          <div
+            className={cn(
+              "bg-primary absolute left-0 w-[4px] rounded-r-full transition-all group-hover:h-[20px]",
+            )}
           />
+          <div
+            className={cn(
+              "group relative mx-3 flex size-[48px] overflow-hidden rounded-[24px] transition group-hover:rounded-[16px]",
+            )}
+          >
+            <Image fill src={notification.image!} alt={notification.name} />
+          </div>
           {notification.count > 0 && (
-            <div className="absolute bottom-0 right-0 flex min-h-[20px] min-w-[20px] items-center justify-center rounded-full bg-rose-500 text-xs text-white">
+            <div className="absolute -bottom-2 right-2 flex min-h-[20px] min-w-[20px] items-center justify-center rounded-full bg-rose-500 text-xs text-white">
               {notification.count}
             </div>
           )}

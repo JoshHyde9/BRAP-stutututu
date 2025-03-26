@@ -10,21 +10,29 @@ type EditMessageParams = {
 };
 
 export const useEditMessage = () => {
-  const { editChatMessage, editConversationMessage } = useSocket();
+  const {
+    actions: { sendMessage },
+  } = useSocket();
   return useMutation({
     mutationFn: async (params: EditMessageParams) => {
       const { messageId, content, queryParams } = params;
 
       try {
         if (queryParams?.channelId && queryParams?.serverId) {
-          editChatMessage({
-            content,
-            messageId,
-            channelId: queryParams.channelId,
-            serverId: queryParams.serverId,
+          sendMessage({
+            type: "edit-message-chat",
+            data: {
+              content,
+              messageId,
+              channelId: queryParams.channelId,
+              serverId: queryParams.serverId,
+            },
           });
         } else {
-          editConversationMessage({ content, messageId });
+          sendMessage({
+            type: "edit-message-conversation",
+            data: { content, messageId },
+          });
         }
 
         return { success: true };
