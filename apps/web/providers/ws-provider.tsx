@@ -44,7 +44,7 @@ type WebSocketMessageType =
   | "join-conversation"
   | "create-message-conversation"
   | "edit-message-conversation"
-  | "delete-message-converastion"
+  | "delete-message-conversation"
   | "create-reaction-conversation";
 
 export type WebSocketMessage = {
@@ -276,7 +276,7 @@ export const SocketProvider = ({
             },
           );
           break;
-        case "delete-message-converastion":
+        case "delete-message-conversation":
           // Delete the existing message instead of pushing it to the queue
           queryClient.setQueryData(
             ["conversation", newMessage.conversationId],
@@ -518,7 +518,7 @@ export const SocketProvider = ({
   const deleteConversationMessage = useCallback(
     ({ messageId }: ConversationMessage) => {
       return sendMessage({
-        type: "delete-message-converastion",
+        type: "delete-message-conversation",
         data: {
           messageId,
         },

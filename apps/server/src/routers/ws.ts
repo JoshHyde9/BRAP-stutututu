@@ -67,7 +67,7 @@ export const wsRouter = (app: ElysiaContext) =>
           t.Literal("join-conversation"),
           t.Literal("create-message-conversation"),
           t.Literal("edit-message-conversation"),
-          t.Literal("delete-message-converastion"),
+          t.Literal("delete-message-conversation"),
           t.Literal("create-reaction-conversation"),
         ]),
         data: t.Object({
@@ -291,7 +291,7 @@ export const wsRouter = (app: ElysiaContext) =>
             }
 
             break;
-          case "delete-message-converastion":
+          case "delete-message-conversation":
             try {
               const deletedMessage = await dmDeleteMessage(prisma, session, {
                 messageId: messageId!,
@@ -300,11 +300,11 @@ export const wsRouter = (app: ElysiaContext) =>
               if (deletedMessage) {
                 ws.publish(`conversation:${deletedMessage.conversationId}`, {
                   message: deletedMessage,
-                  type: "delete-message-converastion",
+                  type: "delete-message-conversation",
                 });
                 ws.send({
                   message: deletedMessage,
-                  type: "delete-message-converastion",
+                  type: "delete-message-conversation",
                 });
               }
             } catch (error) {
