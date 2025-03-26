@@ -35,17 +35,17 @@ type ConversationMessage = {
 };
 
 type WebSocketMessageType =
-  | "join"
-  | "leave"
-  | "create-chat-message"
-  | "edit-chat-message"
-  | "delete-chat-message"
+  | "join-chat"
+  | "leave-chat"
+  | "create-message-chat"
+  | "edit-message-chat"
+  | "delete-message-chat"
   | "create-message-reaction"
-  | "create-conversation-message"
-  | "conversation-join"
-  | "edit-conversation-message"
-  | "delete-conversation-message"
-  | "create-direct-message-reaction";
+  | "join-conversation"
+  | "create-message-conversation"
+  | "edit-message-conversation"
+  | "delete-message-converastion"
+  | "create-reaction-conversation";
 
 export type WebSocketMessage = {
   type: WebSocketMessageType;
@@ -70,20 +70,25 @@ type ConversationNotification = {
 type WebSocketContextType = {
   isConnected: boolean;
   sendMessage: (message: WebSocketMessage) => boolean;
-  joinChannel: (channelId: string) => boolean;
-  leaveChannel: (channelId: string) => boolean;
+  leave: (params: {
+    channelId?: string;
+    serverId?: string;
+    targetId?: string;
+  }) => boolean;
+  join: (params: {
+    channelId?: string;
+    serverId?: string;
+    targetId?: string;
+  }) => boolean;
   sendChatMessage: (data: ChatMessage) => boolean;
   editChatMessage: (data: ChatMessage) => boolean;
   deleteChatMessage: (data: ChatMessage) => boolean;
   createMessageReaction: (data: ChatMessage) => boolean;
-  joinServer: (serverId: string) => boolean;
-  leaveServer: (serverId: string) => boolean;
   notifications: NotificationState;
   currentServerId: string | null;
   clearServerNotifications: (serverId: string) => void;
   setCurrentServer: (serverId: string) => void;
   sendConversationMessage: (data: ConversationMessage) => void;
-  joinConversation: (targetId: string) => boolean;
   editConversationMessage: (data: ConversationMessage) => void;
   deleteConversationMessage: (data: ConversationMessage) => void;
   createDirectMessageReaction: (data: ConversationMessage) => void;
@@ -146,7 +151,7 @@ export const SocketProvider = ({
       });
 
       switch (eventData.type) {
-        case "edit-chat-message":
+        case "edit-message-chat":
           // Only update message content instead of pushing entire new message
           queryClient.setQueryData(
             ["messages", newMessage.channelId],
@@ -166,7 +171,7 @@ export const SocketProvider = ({
             },
           );
           break;
-        case "delete-chat-message":
+        case "delete-message-chat":
           // Delete the existing message instead of pushing it to the queue
           queryClient.setQueryData(
             ["messages", newMessage.channelId],
@@ -202,7 +207,7 @@ export const SocketProvider = ({
             },
           );
           break;
-        case "create-conversation-message":
+        case "create-message-conversation":
           setConversationNotifications((prev) => {
             if (newMessage.userId !== currentUserId) {
               if (!prev[newMessage.userId]) {
@@ -251,7 +256,7 @@ export const SocketProvider = ({
             },
           );
           break;
-        case "edit-conversation-message":
+        case "edit-message-conversation":
           // Only update message content instead of pushing entire new message
           queryClient.setQueryData(
             ["conversation", newMessage.conversationId],
@@ -271,7 +276,7 @@ export const SocketProvider = ({
             },
           );
           break;
-        case "delete-conversation-message":
+        case "delete-message-converastion":
           // Delete the existing message instead of pushing it to the queue
           queryClient.setQueryData(
             ["conversation", newMessage.conversationId],
@@ -289,7 +294,8 @@ export const SocketProvider = ({
             },
           );
           break;
-        case "create-direct-message-reaction":
+        case "create-reaction-conversation":
+          console.log("I AM HERE")
           // Update existing message instead of adding new one
           queryClient.setQueryData(
             ["conversation", newMessage.conversationId],
@@ -367,41 +373,32 @@ export const SocketProvider = ({
     return false;
   }, []);
 
-  const joinChannel = useCallback(
-    (channelId: string) => {
+  const leave = useCallback(
+    (params: { channelId?: string; serverId?: string }) => {
       return sendMessage({
-        type: "join",
-        data: { channelId },
+        type: "leave-chat",
+        data: params.channelId
+          ? { channelId: params.channelId }
+          : { serverId: params.serverId },
       });
     },
     [sendMessage],
   );
 
-  const joinServer = useCallback(
-    (serverId: string) => {
-      return sendMessage({
-        type: "join",
-        data: { serverId },
-      });
-    },
-    [sendMessage],
-  );
+  const join = useCallback(
+    (params: { channelId?: string; serverId?: string; targetId?: string }) => {
+      if (params.targetId) {
+        return sendMessage({
+          type: "join-conversation",
+          data: { targetId: params.targetId },
+        });
+      }
 
-  const leaveChannel = useCallback(
-    (channelId: string) => {
       return sendMessage({
-        type: "leave",
-        data: { channelId },
-      });
-    },
-    [sendMessage],
-  );
-
-  const leaveServer = useCallback(
-    (serverId: string) => {
-      return sendMessage({
-        type: "leave",
-        data: { serverId },
+        type: "join-chat",
+        data: params.channelId
+          ? { channelId: params.channelId }
+          : { serverId: params.serverId },
       });
     },
     [sendMessage],
@@ -410,7 +407,7 @@ export const SocketProvider = ({
   const sendChatMessage = useCallback(
     ({ channelId, serverId, content, fileUrl }: ChatMessage) => {
       return sendMessage({
-        type: "create-chat-message",
+        type: "create-message-chat",
         data: {
           serverId,
           channelId,
@@ -425,7 +422,7 @@ export const SocketProvider = ({
   const editChatMessage = useCallback(
     ({ channelId, content, serverId, messageId }: ChatMessage) => {
       return sendMessage({
-        type: "edit-chat-message",
+        type: "edit-message-chat",
         data: {
           serverId,
           channelId,
@@ -440,7 +437,7 @@ export const SocketProvider = ({
   const deleteChatMessage = useCallback(
     ({ serverId, messageId, channelId }: ChatMessage) => {
       return sendMessage({
-        type: "delete-chat-message",
+        type: "delete-message-chat",
         data: {
           channelId,
           serverId,
@@ -490,20 +487,10 @@ export const SocketProvider = ({
     setCurrentServerId(serverId);
   };
 
-  const joinConversation = useCallback(
-    (targetId: string) => {
-      return sendMessage({
-        type: "conversation-join",
-        data: { targetId },
-      });
-    },
-    [sendMessage],
-  );
-
   const sendConversationMessage = useCallback(
     ({ targetId, content, fileUrl, conversationId }: ConversationMessage) => {
       return sendMessage({
-        type: "create-conversation-message",
+        type: "create-message-conversation",
         data: {
           targetId,
           content,
@@ -518,7 +505,7 @@ export const SocketProvider = ({
   const editConversationMessage = useCallback(
     ({ content, messageId }: ConversationMessage) => {
       return sendMessage({
-        type: "edit-conversation-message",
+        type: "edit-message-conversation",
         data: {
           content,
           messageId,
@@ -531,7 +518,7 @@ export const SocketProvider = ({
   const deleteConversationMessage = useCallback(
     ({ messageId }: ConversationMessage) => {
       return sendMessage({
-        type: "delete-conversation-message",
+        type: "delete-message-converastion",
         data: {
           messageId,
         },
@@ -543,7 +530,7 @@ export const SocketProvider = ({
   const createDirectMessageReaction = useCallback(
     ({ conversationId, messageId, value }: ConversationMessage) => {
       return sendMessage({
-        type: "create-direct-message-reaction",
+        type: "create-reaction-conversation",
         data: {
           conversationId,
           messageId,
@@ -557,20 +544,17 @@ export const SocketProvider = ({
   const value: WebSocketContextType = {
     isConnected,
     sendMessage,
-    joinChannel,
-    leaveChannel,
+    leave,
+    join,
     sendChatMessage,
     editChatMessage,
     deleteChatMessage,
     createMessageReaction,
-    joinServer,
-    leaveServer,
     notifications,
     clearServerNotifications,
     currentServerId,
     setCurrentServer,
     sendConversationMessage,
-    joinConversation,
     editConversationMessage,
     deleteConversationMessage,
     createDirectMessageReaction,

@@ -18,13 +18,13 @@ export const useConversationMessages = ({
   conversationId,
   targetId,
 }: ConversationMessagesProps) => {
-  const { isConnected, joinConversation } = useSocket();
+  const { isConnected, join } = useSocket();
 
   useEffect(() => {
     if (targetId && isConnected) {
-      joinConversation(targetId);
+      join({ targetId });
     }
-  }, [targetId, isConnected])
+  }, [targetId, isConnected, join]);
 
   const query = useInfiniteQuery({
     queryKey: ["conversation", conversationId],

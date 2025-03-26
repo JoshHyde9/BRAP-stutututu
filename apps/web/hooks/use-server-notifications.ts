@@ -10,8 +10,8 @@ export const useServerNotifications = ({
 }: ServerNotificationsProps) => {
   const {
     isConnected,
-    joinServer,
-    leaveServer,
+    join,
+    leave,
     notifications,
     clearServerNotifications,
     setCurrentServer,
@@ -20,15 +20,15 @@ export const useServerNotifications = ({
 
   useEffect(() => {
     if (isConnected && serverId) {
-      joinServer(serverId);
+      join({ serverId });
     }
 
     return () => {
       if (isConnected && serverId) {
-        leaveServer(serverId);
+        leave({ serverId });
       }
     };
-  }, [isConnected, serverId, joinServer, leaveServer]);
+  }, [isConnected, serverId, join, leave]);
 
   return {
     notifications,

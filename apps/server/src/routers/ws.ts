@@ -58,17 +58,17 @@ export const wsRouter = (app: ElysiaContext) =>
     app.ws("/chat", {
       body: t.Object({
         type: t.Union([
-          t.Literal("join"),
-          t.Literal("leave"),
-          t.Literal("create-chat-message"),
-          t.Literal("edit-chat-message"),
-          t.Literal("delete-chat-message"),
+          t.Literal("join-chat"),
+          t.Literal("leave-chat"),
+          t.Literal("create-message-chat"),
+          t.Literal("edit-message-chat"),
+          t.Literal("delete-message-chat"),
           t.Literal("create-message-reaction"),
-          t.Literal("conversation-join"),
-          t.Literal("create-conversation-message"),
-          t.Literal("edit-conversation-message"),
-          t.Literal("delete-conversation-message"),
-          t.Literal("create-direct-message-reaction"),
+          t.Literal("join-conversation"),
+          t.Literal("create-message-conversation"),
+          t.Literal("edit-message-conversation"),
+          t.Literal("delete-message-converastion"),
+          t.Literal("create-reaction-conversation"),
         ]),
         data: t.Object({
           channelId: t.Optional(t.String()),
@@ -113,7 +113,7 @@ export const wsRouter = (app: ElysiaContext) =>
         } = message.data;
 
         switch (message.type) {
-          case "join":
+          case "join-chat":
             if (!channels.has(channelId!)) {
               channels.set(channelId!, new Set());
             }
@@ -128,7 +128,7 @@ export const wsRouter = (app: ElysiaContext) =>
             ws.subscribe(`channel:${channelId}`);
             ws.subscribe(`server:${serverId}`);
             break;
-          case "leave":
+          case "leave-chat":
             channels.get(channelId!)?.delete(ws.id);
             servers.get(serverId!)?.delete(ws.id);
 
@@ -143,7 +143,7 @@ export const wsRouter = (app: ElysiaContext) =>
             ws.unsubscribe(`server:${serverId}`);
             ws.unsubscribe(`channel:${channelId}`);
             break;
-          case "conversation-join":
+          case "join-conversation":
             const conversation = await getConversationId(
               prisma,
               session.user.id,
@@ -162,7 +162,7 @@ export const wsRouter = (app: ElysiaContext) =>
             }
 
             break;
-          case "create-conversation-message":
+          case "create-message-conversation":
             const dmMessage = await dmCreateMessage(prisma, session, {
               content: content!,
               conversationId: conversationId!,
@@ -171,14 +171,14 @@ export const wsRouter = (app: ElysiaContext) =>
 
             ws.publish(`conversation:${dmMessage.conversationId}`, {
               message: dmMessage,
-              type: "create-conversation-message",
+              type: "create-message-conversation",
             });
             ws.send({
               message: dmMessage,
-              type: "create-conversation-message",
+              type: "create-message-conversation",
             });
             break;
-          case "create-chat-message":
+          case "create-message-chat":
             const server = await prisma.server.findFirst({
               where: {
                 id: serverId,
@@ -250,7 +250,7 @@ export const wsRouter = (app: ElysiaContext) =>
               message: { newMessage, serverId: server.id },
             });
             break;
-          case "edit-chat-message":
+          case "edit-message-chat":
             try {
               const editedMessage = await editMessage(prisma, session, {
                 content,
@@ -260,16 +260,16 @@ export const wsRouter = (app: ElysiaContext) =>
               if (editedMessage) {
                 ws.publish(`channel:${channelId}`, {
                   message: editedMessage,
-                  type: "edit-chat-message",
+                  type: "edit-message-chat",
                 });
-                ws.send({ message: editedMessage, type: "edit-chat-message" });
+                ws.send({ message: editedMessage, type: "edit-message-chat" });
               }
             } catch (error) {
               console.log(error);
             }
 
             break;
-          case "edit-conversation-message":
+          case "edit-message-conversation":
             try {
               const editedMessage = await dmEditMesage(prisma, session, {
                 content: content!,
@@ -279,11 +279,11 @@ export const wsRouter = (app: ElysiaContext) =>
               if (editedMessage) {
                 ws.publish(`conversation:${editedMessage.conversationId}`, {
                   message: editedMessage,
-                  type: "edit-conversation-message",
+                  type: "edit-message-conversation",
                 });
                 ws.send({
                   message: editedMessage,
-                  type: "edit-conversation-message",
+                  type: "edit-message-conversation",
                 });
               }
             } catch (error) {
@@ -291,7 +291,7 @@ export const wsRouter = (app: ElysiaContext) =>
             }
 
             break;
-          case "delete-conversation-message":
+          case "delete-message-converastion":
             try {
               const deletedMessage = await dmDeleteMessage(prisma, session, {
                 messageId: messageId!,
@@ -300,11 +300,11 @@ export const wsRouter = (app: ElysiaContext) =>
               if (deletedMessage) {
                 ws.publish(`conversation:${deletedMessage.conversationId}`, {
                   message: deletedMessage,
-                  type: "delete-conversation-message",
+                  type: "delete-message-converastion",
                 });
                 ws.send({
                   message: deletedMessage,
-                  type: "delete-conversation-message",
+                  type: "delete-message-converastion",
                 });
               }
             } catch (error) {
@@ -312,7 +312,7 @@ export const wsRouter = (app: ElysiaContext) =>
             }
 
             break;
-          case "delete-chat-message":
+          case "delete-message-chat":
             try {
               const deletedMessage = await deleteMessage(prisma, session, {
                 messageId,
@@ -322,11 +322,11 @@ export const wsRouter = (app: ElysiaContext) =>
               if (deletedMessage) {
                 ws.publish(`channel:${channelId}`, {
                   message: deletedMessage,
-                  type: "delete-chat-message",
+                  type: "delete-message-chat",
                 });
                 ws.send({
                   message: deletedMessage,
-                  type: "delete-chat-message",
+                  type: "delete-message-chat",
                 });
               }
             } catch (error) {
@@ -356,7 +356,7 @@ export const wsRouter = (app: ElysiaContext) =>
               console.log(error);
             }
             break;
-          case "create-direct-message-reaction":
+          case "create-reaction-conversation":
             try {
               const messageReaction = await dmMessageReaction(prisma, session, {
                 conversationId: conversationId!,
@@ -367,11 +367,11 @@ export const wsRouter = (app: ElysiaContext) =>
               if (messageReaction) {
                 ws.publish(`conversation:${conversationId}`, {
                   message: messageReaction,
-                  type: "create-direct-message-reaction",
+                  type: "create-reaction-conversation",
                 });
                 ws.send({
                   message: messageReaction,
-                  type: "create-direct-message-reaction",
+                  type: "create-reaction-conversation",
                 });
               }
             } catch (error) {

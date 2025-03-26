@@ -16,19 +16,19 @@ type ChannelMessagesProps = {
 };
 
 export const useChannelMessages = ({ channelId }: ChannelMessagesProps) => {
-  const { isConnected, joinChannel, leaveChannel } = useSocket();
+  const { isConnected, join, leave } = useSocket();
 
   useEffect(() => {
     if (isConnected && channelId) {
-      joinChannel(channelId);
+      join({channelId});
     }
 
     return () => {
       if (isConnected && channelId) {
-        leaveChannel(channelId);
+        leave({channelId});
       }
     };
-  }, [isConnected, channelId, joinChannel, leaveChannel]);
+  }, [isConnected, channelId, join, leave]);
 
   const query = useInfiniteQuery({
     queryKey: ["messages", channelId],
