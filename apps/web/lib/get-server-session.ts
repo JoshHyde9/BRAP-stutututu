@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 export const getServerSession = async () => {
   "use server";
 
-  const response = await fetch("http://localhost:5000/api/auth/get-session", {
+  const response = await fetch(`${process.env.DEPLOYED_URL ?? process.env.SERVER_URL ?? 'http://localhost:5000'}/api/auth/get-session`, {
     credentials: "include",
     headers: await headers(),
   });

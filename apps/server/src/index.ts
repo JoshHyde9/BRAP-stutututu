@@ -25,7 +25,7 @@ const app = new Elysia({ prefix: "/api" })
   .use(elysiaContext)
   .use(
     cors({
-      origin: "http://localhost:3000",
+      origin: ["http://localhost:3000", "http://web:3000", `${process.env.DEPLOYED_URL}:3000`],
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
       credentials: true,
       allowedHeaders: ["Content-Type", "Authorization"],
@@ -41,9 +41,7 @@ const app = new Elysia({ prefix: "/api" })
   .all("/auth/*", betterAuthView)
   .listen(5000);
 
-console.log(
-  `Server is running at http://${app.server?.hostname}:${app.server?.port}/api`
-);
+console.log(`Server is running at http://${app.server?.hostname}:${app.server?.port}/api`);
 
 export type App = typeof app;
 export type ElysiaContext = typeof elysiaContext;

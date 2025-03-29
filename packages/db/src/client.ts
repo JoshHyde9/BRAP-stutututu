@@ -1,6 +1,9 @@
 import { PrismaClient } from "../generated/client";
 
-const prisma = new PrismaClient({ log: ["query", "error"] });
+const prisma = new PrismaClient({
+  log:
+    process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+});
 
 const globalForPrisma = global as unknown as { prisma: typeof prisma };
 

@@ -9,6 +9,6 @@ export type {
   DirectMessageWithSortedReactions,
 } from "@workspace/server";
 
-export const { api } = treaty<App>("localhost:5000", {
+export const { api } = treaty<App>(process.env.SERVER_URL || "http://localhost:5000", {
   fetch: { credentials: "include" },
 });
