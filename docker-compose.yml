@@ -16,6 +16,7 @@ services:
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - NEXT_PUBLIC_BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - CORS_URL=${CORS_URL}
+      - DEPLOYED_URL=${DEPLOYED_URL}
       - NODE_ENV=production
     restart: unless-stopped
     networks:
@@ -38,6 +39,7 @@ services:
       - NEXT_PUBLIC_BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - CORS_URL=${CORS_URL}
       - NEXT_PUBLIC_CORS_URL=${CORS_URL}
+      - DEPLOYED_URL=${DEPLOYED_URL}
       - NODE_ENV=production
     restart: unless-stopped
     networks:
