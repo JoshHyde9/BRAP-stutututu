@@ -9,7 +9,7 @@ export default function SignIn() {
       onClick={async () =>
         await signIn.social({
           provider: "discord",
-          callbackURL: process.env.NEXT_PUBLIC_CORS_URL || "http://localhost:3000",
+          callbackURL: "http://server:5000",
         })
       }
     >
