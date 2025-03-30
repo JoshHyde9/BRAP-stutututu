@@ -46,7 +46,7 @@ services:
     ports:
       - "6969:6969"
     volumes:
-      - ./nginx:/etc/nginx/conf.d
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - web
       - server
