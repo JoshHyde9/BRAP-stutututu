@@ -1,6 +1,3 @@
-FROM nginx:alpine
-COPY nginx/nginx.conf /etc/nginx/nginx.conf
-
 FROM oven/bun:latest AS base
 
 # Set working directory

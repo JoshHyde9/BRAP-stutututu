@@ -29,7 +29,7 @@ export const MediaRoom: React.FC<MediaRoomType> = ({
     (async () => {
       try {
         const response = await fetch(
-          `/api/livekit?room=${chatId}&username=${session.user.name}`,
+          `/next-api/livekit?room=${chatId}&username=${session.user.name}`,
         );
         const data = await response.json();
 
