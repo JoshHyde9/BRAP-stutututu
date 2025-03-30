@@ -10,7 +10,7 @@ const baseUrl =
 export const getServerSession = async () => {
   "use server";
 
-  const response = await fetch(`${baseUrl}/api/auth-get-session`, {
+  const response = await fetch(`${baseUrl}/api/auth/get-session`, {
     credentials: "include",
     headers: await headers(),
   });
