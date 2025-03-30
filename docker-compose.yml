@@ -46,8 +46,8 @@ services:
     image: nginx:alpine
     ports:
       - "80:80" 
-    volumes:
-      - /data/compose/45/nginx/nginx.conf:/etc/nginx/nginx.conf 
+    build:
+      context: .
     depends_on:
       - server
       - web
