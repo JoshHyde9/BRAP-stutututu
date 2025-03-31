@@ -42,7 +42,7 @@ services:
     networks:
       - app-network
   nginx:
-    image: nginx:latest
+    build: ./nginx
     ports:
       - "6969:6969"
     depends_on:
