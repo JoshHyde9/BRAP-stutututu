@@ -1,3 +1,6 @@
+FROM nginx
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+
 FROM oven/bun:latest AS base
 
 # Set working directory

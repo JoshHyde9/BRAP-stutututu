@@ -45,11 +45,6 @@ services:
     image: nginx:latest
     ports:
       - "6969:6969"
-    volumes:
-    - type: bind
-      source: ./nginx/default.conf
-      target: /etc/nginx/nginx.conf
-      read_only: true
     depends_on:
       - web
       - server
