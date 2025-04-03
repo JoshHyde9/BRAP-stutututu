@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 
 const baseUrl =
   process.env.NODE_ENV === "production"
-    ? process.env.NEXT_PUBLIC_CORS_URL
+    ? process.env.NEXT_PUBLIC_CORS_URL || "http://server:5000"
     : "http://localhost:5000";
 
 export const getServerSession = async () => {

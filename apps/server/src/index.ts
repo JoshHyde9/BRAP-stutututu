@@ -25,7 +25,12 @@ const app = new Elysia({ prefix: "/api" })
   .use(elysiaContext)
   .use(
     cors({
-      origin: process.env.CORS_URL || "http://localhost:3000",
+      origin: [
+        process.env.CORS_URL!,
+        process.env.NEXT_PUBLIC_CORS_URL!,
+        "http://localhost:3000",
+        "http://web:3000",
+      ],
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
       credentials: true,
       allowedHeaders: ["Content-Type", "Authorization"],
