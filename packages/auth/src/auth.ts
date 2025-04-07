@@ -7,7 +7,7 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  trustedOrigins: ["http://web:3000", "http://localhost:3000", process.env.CORS_URL!, process.env.NEXT_PUBLIC_CORS_URL!],
+  trustedOrigins: ["http://web:3000", "http://localhost:3000", "https://ripcord.jimslab.cc"],
   socialProviders: {
     discord: {
       clientId: process.env.DISCORD_CLIENT_ID as string,

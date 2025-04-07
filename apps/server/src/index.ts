@@ -26,8 +26,7 @@ const app = new Elysia({ prefix: "/api" })
   .use(
     cors({
       origin: [
-        process.env.CORS_URL!,
-        process.env.NEXT_PUBLIC_CORS_URL!,
+        "https://ripcord.jimslab.cc",
         "http://localhost:3000",
         "http://web:3000",
       ],

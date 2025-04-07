@@ -1,13 +1,5 @@
 FROM oven/bun:latest AS base
 
-# Define build arguments
-ARG NEXT_PUBLIC_CORS_URL
-ARG CORS_URL
-
-# Pass build args to environment variables for build time
-ENV NEXT_PUBLIC_CORS_URL=$NEXT_PUBLIC_CORS_URL
-ENV CORS_URL=$CORS_URL
-
 # Set working directory
 WORKDIR /app
 

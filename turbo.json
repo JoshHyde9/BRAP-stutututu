@@ -3,19 +3,6 @@
   "ui": "tui",
   "tasks": {
     "build": {
-      "env": [
-        "NODE_ENV=production",
-        "DATABASE_URL",
-        "DISCORD_CLIENT_ID",
-        "DISCORD_CLIENT_SECRET",
-        "LIVEKIT_API_KEY",
-        "LIVEKIT_API_SECRET",
-        "NEXT_PUBLIC_LIVEKIT_URL",
-        "UPLOADTHING_TOKEN",
-        "BETTER_AUTH_SECRET",
-        "CORS_URL",
-        "NEXT_PUBLIC_CORS_URL"
-      ],
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
@@ -23,20 +10,7 @@
     "start": {
       "dependsOn": ["build"],
       "cache": false,
-      "persistent": true,
-      "env": [
-        "NODE_ENV=production",
-        "DATABASE_URL",
-        "DISCORD_CLIENT_ID",
-        "DISCORD_CLIENT_SECRET",
-        "LIVEKIT_API_KEY",
-        "LIVEKIT_API_SECRET",
-        "NEXT_PUBLIC_LIVEKIT_URL",
-        "UPLOADTHING_TOKEN",
-        "BETTER_AUTH_SECRET",
-        "CORS_URL",
-        "NEXT_PUBLIC_CORS_URL"
-      ]
+      "persistent": true
     },
     "lint": {
       "dependsOn": ["^lint"]
