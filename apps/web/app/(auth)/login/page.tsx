@@ -9,7 +9,7 @@ export default function SignIn() {
       onClick={async () =>
         await signIn.social({
           provider: "discord",
-          callbackURL: "https://ripcord.jimslab.cc",
+          callbackURL: process.env.NODE_ENV === "production" ? "https://ripcord.jimslab.cc" : "http://localhost:3000",
         })
       }
     >
