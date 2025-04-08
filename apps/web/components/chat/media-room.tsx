@@ -52,7 +52,7 @@ export const MediaRoom: React.FC<MediaRoomType> = ({
   return (
     <LiveKitRoom
       data-lk-theme="default"
-      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+      serverUrl="wss://discord-clone-050a26ch.livekit.cloud"
       token={token}
       connect={true}
       video={video}
