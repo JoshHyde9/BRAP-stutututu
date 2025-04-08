@@ -21,6 +21,8 @@ Fkn idk tbh
 - [ ] Pinned messages
 - [ ] User activity status
 - [ ] Mention users
+- [ ] Fix modal tree closing
+- [ ] Drag and drop file uploads in text channels / conversations
 - [ ] User settings
   - [ ] Edit their displayName, name and image
 
