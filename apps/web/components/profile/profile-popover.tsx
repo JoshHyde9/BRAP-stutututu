@@ -15,7 +15,7 @@ import { ProfilePopoverActions } from "./profile-popover-actions";
 type ProfilePopoverProps = {
   displayName: string;
   username: string;
-  image: string | null;
+  image?: string | null;
   role: MemberRole;
   children: React.ReactNode;
 };

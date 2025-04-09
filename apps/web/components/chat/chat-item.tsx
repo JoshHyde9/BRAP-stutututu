@@ -78,10 +78,21 @@ export const ChatItem: React.FC<ChatItemProps> = ({
       <div className={cn("start group flex w-full gap-x-2")}>
         {!isCompact ? (
           <div className="cursor-pointer transition hover:drop-shadow-md">
-            <UserAvatar
-              name={message.member.user.name}
-              src={message.member.user.image}
-            />
+            <ProfilePopover
+              image={message.member.user.image}
+              username={message.member.user.name}
+              displayName={
+                message.member.nickname ??
+                message.member.user.displayName ??
+                message.member.user.name
+              }
+              role={message.member.role}
+            >
+              <UserAvatar
+                name={message.member.user.name}
+                src={message.member.user.image}
+              />
+            </ProfilePopover>
           </div>
         ) : (
           <span className="text-muted-foreground cursor-default pr-2 pt-1 text-xs opacity-0 group-hover:opacity-100">
