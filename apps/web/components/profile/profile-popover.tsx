@@ -49,7 +49,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
             </div>
             <div className="mb-7">
               <UserAvatar
-                className="top-2/5 absolute left-2.5 size-14 border-4 border-black md:size-24"
+                className="top-3/5 md:top-2/5 absolute left-2.5 size-18 border-4 border-black md:size-24"
                 name={username}
                 src={image}
               />

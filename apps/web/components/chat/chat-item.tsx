@@ -227,12 +227,12 @@ export const ChatItem: React.FC<ChatItemProps> = ({
                 </ProfilePopover>
               </div>
             ) : (
-              <span className="text-muted-foreground cursor-default pr-2 pt-1 text-xs opacity-0 group-hover:opacity-100">
+              <span className="text-muted-foreground cursor-default lg:pr-2 -ml-1 lg:ml-0 pt-1 text-xs opacity-0 group-hover:opacity-100">
                 {format(message.createdAt, "hh:mm")}
               </span>
             )}
             <div className="flex w-full flex-col">
-              {!isCompact ? (
+              {!isCompact && (
                 <div className="flex items-center gap-x-2">
                   <div className="flex items-center">
                     <ProfilePopover
@@ -259,8 +259,6 @@ export const ChatItem: React.FC<ChatItemProps> = ({
                     {formatDate(message.createdAt)}
                   </span>
                 </div>
-              ) : (
-                <span></span>
               )}
               {isImage && (
                 <Dialog>
