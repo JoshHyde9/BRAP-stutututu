@@ -207,7 +207,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
         </div>
       ) : (
         <MessageToolbarDrawer>
-          <div className={cn("start group flex w-full gap-x-2")}>
+          <div className={cn("start group flex w-full gap-x-2 select-none")}>
             {!isCompact ? (
               <div className="cursor-pointer transition hover:drop-shadow-md">
                 <ProfilePopover

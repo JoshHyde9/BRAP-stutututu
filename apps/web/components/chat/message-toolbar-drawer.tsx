@@ -27,7 +27,7 @@ export const MessageToolbarDrawer: React.FC<MessageToolbarDrawerProps> = ({
   children,
 }) => {
   const [open, setOpen] = useState(false);
-  const [onStart, onEnd] = useLongPress(() => setOpen(true), 800);
+  const [onStart, onEnd] = useLongPress(() => setOpen(true), 600);
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
