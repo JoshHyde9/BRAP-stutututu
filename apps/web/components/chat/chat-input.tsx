@@ -5,7 +5,7 @@ import type z from "zod";
 
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, Smile } from "lucide-react";
+import { Plus, SendHorizonal, Smile } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -108,7 +108,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                     placeholder={`Message ${type === "conversation" ? name : `#${name}`}`}
                     {...field}
                   />
-                  <div className="absolute right-8 flex items-center">
+                  <div className="absolute right-8 flex items-center gap-x-1">
                     <EmojiPicker
                       label="Add Emoji"
                       side="top"
@@ -121,6 +121,11 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                         className="ml-auto size-[24px] cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300"
                       />
                     </EmojiPicker>
+                    <div className="bg-discord flex size-[24px] items-center justify-center rounded-full">
+                      <button type="submit">
+                        <SendHorizonal className="size-4 text-white" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </FormControl>
