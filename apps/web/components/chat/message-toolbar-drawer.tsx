@@ -18,6 +18,11 @@ type MessageToolbarDrawerProps = {
   children: React.ReactNode;
 };
 
+/* TODO:
+ * Add functionality to actions
+ * Conditional rendering
+ * Separate out lists into own components
+ */
 export const MessageToolbarDrawer: React.FC<MessageToolbarDrawerProps> = ({
   children,
 }) => {

@@ -36,6 +36,7 @@ type EmojiPickerProps = {
   open: boolean;
 };
 
+// TODO: Mobile picker is put into a drawer instead of a popover
 export const EmojiPicker: React.FC<EmojiPickerProps> = ({
   handleEmojiSelect,
   children,
