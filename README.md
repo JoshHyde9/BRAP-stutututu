@@ -24,6 +24,7 @@ Fkn idk tbh
 - [ ] Fix modal tree closing
 - [ ] Drag and drop file uploads in text channels / conversations
 - [ ] Prefetch everything, app feels very slugish
+- [ ] Fix UI shift when hovering server sidebar items
 - [ ] User settings
   - [ ] Edit their displayName, name and image
 
