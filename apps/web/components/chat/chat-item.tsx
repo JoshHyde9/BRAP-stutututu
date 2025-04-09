@@ -4,7 +4,7 @@ import type { Member } from "@workspace/db";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { format } from "date-fns";
-import { Edit, FileIcon, MoreVertical } from "lucide-react";
+import { CornerUpLeft, Edit, FileIcon, MoreVertical } from "lucide-react";
 
 import {
   Dialog,
@@ -24,9 +24,10 @@ import { AddReaction } from "@/components/chat/add-reaction";
 import { DeleteMessage } from "@/components/chat/delete-message";
 import { EditMessage } from "@/components/chat/edit-message";
 import { MessageReactions } from "@/components/chat/message-reactions";
+import { ProfilePopover } from "@/components/profile/profile-popover";
 import { UserAvatar } from "@/components/user-avatar";
 
-import { ProfilePopover } from "@/components/profile/profile-popover";
+import { MessageToolbarMore } from "./message-toolbar-more";
 
 type ChatItemProps = {
   loggedInMember: Member;
@@ -192,6 +193,9 @@ export const ChatItem: React.FC<ChatItemProps> = ({
             queryParams={{ channelId, serverId }}
             messageId={message.id}
           />
+          <ActionTooltip label="Reply">
+            <CornerUpLeft className="ml-auto size-4 cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300" />
+          </ActionTooltip>
           {message.member.user.id === loggedInMember.userId &&
             !message.fileUrl && (
               <ActionTooltip label="Edit">
@@ -212,9 +216,16 @@ export const ChatItem: React.FC<ChatItemProps> = ({
           ) : (
             false
           )}
-          <ActionTooltip label="More">
-            <MoreVertical className="ml-auto size-4 cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300" />
-          </ActionTooltip>
+          <MessageToolbarMore
+            loggedInMember={{
+              role: loggedInMember.role,
+              userId: loggedInMember.userId,
+            }}
+            messageUser={{
+              role: message.member.role,
+              userId: message.member.userId,
+            }}
+          />
         </div>
       </div>
     </div>
