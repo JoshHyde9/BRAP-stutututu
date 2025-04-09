@@ -4,7 +4,7 @@ import type { Member } from "@workspace/db";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { format } from "date-fns";
-import { CornerUpLeft, Edit, FileIcon, MoreVertical } from "lucide-react";
+import { CornerUpLeft, Edit, FileIcon } from "lucide-react";
 
 import {
   Dialog,

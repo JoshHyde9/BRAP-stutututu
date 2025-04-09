@@ -9,8 +9,8 @@ import {
 
 import { roleIconMap } from "@/lib/iconMaps";
 
-import { UserAvatar } from "../user-avatar";
-import { ProfilePopoverActions } from "./profile-popover-actions";
+import { UserAvatar } from "@/components/user-avatar";
+import { ProfilePopoverActions } from "@/components/profile/profile-popover-actions";
 
 type ProfilePopoverProps = {
   displayName: string;
