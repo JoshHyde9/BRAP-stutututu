@@ -26,6 +26,7 @@ Fkn idk tbh
 - [ ] Prefetch everything, app feels very slugish
 - [ ] User settings
   - [ ] Edit their displayName, name and image
+- [ ] Create separate Dockerfiles for server and web
 
 ## Features
 
