@@ -26,6 +26,8 @@ import { EditMessage } from "@/components/chat/edit-message";
 import { MessageReactions } from "@/components/chat/message-reactions";
 import { UserAvatar } from "@/components/user-avatar";
 
+import { ProfilePopover } from "@/components/profile/profile-popover";
+
 type ChatItemProps = {
   loggedInMember: Member;
   serverId: string;
@@ -89,11 +91,22 @@ export const ChatItem: React.FC<ChatItemProps> = ({
           {!isCompact ? (
             <div className="flex items-center gap-x-2">
               <div className="flex items-center">
-                <p className="cursor-pointer font-semibold hover:underline">
-                  {message.member.nickname ??
+                <ProfilePopover
+                  image={message.member.user.image}
+                  username={message.member.user.name}
+                  displayName={
+                    message.member.nickname ??
                     message.member.user.displayName ??
-                    message.member.user.name}
-                </p>
+                    message.member.user.name
+                  }
+                  role={message.member.role}
+                >
+                  <p className="cursor-pointer font-semibold hover:underline">
+                    {message.member.nickname ??
+                      message.member.user.displayName ??
+                      message.member.user.name}
+                  </p>
+                </ProfilePopover>
                 <ActionTooltip label={message.member.role}>
                   <p>{roleIconMap[message.member.role]}</p>
                 </ActionTooltip>
