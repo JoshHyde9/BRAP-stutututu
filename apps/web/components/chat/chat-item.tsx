@@ -14,6 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
+import { useMediaQuery } from "@workspace/ui/hooks/use-media-query";
 import { cn } from "@workspace/ui/lib/utils";
 
 import { formatDate } from "@/lib/helpers";
@@ -24,10 +25,10 @@ import { AddReaction } from "@/components/chat/add-reaction";
 import { DeleteMessage } from "@/components/chat/delete-message";
 import { EditMessage } from "@/components/chat/edit-message";
 import { MessageReactions } from "@/components/chat/message-reactions";
+import { MessageToolbarDrawer } from "@/components/chat/message-toolbar-drawer";
+import { MessageToolbarMore } from "@/components/chat/message-toolbar-more";
 import { ProfilePopover } from "@/components/profile/profile-popover";
 import { UserAvatar } from "@/components/user-avatar";
-
-import { MessageToolbarMore } from "./message-toolbar-more";
 
 type ChatItemProps = {
   loggedInMember: Member;
@@ -51,6 +52,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
   const isImage = !isPDF && message.fileUrl;
 
   const [isEditing, setIsEditing] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   const isEdited = message.content !== message.originalContent;
 
@@ -75,34 +77,139 @@ export const ChatItem: React.FC<ChatItemProps> = ({
         !isCompact && "mt-4",
       )}
     >
-      <div className={cn("start group flex w-full gap-x-2")}>
-        {!isCompact ? (
-          <div className="cursor-pointer transition hover:drop-shadow-md">
-            <ProfilePopover
-              image={message.member.user.image}
-              username={message.member.user.name}
-              displayName={
-                message.member.nickname ??
-                message.member.user.displayName ??
-                message.member.user.name
-              }
-              role={message.member.role}
-            >
-              <UserAvatar
-                name={message.member.user.name}
-                src={message.member.user.image}
-              />
-            </ProfilePopover>
-          </div>
-        ) : (
-          <span className="text-muted-foreground cursor-default pr-2 pt-1 text-xs opacity-0 group-hover:opacity-100">
-            {format(message.createdAt, "hh:mm")}
-          </span>
-        )}
-        <div className="flex w-full flex-col">
+      {/* TODO: Refactor */}
+      {isDesktop ? (
+        <div className={cn("start group flex w-full gap-x-2")}>
           {!isCompact ? (
-            <div className="flex items-center gap-x-2">
-              <div className="flex items-center">
+            <div className="cursor-pointer transition hover:drop-shadow-md">
+              <ProfilePopover
+                image={message.member.user.image}
+                username={message.member.user.name}
+                displayName={
+                  message.member.nickname ??
+                  message.member.user.displayName ??
+                  message.member.user.name
+                }
+                role={message.member.role}
+              >
+                <UserAvatar
+                  name={message.member.user.name}
+                  src={message.member.user.image}
+                />
+              </ProfilePopover>
+            </div>
+          ) : (
+            <span className="text-muted-foreground cursor-default pr-2 pt-1 text-xs opacity-0 group-hover:opacity-100">
+              {format(message.createdAt, "hh:mm")}
+            </span>
+          )}
+          <div className="flex w-full flex-col">
+            {!isCompact ? (
+              <div className="flex items-center gap-x-2">
+                <div className="flex items-center">
+                  <ProfilePopover
+                    image={message.member.user.image}
+                    username={message.member.user.name}
+                    displayName={
+                      message.member.nickname ??
+                      message.member.user.displayName ??
+                      message.member.user.name
+                    }
+                    role={message.member.role}
+                  >
+                    <p className="cursor-pointer font-semibold hover:underline">
+                      {message.member.nickname ??
+                        message.member.user.displayName ??
+                        message.member.user.name}
+                    </p>
+                  </ProfilePopover>
+                  <ActionTooltip label={message.member.role}>
+                    <p>{roleIconMap[message.member.role]}</p>
+                  </ActionTooltip>
+                </div>
+                <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                  {formatDate(message.createdAt)}
+                </span>
+              </div>
+            ) : (
+              <span></span>
+            )}
+            {isImage && (
+              <Dialog>
+                <DialogTrigger>
+                  <Image
+                    src={message.fileUrl!}
+                    alt={message.content}
+                    width={400}
+                    height={300}
+                    className="mt-2 cursor-pointer rounded-md object-contain"
+                  />
+                </DialogTrigger>
+                <DialogContent className="max-h-screen w-fit max-w-screen-lg overflow-hidden border-0 bg-transparent p-0">
+                  <DialogHeader>
+                    <DialogTitle className="sr-only">Image</DialogTitle>
+                    <DialogDescription className="h-screen w-screen">
+                      <Image
+                        src={message.fileUrl!}
+                        alt={message.content}
+                        fill
+                        className="max-h-[90vh] w-auto max-w-full object-contain"
+                      />
+                    </DialogDescription>
+                  </DialogHeader>
+                </DialogContent>
+              </Dialog>
+            )}
+            {isPDF && (
+              <div className="relative mt-2 flex items-center rounded-md bg-neutral-300/10 p-2">
+                <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
+                <a
+                  href={message.fileUrl!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-discord ml-2 text-sm hover:underline dark:text-indigo-400"
+                >
+                  PDF File
+                </a>
+              </div>
+            )}
+            {!message.fileUrl && (
+              <p className="text-zinc-600 dark:text-zinc-300">
+                {message.content}{" "}
+                {isEdited ? (
+                  <span className="text-muted-foreground text-xs">
+                    (edited)
+                  </span>
+                ) : null}
+              </p>
+            )}
+
+            {message.reactions && message.reactions.length > 0 && (
+              <MessageReactions
+                loggedInMember={loggedInMember}
+                messageId={message.id}
+                queryParams={{ channelId, serverId }}
+                reactions={message.reactions}
+              />
+            )}
+            {isEditing && (
+              <EditMessage
+                queryParams={{
+                  serverId,
+                  channelId,
+                }}
+                messageId={message.id}
+                content={message.content}
+                setIsEditing={setIsEditing}
+              />
+            )}
+          </div>
+        </div>
+      ) : (
+        <MessageToolbarDrawer>
+          <div className={cn("start group flex w-full gap-x-2")}>
+            {!isCompact ? (
+              <div className="cursor-pointer transition hover:drop-shadow-md">
                 <ProfilePopover
                   image={message.member.user.image}
                   username={message.member.user.name}
@@ -113,91 +220,122 @@ export const ChatItem: React.FC<ChatItemProps> = ({
                   }
                   role={message.member.role}
                 >
-                  <p className="cursor-pointer font-semibold hover:underline">
-                    {message.member.nickname ??
-                      message.member.user.displayName ??
-                      message.member.user.name}
-                  </p>
+                  <UserAvatar
+                    name={message.member.user.name}
+                    src={message.member.user.image}
+                  />
                 </ProfilePopover>
-                <ActionTooltip label={message.member.role}>
-                  <p>{roleIconMap[message.member.role]}</p>
-                </ActionTooltip>
               </div>
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                {formatDate(message.createdAt)}
+            ) : (
+              <span className="text-muted-foreground cursor-default pr-2 pt-1 text-xs opacity-0 group-hover:opacity-100">
+                {format(message.createdAt, "hh:mm")}
               </span>
-            </div>
-          ) : (
-            <span></span>
-          )}
-          {isImage && (
-            <Dialog>
-              <DialogTrigger>
-                <Image
-                  src={message.fileUrl!}
-                  alt={message.content}
-                  width={400}
-                  height={300}
-                  className="mt-2 cursor-pointer rounded-md object-contain"
-                />
-              </DialogTrigger>
-              <DialogContent className="max-h-screen w-fit max-w-screen-lg overflow-hidden border-0 bg-transparent p-0">
-                <DialogHeader>
-                  <DialogTitle className="sr-only">Image</DialogTitle>
-                  <DialogDescription className="h-screen w-screen">
+            )}
+            <div className="flex w-full flex-col">
+              {!isCompact ? (
+                <div className="flex items-center gap-x-2">
+                  <div className="flex items-center">
+                    <ProfilePopover
+                      image={message.member.user.image}
+                      username={message.member.user.name}
+                      displayName={
+                        message.member.nickname ??
+                        message.member.user.displayName ??
+                        message.member.user.name
+                      }
+                      role={message.member.role}
+                    >
+                      <p className="cursor-pointer font-semibold hover:underline">
+                        {message.member.nickname ??
+                          message.member.user.displayName ??
+                          message.member.user.name}
+                      </p>
+                    </ProfilePopover>
+                    <ActionTooltip label={message.member.role}>
+                      <p>{roleIconMap[message.member.role]}</p>
+                    </ActionTooltip>
+                  </div>
+                  <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                    {formatDate(message.createdAt)}
+                  </span>
+                </div>
+              ) : (
+                <span></span>
+              )}
+              {isImage && (
+                <Dialog>
+                  <DialogTrigger>
                     <Image
                       src={message.fileUrl!}
                       alt={message.content}
-                      fill
-                      className="max-h-[90vh] w-auto max-w-full object-contain"
+                      width={400}
+                      height={300}
+                      className="mt-2 cursor-pointer rounded-md object-contain"
                     />
-                  </DialogDescription>
-                </DialogHeader>
-              </DialogContent>
-            </Dialog>
-          )}
-          {isPDF && (
-            <div className="relative mt-2 flex items-center rounded-md bg-neutral-300/10 p-2">
-              <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
-              <a
-                href={message.fileUrl!}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-discord ml-2 text-sm hover:underline dark:text-indigo-400"
-              >
-                PDF File
-              </a>
+                  </DialogTrigger>
+                  <DialogContent className="max-h-screen w-fit max-w-screen-lg overflow-hidden border-0 bg-transparent p-0">
+                    <DialogHeader>
+                      <DialogTitle className="sr-only">Image</DialogTitle>
+                      <DialogDescription className="h-screen w-screen">
+                        <Image
+                          src={message.fileUrl!}
+                          alt={message.content}
+                          fill
+                          className="max-h-[90vh] w-auto max-w-full object-contain"
+                        />
+                      </DialogDescription>
+                    </DialogHeader>
+                  </DialogContent>
+                </Dialog>
+              )}
+              {isPDF && (
+                <div className="relative mt-2 flex items-center rounded-md bg-neutral-300/10 p-2">
+                  <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
+                  <a
+                    href={message.fileUrl!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-discord ml-2 text-sm hover:underline dark:text-indigo-400"
+                  >
+                    PDF File
+                  </a>
+                </div>
+              )}
+              {!message.fileUrl && (
+                <p className="text-zinc-600 dark:text-zinc-300">
+                  {message.content}{" "}
+                  {isEdited ? (
+                    <span className="text-muted-foreground text-xs">
+                      (edited)
+                    </span>
+                  ) : null}
+                </p>
+              )}
+
+              {message.reactions && message.reactions.length > 0 && (
+                <MessageReactions
+                  loggedInMember={loggedInMember}
+                  messageId={message.id}
+                  queryParams={{ channelId, serverId }}
+                  reactions={message.reactions}
+                />
+              )}
+              {isEditing && (
+                <EditMessage
+                  queryParams={{
+                    serverId,
+                    channelId,
+                  }}
+                  messageId={message.id}
+                  content={message.content}
+                  setIsEditing={setIsEditing}
+                />
+              )}
             </div>
-          )}
-          {!message.fileUrl && (
-            <p className="text-zinc-600 dark:text-zinc-300">
-              {message.content}{" "}
-              {isEdited ? (
-                <span className="text-muted-foreground text-xs">(edited)</span>
-              ) : null}
-            </p>
-          )}
-          {message.reactions && message.reactions.length > 0 && (
-            <MessageReactions
-              loggedInMember={loggedInMember}
-              messageId={message.id}
-              queryParams={{ channelId, serverId }}
-              reactions={message.reactions}
-            />
-          )}
-          {isEditing && (
-            <EditMessage
-              queryParams={{
-                serverId,
-                channelId,
-              }}
-              messageId={message.id}
-              content={message.content}
-              setIsEditing={setIsEditing}
-            />
-          )}
-        </div>
-      </div>
+          </div>
+        </MessageToolbarDrawer>
+      )}
+
       <div className="absolute -top-2 right-5">
         <div className="flex items-center gap-x-2 rounded-sm border bg-white p-1 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-zinc-800">
           <AddReaction

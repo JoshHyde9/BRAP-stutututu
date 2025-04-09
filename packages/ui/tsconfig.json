@@ -1,6 +1,7 @@
 {
   "extends": "@workspace/tsconfig/react-library.json",
   "compilerOptions": {
+    "lib": ["DOM"],
     "baseUrl": ".",
     "paths": {
       "@workspace/ui/*": ["./src/*"]
