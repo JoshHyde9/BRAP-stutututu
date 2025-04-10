@@ -1,5 +1,7 @@
 "use client";
 
+import type { QueryParamsKeys } from "@/lib/types";
+
 import { useState } from "react";
 import { ChevronLeft, Copy, CornerUpLeft, Pencil, Trash } from "lucide-react";
 
@@ -14,8 +16,12 @@ import {
 import { Separator } from "@workspace/ui/components/separator";
 import { useLongPress } from "@workspace/ui/hooks/use-long-press";
 
+import { AddReaction } from "./add-reaction";
+
 type MessageToolbarDrawerProps = {
   children: React.ReactNode;
+  queryParams: QueryParamsKeys;
+  messageId: string;
 };
 
 /* TODO:
@@ -25,6 +31,8 @@ type MessageToolbarDrawerProps = {
  */
 export const MessageToolbarDrawer: React.FC<MessageToolbarDrawerProps> = ({
   children,
+  messageId,
+  queryParams,
 }) => {
   const [open, setOpen] = useState(false);
   const [onStart, onEnd] = useLongPress(() => setOpen(true), 600);
@@ -42,10 +50,16 @@ export const MessageToolbarDrawer: React.FC<MessageToolbarDrawerProps> = ({
         <div className="flex flex-col gap-y-2 px-2">
           <div className="flex flex-col rounded-md">
             <ul className="my-2 flex list-none flex-col rounded-md bg-white dark:bg-[#2b2d31]">
-              <li className="inline-flex items-center gap-x-2 p-3">
-                <ChevronLeft className="size-4" />
-                Add Reaction
-              </li>
+              <AddReaction
+                variant="drawer"
+                messageId={messageId}
+                queryParams={queryParams}
+                setDrawer={setOpen}
+              >
+                <li className="inline-flex items-center gap-x-2 p-3">
+                  Add Reaction
+                </li>
+              </AddReaction>
               <Separator className="dark:bg-muted-foreground/20" />
               <li className="inline-flex items-center gap-x-2 p-3">
                 <Pencil className="size-4" />

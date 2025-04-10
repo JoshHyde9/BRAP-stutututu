@@ -12,16 +12,32 @@ import { QueryParamsKeys } from "@/lib/types";
 
 import { EmojiPicker } from "@/components/chat/emoji-picker";
 
-type AddReactionProps = {
+type DefaultProps = {
   queryParams: QueryParamsKeys;
   messageId: string;
-  variant?: "button" | "icon";
 };
+
+type ButtonVariantProps = {
+  variant: "button" | "icon";
+  children?: never;
+  setDrawer?: never;
+};
+
+type DrawerVariantProps = {
+  variant?: "drawer";
+  children?: React.ReactNode;
+  setDrawer?: (drawer: boolean) => void;
+};
+
+type AddReactionProps = DefaultProps &
+  (ButtonVariantProps | DrawerVariantProps);
 
 export const AddReaction: React.FC<AddReactionProps> = ({
   queryParams,
   messageId,
   variant = "icon",
+  children,
+  setDrawer,
 }) => {
   const messageReaction = useReactions();
   const [open, setOpen] = useState(false);
@@ -33,7 +49,31 @@ export const AddReaction: React.FC<AddReactionProps> = ({
       value: emoji.native,
     });
     setOpen(false);
+
+    if (setDrawer) {
+      setDrawer(false);
+    }
   };
+
+  if (variant === "drawer") {
+    return (
+      <EmojiPicker
+        label="Add Reaction"
+        handleEmojiSelect={handleEmojiSelect}
+        side="right"
+        handleOpen={setOpen}
+        open={open}
+      >
+        <button
+          className="flex w-full items-center justify-start pl-3"
+          onClick={() => setOpen(true)}
+        >
+          <SmilePlus className="size-4 cursor-pointer text-black transition dark:text-neutral-200" />
+          {children}
+        </button>
+      </EmojiPicker>
+    );
+  }
 
   return (
     <EmojiPicker

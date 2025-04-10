@@ -206,8 +206,11 @@ export const ChatItem: React.FC<ChatItemProps> = ({
           </div>
         </div>
       ) : (
-        <MessageToolbarDrawer>
-          <div className={cn("start group flex w-full gap-x-2 select-none")}>
+        <MessageToolbarDrawer
+          queryParams={{ channelId, serverId }}
+          messageId={message.id}
+        >
+          <div className={cn("start group flex w-full select-none gap-x-2")}>
             {!isCompact ? (
               <div className="cursor-pointer transition hover:drop-shadow-md">
                 <ProfilePopover
@@ -227,7 +230,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
                 </ProfilePopover>
               </div>
             ) : (
-              <span className="text-muted-foreground cursor-default lg:pr-2 -ml-1 lg:ml-0 pt-1 text-xs opacity-0 group-hover:opacity-100">
+              <span className="text-muted-foreground -ml-1 cursor-default pt-1 text-xs opacity-0 group-hover:opacity-100 lg:ml-0 lg:pr-2">
                 {format(message.createdAt, "hh:mm")}
               </span>
             )}
