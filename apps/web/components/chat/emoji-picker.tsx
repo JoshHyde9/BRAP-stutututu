@@ -6,6 +6,15 @@ import Picker from "@emoji-mart/react";
 import { useTheme } from "next-themes";
 
 import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@workspace/ui/components/drawer";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -16,6 +25,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip";
+import { useMediaQuery } from "@workspace/ui/hooks/use-media-query";
 
 export type Emoji = {
   id: string;
@@ -36,7 +46,6 @@ type EmojiPickerProps = {
   open: boolean;
 };
 
-// TODO: Mobile picker is put into a drawer instead of a popover
 export const EmojiPicker: React.FC<EmojiPickerProps> = ({
   handleEmojiSelect,
   children,
@@ -48,29 +57,51 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({
   const { resolvedTheme } = useTheme();
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  if (isDesktop) {
+    return (
+      <TooltipProvider>
+        <Popover open={open} onOpenChange={handleOpen}>
+          <Tooltip
+            delayDuration={50}
+            open={tooltipOpen}
+            onOpenChange={setTooltipOpen}
+          >
+            <PopoverTrigger asChild>
+              <TooltipTrigger asChild>{children}</TooltipTrigger>
+            </PopoverTrigger>
+            <TooltipContent>
+              <p className="text-sm font-semibold capitalize">{label}</p>
+            </TooltipContent>
+          </Tooltip>
+          <PopoverContent side={side} className="w-fit">
+            <Picker
+              theme={resolvedTheme}
+              data={data}
+              onEmojiSelect={handleEmojiSelect}
+            />
+          </PopoverContent>
+        </Popover>
+      </TooltipProvider>
+    );
+  }
+
   return (
-    <TooltipProvider>
-      <Popover open={open} onOpenChange={handleOpen}>
-        <Tooltip
-          delayDuration={50}
-          open={tooltipOpen}
-          onOpenChange={setTooltipOpen}
-        >
-          <PopoverTrigger asChild>
-            <TooltipTrigger asChild>{children}</TooltipTrigger>
-          </PopoverTrigger>
-          <TooltipContent>
-            <p className="text-sm font-semibold capitalize">{label}</p>
-          </TooltipContent>
-        </Tooltip>
-        <PopoverContent side={side} className="w-fit">
-          <Picker
-            theme={resolvedTheme}
-            data={data}
-            onEmojiSelect={handleEmojiSelect}
-          />
-        </PopoverContent>
-      </Popover>
-    </TooltipProvider>
+    <Drawer open={open} onOpenChange={handleOpen}>
+      <DrawerTrigger asChild>{children}</DrawerTrigger>
+      <DrawerContent className="flex items-center">
+        <DrawerHeader className="sr-only">
+          <DrawerTitle>Emoji Picker</DrawerTitle>
+          <DrawerDescription>Emoji Picker</DrawerDescription>
+        </DrawerHeader>
+        <Picker
+          theme={resolvedTheme}
+          data={data}
+          onEmojiSelect={handleEmojiSelect}
+        />
+        <DrawerFooter />
+      </DrawerContent>
+    </Drawer>
   );
 };
