@@ -19,7 +19,7 @@ export const ServerList: React.FC<ServerListProps> = ({ servers }) => {
   return (
     <ScrollArea className="w-full flex-1">
       {servers?.map((server) => (
-        <Link key={server.id} href="/server/[id]" as={`/server/${server.id}/channel/${server.channels[0]?.id}`}>
+        <Link key={server.id} href="/server/[serverId]/channel/[channelId]" as={`/server/${server.id}/channel/${server.channels[0]?.id}`}>
           <div className="mb-4">
             <NavigationItem
               id={server.id}
