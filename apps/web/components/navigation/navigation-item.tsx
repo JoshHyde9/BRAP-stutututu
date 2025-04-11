@@ -22,7 +22,6 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
   name,
 }) => {
   const params = useParams<{ serverId: string }>();
-  const router = useRouter();
   const {
     notifications,
     clearServerNotifications,
@@ -43,7 +42,6 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
       <button
         onClick={() => {
           clearServerNotifications(params.serverId);
-          router.push(`/server/${id}`);
         }}
         className="group relative flex items-center"
       >

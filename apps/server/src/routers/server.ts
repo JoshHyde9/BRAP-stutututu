@@ -19,6 +19,13 @@ export const serverRouter = (app: ElysiaContext) =>
                 },
               },
             },
+            include: {
+              channels: {
+                where: {
+                  name: "general"
+                }
+              }
+            }
           });
         },
         { auth: true }

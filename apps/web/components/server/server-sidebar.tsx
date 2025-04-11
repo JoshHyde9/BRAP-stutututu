@@ -1,5 +1,7 @@
 import { headers } from "next/headers";
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { QueryClient } from "@tanstack/react-query";
 
 import { api } from "@workspace/api";
 import { ChannelType } from "@workspace/db";
@@ -24,14 +26,22 @@ export const ServerSidebar: React.FC<ServerSidebarProps> = async ({
   serverId,
 }) => {
   const session = await getServerSession();
+  const queryClient = new QueryClient();
 
   if (!session || !serverId) {
     return redirect("/");
   }
 
-  const { data: server } = await api.server
-    .byIdWithMembersAndChannels({ id: serverId })
-    .get({ fetch: { headers: await headers() } });
+  const server = await queryClient.fetchQuery({
+    queryKey: ["server", serverId],
+    queryFn: async () => {
+      const { data: server } = await api.server
+        .byIdWithMembersAndChannels({ id: serverId })
+        .get({ fetch: { headers: await headers() } });
+
+      return server;
+    },
+  });
 
   if (!server) {
     return redirect("/");
@@ -120,12 +130,17 @@ export const ServerSidebar: React.FC<ServerSidebarProps> = async ({
             />
             <div className="space-y-[2px]">
               {textChannels.map((channel) => (
-                <ServerChannel
+                <Link
                   key={channel.id}
-                  channel={channel}
-                  server={server}
-                  loggedInUserRole={loggedInUserRole}
-                />
+                  href="/server/[serverId]/channel/[channelId]"
+                  as={`/server/${server.id}/channel/${channel.id}`}
+                >
+                  <ServerChannel
+                    channel={channel}
+                    server={server}
+                    loggedInUserRole={loggedInUserRole}
+                  />
+                </Link>
               ))}
             </div>
           </div>
@@ -142,12 +157,18 @@ export const ServerSidebar: React.FC<ServerSidebarProps> = async ({
             />
             <div className="space-y-[2px]">
               {audioChannels.map((channel) => (
-                <ServerChannel
+                <Link
                   key={channel.id}
-                  channel={channel}
-                  server={server}
-                  loggedInUserRole={loggedInUserRole}
-                />
+                  href="/server/[serverId]/channel/[channelId]"
+                  as={`/server/${server.id}/channel/${channel.id}`}
+                >
+                  <ServerChannel
+                    key={channel.id}
+                    channel={channel}
+                    server={server}
+                    loggedInUserRole={loggedInUserRole}
+                  />
+                </Link>
               ))}
             </div>
           </div>
@@ -164,12 +185,18 @@ export const ServerSidebar: React.FC<ServerSidebarProps> = async ({
             />
             <div className="space-y-[2px]">
               {videoChannels.map((channel) => (
-                <ServerChannel
+                <Link
                   key={channel.id}
-                  channel={channel}
-                  server={server}
-                  loggedInUserRole={loggedInUserRole}
-                />
+                  href="/server/[serverId]/channel/[channelId]"
+                  as={`/server/${server.id}/channel/${channel.id}`}
+                >
+                  <ServerChannel
+                    key={channel.id}
+                    channel={channel}
+                    server={server}
+                    loggedInUserRole={loggedInUserRole}
+                  />
+                </Link>
               ))}
             </div>
           </div>

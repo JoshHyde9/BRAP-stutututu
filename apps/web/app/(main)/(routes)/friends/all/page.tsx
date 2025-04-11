@@ -1,13 +1,19 @@
-import { headers } from "next/headers";
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
 
 import { api } from "@workspace/api";
 
 import { FriendsList } from "@/components/friends/friends-list";
 
-const FriendsPage = async () => {
-  const { data: friends } = await api.friend.all.get({
-    //@ts-ignore
-    headers: await headers(),
+const FriendsPage = () => {
+  const { data: friends } = useQuery({
+    queryKey: ["all"],
+    queryFn: async () => {
+      const { data: friends } = await api.friend.all.get();
+
+      return friends;
+    },
   });
 
   return (

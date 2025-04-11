@@ -16,7 +16,7 @@ type Friend = {
 };
 
 type FriendsListProps = {
-  friends: Friend[] | null;
+  friends: Friend[] | null | undefined;
   type: "friends" | "requested" | "pending";
 };
 

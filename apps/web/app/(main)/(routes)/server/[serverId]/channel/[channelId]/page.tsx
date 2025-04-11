@@ -1,5 +1,10 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 
 import { api } from "@workspace/api";
 
@@ -17,6 +22,7 @@ type ChannelIdPageProps = {
 const ChannelIdPage: React.FC<ChannelIdPageProps> = async ({ params }) => {
   const session = await getServerSession();
   const headerStore = await headers();
+  const queryClient = new QueryClient();
 
   const { serverId, channelId } = await params;
 
@@ -28,9 +34,37 @@ const ChannelIdPage: React.FC<ChannelIdPageProps> = async ({ params }) => {
     .byId({ channelId })
     .get({ fetch: { headers: headerStore } });
 
-  const { data: loggedInMember } = await api.member
-    .loggedInUserServerMember({ serverId })
-    .get({ fetch: { headers: headerStore } });
+  const loggedInMember = await queryClient.fetchQuery({
+    queryKey: ["loggedInMember", serverId],
+    queryFn: async () => {
+      const { data: loggedInMember } = await api.member
+        .loggedInUserServerMember({ serverId })
+        .get({ fetch: { headers: headerStore } });
+
+      return loggedInMember;
+    },
+  });
+
+  await queryClient.prefetchInfiniteQuery({
+    queryKey: ["messages", channelId],
+    queryFn: async ({
+      pageParam = undefined,
+    }: {
+      pageParam: string | undefined;
+    }) => {
+      const { data, error } = await api.message.channelMessages.get({
+        query: { channelId: channelId, cursor: pageParam },
+        fetch: { headers: headerStore },
+      });
+
+      if (error) {
+        Promise.reject(new Error(error.value.message));
+      }
+
+      return data;
+    },
+    initialPageParam: "",
+  });
 
   if (!channel || !loggedInMember) {
     return redirect("/");
@@ -45,16 +79,21 @@ const ChannelIdPage: React.FC<ChannelIdPageProps> = async ({ params }) => {
       />
       {channel.type === "TEXT" && (
         <>
-          <ChatMessages
-            channelName={channel.name}
-            channelId={channel.id}
-            serverId={channel.serverId}
-            loggedInMember={loggedInMember}
-          />
+          <HydrationBoundary state={dehydrate(queryClient)}>
+            <ChatMessages
+              channelName={channel.name}
+              channelId={channel.id}
+              serverId={channel.serverId}
+              loggedInMember={loggedInMember}
+            />
+          </HydrationBoundary>
           <ChatInput
             name={channel.name}
             type="channel"
-            queryParams={{ channelId: channel.id, serverId: channel.serverId }}
+            queryParams={{
+              channelId: channel.id,
+              serverId: channel.serverId,
+            }}
           />
         </>
       )}

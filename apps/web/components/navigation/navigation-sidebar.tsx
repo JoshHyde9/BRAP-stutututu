@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { QueryClient } from "@tanstack/react-query";
 
 import { api } from "@workspace/api";
 import { Separator } from "@workspace/ui/components/separator";
@@ -14,14 +15,36 @@ import { ConversationNotifications } from "./conversation-notifications";
 
 export const NavigationSidebar = async () => {
   const session = await getServerSession();
+  const headerStore = await headers();
+  const queryClient = new QueryClient();
 
   if (!session) {
     return redirect("/");
   }
 
-  const { data: servers } = await api.server.all.get({
-    fetch: { headers: await headers() },
+  const servers = await queryClient.fetchQuery({
+    queryKey: ["servers"],
+    queryFn: async () => {
+      const { data: servers } = await api.server.all.get({
+        fetch: { headers: headerStore },
+      });
+      
+      return servers;
+    },
   });
+
+  servers?.forEach((server) => {
+    queryClient.prefetchQuery({
+      queryKey: ["server", server.id],
+      queryFn: async () => {
+        const { data: userServer } = await api.server
+          .byIdWithMembersAndChannels({ id: server?.id })
+          .get({ fetch: { headers: headerStore } });
+  
+        return userServer;
+      },
+    })
+  })
 
   return (
     <div className="text-primary flex h-full w-full flex-col items-center space-y-4 bg-zinc-200 py-3 dark:bg-[#1e1f22]">
