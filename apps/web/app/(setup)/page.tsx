@@ -1,8 +1,9 @@
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { getServerSession } from "@/lib/get-server-session";
+import { api } from "@workspace/api";
 
-import { prisma } from "@workspace/db";
+import { getServerSession } from "@/lib/get-server-session";
 
 import { InitialModal } from "@/components/modals/initial-modal";
 
@@ -13,17 +14,15 @@ const SetupPage = async () => {
     return redirect("/login");
   }
 
-  const server = await prisma.server.findFirst({
-    where: { members: { some: { userId: session.user.id } } },
+  const { data: server } = await api.server.findFirst.get({
+    fetch: { headers: await headers() },
   });
 
   if (server) {
-    return redirect(`/server/${server.id}`);
+    return redirect(`/server/${server.id}/channel/${server.channels[0]?.id}`);
   }
 
-  return (
-      <InitialModal />
-  );
+  return <InitialModal />;
 };
 
 export default SetupPage;

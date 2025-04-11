@@ -22,13 +22,37 @@ export const serverRouter = (app: ElysiaContext) =>
             include: {
               channels: {
                 where: {
-                  name: "general"
-                }
-              }
-            }
+                  name: "general",
+                },
+              },
+            },
           });
         },
         { auth: true }
+      )
+      .get(
+        "/findFirst",
+        async ({ user, prisma }) => {
+          return await prisma.server.findFirst({
+            where: {
+              members: {
+                some: {
+                  userId: user.id,
+                },
+              },
+            },
+            include: {
+              channels: {
+                where: {
+                  name: "general",
+                },
+              },
+            },
+          });
+        },
+        {
+          auth: true,
+        }
       )
       .post(
         "/create",
@@ -292,9 +316,7 @@ export const serverRouter = (app: ElysiaContext) =>
             return error("Bad Request");
           }
 
-          const canBan =
-            loggedInMember.role === "ADMIN" ||
-            loggedInMember.role === "MODERATOR";
+          const canBan = loggedInMember.role === "ADMIN" || loggedInMember.role === "MODERATOR";
 
           if (!canBan) {
             return error("Bad Request");
@@ -331,9 +353,7 @@ export const serverRouter = (app: ElysiaContext) =>
             return error("Bad Request");
           }
 
-          const canBan =
-            loggedInMember.role === "ADMIN" ||
-            loggedInMember.role === "MODERATOR";
+          const canBan = loggedInMember.role === "ADMIN" || loggedInMember.role === "MODERATOR";
 
           if (!canBan) {
             return error("Bad Request");
@@ -341,7 +361,7 @@ export const serverRouter = (app: ElysiaContext) =>
 
           await prisma.ban.delete({
             where: {
-              id: body.banId
+              id: body.banId,
             },
           });
 

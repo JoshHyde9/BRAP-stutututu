@@ -7,7 +7,7 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  trustedOrigins: ["http://web:3000", "http://localhost:3000", "https://ripcord.jimslab.cc"],
+  trustedOrigins: ["http://web:3000", "http://localhost:3000", "http://localhost:5000", "https://ripcord.jimslab.cc"],
   socialProviders: {
     discord: {
       clientId: process.env.DISCORD_CLIENT_ID as string,
@@ -17,6 +17,7 @@ export const auth = betterAuth({
           displayName: profile.global_name,
         };
       },
+      redirectURI: process.env.NODE_ENV === "production" ? "https://ripcord.jimslab.cc/api/auth/callback/discord" : "http://localhost:5000/api/auth/callback/discord"
     },
   },
   user: {
