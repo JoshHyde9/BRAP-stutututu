@@ -17,7 +17,6 @@ export const auth = betterAuth({
           displayName: profile.global_name,
         };
       },
-      redirectURI: process.env.NODE_ENV === "production" ? "https://ripcord.jimslab.cc/api/auth/callback/discord" : "http://localhost:5000/api/auth/callback/discord"
     },
   },
   user: {
