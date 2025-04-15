@@ -53,7 +53,7 @@ export const channelRouter = (app: ElysiaContext) =>
             type: t.Enum(ChannelType),
           }),
           params: t.Object({ serverId: t.String() }),
-        }
+        },
       )
       .delete(
         "/deleteChannel/:serverId/:channelId",
@@ -87,7 +87,7 @@ export const channelRouter = (app: ElysiaContext) =>
         {
           auth: true,
           params: t.Object({ serverId: t.String(), channelId: t.String() }),
-        }
+        },
       )
       .patch(
         "/editChannel/:serverId/:channelId",
@@ -127,7 +127,7 @@ export const channelRouter = (app: ElysiaContext) =>
           auth: true,
           body: t.Object({ name: t.String(), type: t.Enum(ChannelType) }),
           params: t.Object({ serverId: t.String(), channelId: t.String() }),
-        }
+        },
       )
       .get(
         "/byId/:channelId",
@@ -139,6 +139,38 @@ export const channelRouter = (app: ElysiaContext) =>
         {
           auth: true,
           params: t.Object({ channelId: t.String() }),
-        }
+        },
       )
+      .get("/pinnedMessages/:channelId", async ({ prisma, params }) => {
+        return await prisma.pinnedMessage.findMany({
+          where: {
+            channelId: params.channelId,
+          },
+          include: {
+            message: {
+              select: {
+                id: true,
+                content: true,
+                fileUrl: true,
+                createdAt: true,
+                member: {
+                  select: {
+                    nickname: true,
+                    user: {
+                      select: {
+                        image: true,
+                        displayName: true,
+                        name: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+      }),
   );

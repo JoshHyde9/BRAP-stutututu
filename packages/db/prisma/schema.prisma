@@ -151,7 +151,8 @@ model Channel {
   serverId String
   server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
-  messages Message[]
+  messages       Message[]
+  pinnedMessages PinnedMessage[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -192,7 +193,8 @@ model Message {
   channelId String
   channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
 
-  reactions Reaction[]
+  reactions     Reaction[]
+  pinnedMessage PinnedMessage?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -308,4 +310,21 @@ model DirectMessageReaction {
   @@index([userId])
   @@index([directMessageId])
   @@map("direct_message_reaction")
+}
+
+model PinnedMessage {
+  id String @id @default(uuid())
+
+  messageId String  @unique
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  channelId String
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([messageId])
+  @@index([channelId])
+  @@map("pinned_message")
 }

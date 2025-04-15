@@ -66,6 +66,17 @@ const ChannelIdPage: React.FC<ChannelIdPageProps> = async ({ params }) => {
     initialPageParam: "",
   });
 
+  await queryClient.prefetchQuery({
+    queryKey: ["pinnedMessages", channelId],
+    queryFn: async () => {
+      const { data } = await api.channel
+        .pinnedMessages({ channelId })
+        .get({ fetch: { headers: headerStore } });
+
+      return data;
+    },
+  });
+
   if (!channel || !loggedInMember) {
     return redirect("/");
   }
@@ -76,6 +87,7 @@ const ChannelIdPage: React.FC<ChannelIdPageProps> = async ({ params }) => {
         type="channel"
         name={channel.name}
         serverId={channel.serverId}
+        channelId={channelId}
       />
       {channel.type === "TEXT" && (
         <>

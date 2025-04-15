@@ -2,16 +2,17 @@ import { Hash, UserRound } from "lucide-react";
 
 import { Separator } from "@workspace/ui/components/separator";
 
+import { PinnedMessages } from "@/components/chat/pinned-messages/pinned-messages";
+import { FriendsTabs } from "@/components/friends/friends-tabs";
 import { MobileToggle } from "@/components/mobile-toggle";
 import { UserAvatar } from "@/components/user-avatar";
-
-import { FriendsTabs } from "@/components/friends/friends-tabs";
 
 type FriendsChatHeaderProps = {
   type: "friends";
   serverId?: never;
   imageUrl?: never;
   name?: never;
+  channelId?: never;
 };
 
 type ChatHeaderProps =
@@ -20,6 +21,7 @@ type ChatHeaderProps =
       serverId?: string;
       imageUrl?: string | null;
       name: string;
+      channelId: string;
     }
   | FriendsChatHeaderProps;
 
@@ -28,6 +30,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   serverId,
   type,
   imageUrl,
+  channelId,
 }) => {
   if (type === "friends") {
     return (
@@ -56,7 +59,10 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       ) : (
         <UserAvatar name={name} src={imageUrl} className="mr-2" />
       )}
-      <p className="font-semibold">{name}</p>
+      <div className="flex w-full pr-2">
+        <p className="font-semibold">{name}</p>
+        <PinnedMessages channelId={channelId} />
+      </div>
     </div>
   );
 };

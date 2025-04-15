@@ -36,7 +36,7 @@ export const messageRouter = (app: ElysiaContext) =>
           }
 
           const member = server.members.find(
-            (member) => member.userId === user.id
+            (member) => member.userId === user.id,
           );
 
           if (!member) {
@@ -78,7 +78,7 @@ export const messageRouter = (app: ElysiaContext) =>
             fileUrl: t.Optional(t.String()),
           }),
           params: t.Object({ serverId: t.String(), channelId: t.String() }),
-        }
+        },
       )
       .get(
         "/channelMessages",
@@ -128,6 +128,25 @@ export const messageRouter = (app: ElysiaContext) =>
             channelId: t.String(),
             cursor: t.Optional(t.String()),
           }),
-        }
+        },
       )
+      .post(
+        "/pinMessage",
+        async ({ prisma, body }) => {
+          await prisma.pinnedMessage.create({
+            data: {
+              messageId: body.messageId,
+              channelId: body.channelId,
+            },
+          });
+
+          return { success: true };
+        },
+        {
+          body: t.Object({
+            messageId: t.String(),
+            channelId: t.String(),
+          }),
+        },
+      ),
   );

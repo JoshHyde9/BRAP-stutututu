@@ -41,3 +41,8 @@ export const ignoreFriendRequestSchema = z.object({
 export const removeFriendSchema = z.object({
   friendshipId: z.string().optional(),
 });
+
+export const createPinnedMessage = z.object({
+  messageId: z.string(),
+  channelId: z.string(),
+});

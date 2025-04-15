@@ -30,6 +30,8 @@ import { MessageToolbarMore } from "@/components/chat/message-toolbar-more";
 import { ProfilePopover } from "@/components/profile/profile-popover";
 import { UserAvatar } from "@/components/user-avatar";
 
+import { PinMessage } from "./pinned-messages/create-pin";
+
 type ChatItemProps = {
   loggedInMember: Member;
   serverId: string;
@@ -355,6 +357,13 @@ export const ChatItem: React.FC<ChatItemProps> = ({
                 />
               </ActionTooltip>
             )}
+          {loggedInMember.role === "ADMIN" ||
+          (message.member.role == "GUEST" &&
+            loggedInMember.role === "MODERATOR") ? (
+            <PinMessage channelId={message.channelId} messageId={message.id} />
+          ) : (
+            false
+          )}
           {message.member.user.id === loggedInMember.userId ||
           loggedInMember.role === "ADMIN" ||
           (message.member.role == "GUEST" &&
