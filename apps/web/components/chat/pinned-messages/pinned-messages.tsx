@@ -5,7 +5,7 @@ import type { Member } from "@workspace/db";
 
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
-import { FileIcon, Pin } from "lucide-react";
+import { FileIcon, Pin, PinOff } from "lucide-react";
 
 import { api } from "@workspace/api";
 import {
@@ -61,7 +61,12 @@ export const PinnedMessages: React.FC<PinnedMessagesProps> = ({
         </div>
 
         {!messages || messages.length <= 0 ? (
-          <div>No pinned messages</div>
+          <div className="flex h-52 flex-col items-center justify-center space-y-3 px-4 text-zinc-600 dark:text-zinc-300">
+            <PinOff className="size-10" />
+            <p className="w-60 text-center">
+              This channel doesn't have any pinned messages... yet.
+            </p>
+          </div>
         ) : (
           <ScrollArea className="px-4 lg:h-[1000px]">
             <div className="flex flex-col gap-y-2">
