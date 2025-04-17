@@ -156,6 +156,8 @@ export const channelRouter = (app: ElysiaContext) =>
                 member: {
                   select: {
                     nickname: true,
+                    role: true,
+                    userId: true,
                     user: {
                       select: {
                         image: true,

@@ -143,6 +143,51 @@ export const messageRouter = (app: ElysiaContext) =>
           return { success: true };
         },
         {
+          auth: true,
+          body: t.Object({
+            messageId: t.String(),
+            channelId: t.String(),
+          }),
+        },
+      )
+      .delete(
+        "/pinMessage",
+        async ({ prisma, user, body }) => {
+          const serverMembers = await prisma.channel.findUnique({
+            where: {
+              id: body.channelId,
+            },
+            include: {
+              server: {
+                include: {
+                  members: true,
+                },
+              },
+            },
+          });
+
+          const loggedInMember = serverMembers?.server.members.find(
+            (member) => member.userId === user.id,
+          );
+
+          const isAdmin = loggedInMember?.role === "ADMIN";
+          const isModerator = loggedInMember?.role === "MODERATOR";
+          const canDelete = isAdmin || isModerator;
+
+          if (!canDelete) {
+            throw new Error("Don't try to be sneaky");
+          }
+
+          await prisma.pinnedMessage.delete({
+            where: {
+              messageId: body.messageId,
+            },
+          });
+
+          return { success: true };
+        },
+        {
+          auth: true,
           body: t.Object({
             messageId: t.String(),
             channelId: t.String(),

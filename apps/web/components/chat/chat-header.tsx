@@ -1,3 +1,5 @@
+import type { Member } from "@workspace/db";
+
 import { Hash, UserRound } from "lucide-react";
 
 import { Separator } from "@workspace/ui/components/separator";
@@ -13,6 +15,7 @@ type FriendsChatHeaderProps = {
   imageUrl?: never;
   name?: never;
   channelId?: never;
+  loggedInMember?: never;
 };
 
 type ChatHeaderProps =
@@ -22,6 +25,7 @@ type ChatHeaderProps =
       imageUrl?: string | null;
       name: string;
       channelId: string;
+      loggedInMember: Member;
     }
   | FriendsChatHeaderProps;
 
@@ -31,6 +35,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   type,
   imageUrl,
   channelId,
+  loggedInMember,
 }) => {
   if (type === "friends") {
     return (
@@ -61,7 +66,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       )}
       <div className="flex w-full pr-2">
         <p className="font-semibold">{name}</p>
-        <PinnedMessages channelId={channelId} />
+        <PinnedMessages loggedInMember={loggedInMember} channelId={channelId} />
       </div>
     </div>
   );

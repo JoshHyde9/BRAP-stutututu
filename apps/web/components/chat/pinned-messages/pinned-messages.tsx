@@ -1,5 +1,8 @@
 "use client";
 
+import type { Session } from "@workspace/auth";
+import type { Member } from "@workspace/db";
+
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { FileIcon, Pin } from "lucide-react";
@@ -25,12 +28,16 @@ import { formatDate } from "@/lib/helpers";
 import { ActionTooltip } from "@/components/action-tooltip";
 import { UserAvatar } from "@/components/user-avatar";
 
+import { DeletePin } from "./delete-pin";
+
 type PinnedMessagesProps = {
   channelId: string;
+  loggedInMember: Member;
 };
 
 export const PinnedMessages: React.FC<PinnedMessagesProps> = ({
   channelId,
+  loggedInMember,
 }) => {
   const { data: messages } = useQuery({
     queryKey: ["pinnedMessages", channelId],
@@ -74,13 +81,26 @@ export const PinnedMessages: React.FC<PinnedMessagesProps> = ({
                         src={message.member.user.image}
                         name={message.member.user.name}
                       />
-                      <div className="flex items-center gap-x-2">
+                      <div className="flex w-full items-center gap-x-2">
                         <p className="font-semibold">
                           {message.member.user.name}
                         </p>
                         <span className="text-xs text-zinc-500 dark:text-zinc-400">
                           {formatDate(message.createdAt)}
                         </span>
+                        {message.member.userId === loggedInMember.userId ||
+                        loggedInMember.role === "ADMIN" ||
+                        (message.member.role == "GUEST" &&
+                          loggedInMember.role === "MODERATOR") ? (
+                          <div className="ml-auto">
+                            <DeletePin
+                              messageId={message.id}
+                              channelId={channelId}
+                            />
+                          </div>
+                        ) : (
+                          false
+                        )}
                       </div>
                     </div>
 
