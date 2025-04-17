@@ -36,12 +36,14 @@ type ConversationSearchProps = {
   data: {
     label: string;
     type: SectionType;
-    data: {
-      id: string;
-      icon?: never;
-      imageUrl?: string | null;
-      name: string;
-    }[] | null;
+    data:
+      | {
+          id: string;
+          icon?: never;
+          imageUrl: string | undefined;
+          name: string;
+        }[]
+      | null;
   }[];
 };
 
@@ -114,16 +116,22 @@ export const ServerSearch: React.FC<ServerSearchProps> = ({
 
             return (
               <CommandGroup key={label} heading={label}>
-                {data && data.map(({ id, name, icon, imageUrl }) => (
-                  <CommandItem
-                    key={id}
-                    onSelect={() => onClick({ id, type })}
-                    className="cursor-pointer"
-                  >
-                    {icon ? icon : <UserAvatar name={name} src={imageUrl} />}
-                    <span>{name}</span>
-                  </CommandItem>
-                ))}
+                {data &&
+                  data.map(({ id, name, icon, imageUrl }) => (
+                    <CommandItem
+                      key={id}
+                      onSelect={() => onClick({ id, type })}
+                      className="cursor-pointer"
+                    >
+                      {imageUrl ? (
+                        <UserAvatar name={name} src={imageUrl} />
+                      ) : (
+                        icon
+                      )}
+                      <span>{name}</span>
+                      {type === "member" && icon}
+                    </CommandItem>
+                  ))}
               </CommandGroup>
             );
           })}

@@ -112,6 +112,7 @@ export const ServerSidebar: React.FC<ServerSidebarProps> = async ({
                     member.user.displayName ??
                     member.user.name,
                   icon: roleIconMap[member.role],
+                  imageUrl: member.user.image,
                 })),
               },
             ]}
