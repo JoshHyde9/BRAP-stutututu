@@ -3,11 +3,18 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "@workspace/db";
 
 export const auth = betterAuth({
-  secret: process.env.BETTER_AUTH_SECRET || process.env.NEXT_PUBLIC_BETTER_AUTH_SECRET,
+  secret:
+    process.env.BETTER_AUTH_SECRET ||
+    process.env.NEXT_PUBLIC_BETTER_AUTH_SECRET,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  trustedOrigins: ["http://web:3000", "http://localhost:3000", "http://localhost:5000", "https://ripcord.jimslab.cc"],
+  trustedOrigins: [
+    "http://web:3000",
+    "http://localhost:3000",
+    "http://localhost:5000",
+    "https://ripcord.jimslab.cc",
+  ],
   socialProviders: {
     discord: {
       clientId: process.env.DISCORD_CLIENT_ID as string,
