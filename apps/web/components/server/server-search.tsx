@@ -94,7 +94,7 @@ export const ServerSearch: React.FC<ServerSearchProps> = ({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="darkhover:bg-zinc-700/50 group flex w-full items-center gap-x-2 rounded-md p-2 transition hover:bg-zinc-700/10"
+        className="group flex w-full items-center gap-x-2 rounded-md p-2 transition hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50"
       >
         <Search className="size-4 text-zinc-400 dark:text-zinc-400" />
         <p className="text-sm font-semibold text-zinc-500 transition group-hover:text-zinc-600 dark:text-zinc-400 dark:group-hover:text-zinc-300">
