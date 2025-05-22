@@ -1,7 +1,7 @@
 import { t } from "elysia";
 import { ChannelType, MemberRole } from "@workspace/db";
 
-import { ElysiaContext } from "..";
+import type { ElysiaContext } from "..";
 
 export const channelRouter = (app: ElysiaContext) =>
   app.group("/channel", (app) =>

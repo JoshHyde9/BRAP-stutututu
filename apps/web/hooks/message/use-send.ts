@@ -1,7 +1,7 @@
+import type { QueryParamsKeys } from "@/lib/types";
+
 import { useSocket } from "@/providers/ws-provider";
 import { useMutation } from "@tanstack/react-query";
-
-import { QueryParamsKeys } from "@/lib/types";
 
 type SendMessageParams<T extends QueryParamsKeys> = {
   queryParams: T;

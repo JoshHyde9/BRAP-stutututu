@@ -1,12 +1,20 @@
 {
-  "extends": "@workspace/tsconfig/react-library.json",
-  "compilerOptions": {
-    "lib": ["DOM"],
-    "baseUrl": ".",
-    "paths": {
-      "@workspace/ui/*": ["./src/*"]
-    }
-  },
-  "include": ["."],
-  "exclude": ["node_modules", "dist"]
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"verbatimModuleSyntax": true,
+		"strict": true,
+		"skipLibCheck": true,
+		"baseUrl": "./",
+		"paths": {
+			"@workspace/ui/*": ["./src/*"]
+		},
+		"outDir": "./dist",
+		"types": ["bun"],
+		"jsx": "react-jsx"
+	},
+	"tsc-alias": {
+		"resolveFullPaths": true
+	},
 }

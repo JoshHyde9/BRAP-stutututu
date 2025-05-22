@@ -33,8 +33,8 @@ export const MobileToggle: React.FC<MobileToggleProps> = ({
       <SheetContent side="left" className="flex w-full flex-row gap-0 p-0">
         <div className="w-[72px]">
           <SheetHeader className="sr-only">
-            <SheetTitle></SheetTitle>
-            <SheetDescription></SheetDescription>
+            <SheetTitle />
+            <SheetDescription />
           </SheetHeader>
           <NavigationSidebar />
         </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import type z from "zod";
+import type { ignoreFriendRequestSchema } from "@/lib/schema";
 
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
@@ -8,7 +9,6 @@ import { X } from "lucide-react";
 
 import { api } from "@workspace/api";
 
-import { ignoreFriendRequestSchema } from "@/lib/schema";
 
 import { ActionTooltip } from "@/components/action-tooltip";
 

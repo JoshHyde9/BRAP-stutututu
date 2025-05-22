@@ -1,3 +1,5 @@
+import type { QueryParamsKeys } from "@/lib/types";
+
 import { useForm } from "react-hook-form";
 
 import { Button } from "@workspace/ui/components/button";
@@ -10,7 +12,6 @@ import {
 import { Input } from "@workspace/ui/components/input";
 
 import { useEditMessage } from "@/hooks/message/use-edit";
-import { QueryParamsKeys } from "@/lib/types";
 
 type EditMessageProps = {
   queryParams?: Pick<QueryParamsKeys, "channelId" | "serverId">;

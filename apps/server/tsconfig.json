@@ -1,6 +1,21 @@
 {
-  "extends": "@workspace/tsconfig/base.json",
-  "include": ["src", "*.ts"],
-  "exclude": ["node_modules"]
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+    "strict": true,
+    "composite": true,
+    "skipLibCheck": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "outDir": "./dist",
+    "types": ["bun"],
+    "jsx": "react-jsx"
+  },
+  "tsc-alias": {
+    "resolveFullPaths": true
+  }
 }
-

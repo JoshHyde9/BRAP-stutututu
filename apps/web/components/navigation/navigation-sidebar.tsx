@@ -28,23 +28,23 @@ export const NavigationSidebar = async () => {
       const { data: servers } = await api.server.all.get({
         fetch: { headers: headerStore },
       });
-      
+
       return servers;
     },
   });
 
-  servers?.forEach((server) => {
+  for (const server of servers ?? []) {
     queryClient.prefetchQuery({
       queryKey: ["server", server.id],
       queryFn: async () => {
         const { data: userServer } = await api.server
           .byIdWithMembersAndChannels({ id: server?.id })
           .get({ fetch: { headers: headerStore } });
-  
+
         return userServer;
       },
-    })
-  })
+    });
+  }
 
   return (
     <div className="text-primary flex h-full w-full flex-col items-center space-y-4 bg-zinc-200 py-3 dark:bg-[#1e1f22]">

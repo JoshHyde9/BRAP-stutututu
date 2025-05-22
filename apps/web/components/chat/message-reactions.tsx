@@ -1,11 +1,12 @@
-import { SortedReaction } from "@workspace/api";
-import { Session } from "@workspace/auth";
-import { Member } from "@workspace/db";
-import { DirectMessageSortedReaction } from "@workspace/server";
+import type { SortedReaction } from "@workspace/api";
+import type { Session } from "@workspace/auth";
+import type { Member } from "@workspace/db";
+import type { DirectMessageSortedReaction } from "@workspace/server";
+import type { QueryParamsKeys } from "@/lib/types";
+
 import { cn } from "@workspace/ui/lib/utils";
 
 import { useReactions } from "@/hooks/message/use-reaction";
-import { QueryParamsKeys } from "@/lib/types";
 
 import { AddReaction } from "@/components/chat/add-reaction";
 

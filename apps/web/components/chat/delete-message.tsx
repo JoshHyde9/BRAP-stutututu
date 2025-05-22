@@ -1,7 +1,8 @@
+import type { QueryParamsKeys } from "@/lib/types";
+
 import { Trash } from "lucide-react";
 
 import { useDeleteMessage } from "@/hooks/message/use-delete";
-import { QueryParamsKeys } from "@/lib/types";
 
 import { ActionTooltip } from "@/components/action-tooltip";
 

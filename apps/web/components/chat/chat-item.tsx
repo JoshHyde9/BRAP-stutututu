@@ -134,7 +134,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
                 </span>
               </div>
             ) : (
-              <span></span>
+              <span />
             )}
             {isImage && (
               <Dialog>
@@ -358,7 +358,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
               </ActionTooltip>
             )}
           {loggedInMember.role === "ADMIN" ||
-          (message.member.role == "GUEST" &&
+          (message.member.role === "GUEST" &&
             loggedInMember.role === "MODERATOR") ? (
             <PinMessage channelId={message.channelId} messageId={message.id} />
           ) : (
@@ -366,7 +366,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
           )}
           {message.member.user.id === loggedInMember.userId ||
           loggedInMember.role === "ADMIN" ||
-          (message.member.role == "GUEST" &&
+          (message.member.role === "GUEST" &&
             loggedInMember.role === "MODERATOR") ? (
             <DeleteMessage
               queryParams={{ channelId, serverId }}

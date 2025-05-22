@@ -21,7 +21,7 @@ import { useModal } from "@/hooks/use-modal-store";
 import { sendMessageSchema } from "@/lib/schema";
 
 import { ActionTooltip } from "@/components/action-tooltip";
-import { Emoji, EmojiPicker } from "@/components/chat/emoji-picker";
+import { type Emoji, EmojiPicker } from "@/components/chat/emoji-picker";
 
 type ChatInputProps = {
   queryParams: QueryParamsKeys;

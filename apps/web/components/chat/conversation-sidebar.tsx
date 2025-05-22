@@ -34,19 +34,18 @@ export const ConversationSidebar: React.FC = async () => {
             {
               label: "Members",
               type: "member",
-              data:
-                conversations &&
-                conversations.map((conversation) => {
-                  const otherUser =
-                    conversation.userOne.id === session.user.id
-                      ? conversation.userTwo
-                      : conversation.userOne;
-                  return {
-                    id: otherUser.id,
-                    imageUrl: otherUser.image,
-                    name: otherUser.displayName ?? otherUser.name,
-                  };
-                }),
+              // @ts-expect-error
+              data: conversations?.map((conversation) => {
+                const otherUser =
+                  conversation.userOne.id === session.user.id
+                    ? conversation.userTwo
+                    : conversation.userOne;
+                return {
+                  id: otherUser.id,
+                  imageUrl: otherUser.image,
+                  name: otherUser.displayName ?? otherUser.name,
+                };
+              }),
             },
           ]}
         />
@@ -66,14 +65,13 @@ export const ConversationSidebar: React.FC = async () => {
           </ActionTooltip>
         </div>
         <div className="space-y-[2px]">
-          {conversations &&
-            conversations.map((conversation, i) => {
-              const otherUser =
-                conversation.userOne.id === session.user.id
-                  ? conversation.userTwo
-                  : conversation.userOne;
-              return <ServerMember key={i} user={otherUser} />;
-            })}
+          {conversations?.map((conversation, i) => {
+            const otherUser =
+              conversation.userOne.id === session.user.id
+                ? conversation.userTwo
+                : conversation.userOne;
+            return <ServerMember key={i} user={otherUser} />;
+          })}
         </div>
       </ScrollArea>
 

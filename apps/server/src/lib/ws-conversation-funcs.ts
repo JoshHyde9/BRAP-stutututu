@@ -1,7 +1,7 @@
 import type { Session } from "@workspace/auth";
 import type { PrismaClient } from "@workspace/db";
 import { fetchMessageWithReactions } from "./util";
-import { DirectMessageSortedReaction } from "..";
+import type { DirectMessageSortedReaction } from "..";
 
 type DMCreateMessage = {
   content: string;
@@ -27,7 +27,7 @@ type DMMessageReaction = {
 export const dmCreateMessage = async (
   prisma: PrismaClient,
   session: Session,
-  data: DMCreateMessage
+  data: DMCreateMessage,
 ) => {
   return await prisma.directMessage.create({
     data: {
@@ -51,11 +51,7 @@ export const dmCreateMessage = async (
   });
 };
 
-export const dmEditMesage = async (
-  prisma: PrismaClient,
-  session: Session,
-  data: DMEditMessage
-) => {
+export const dmEditMesage = async (prisma: PrismaClient, session: Session, data: DMEditMessage) => {
   return await prisma.directMessage.update({
     where: {
       id: data.messageId,
@@ -75,7 +71,7 @@ export const dmEditMesage = async (
 export const dmDeleteMessage = async (
   prisma: PrismaClient,
   session: Session,
-  data: DMDeleteMessage
+  data: DMDeleteMessage,
 ) => {
   return await prisma.directMessage.delete({
     where: {
@@ -93,7 +89,7 @@ export const dmDeleteMessage = async (
 export const dmMessageReaction = async (
   prisma: PrismaClient,
   session: Session,
-  data: DMMessageReaction
+  data: DMMessageReaction,
 ) => {
   const message = await fetchMessageWithReactions(prisma, data.messageId);
 
@@ -103,7 +99,7 @@ export const dmMessageReaction = async (
     (reaction: DirectMessageSortedReaction) =>
       message.id === data.messageId &&
       reaction.userIds.includes(session.user.id) &&
-      reaction.value === data.value
+      reaction.value === data.value,
   );
 
   if (existingReactionFromUser) {
@@ -119,15 +115,15 @@ export const dmMessageReaction = async (
     const updatedMessage = await fetchMessageWithReactions(prisma, message.id);
 
     return { conversationId: data.conversationId, ...updatedMessage };
-  } else {
-    await prisma.directMessageReaction.create({
-      data: {
-        value: data.value,
-        userId: session.user.id,
-        directMessageId: data.messageId,
-      },
-    });
   }
+
+  await prisma.directMessageReaction.create({
+    data: {
+      value: data.value,
+      userId: session.user.id,
+      directMessageId: data.messageId,
+    },
+  });
 
   const updatedMessage = await fetchMessageWithReactions(prisma, message.id);
   return { conversationId: data.conversationId, ...updatedMessage };

@@ -1,6 +1,6 @@
 import { t } from "elysia";
 
-import { ElysiaContext } from "..";
+import type { ElysiaContext } from "..";
 
 import { MemberRole } from "@workspace/db";
 

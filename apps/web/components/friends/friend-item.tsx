@@ -1,7 +1,8 @@
-import Link from "next/link";
-import { MessageCircle, MoreVertical } from "lucide-react";
+import type { User } from "@workspace/db";
 
-import { User } from "@workspace/db";
+import { MessageCircle, MoreVertical } from "lucide-react";
+import Link from "next/link";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,7 +72,7 @@ export const FriendItem: React.FC<FriendItemProps> = ({
           {type === "pending" && (
             <CancelFriendRequest requestId={friendshipId} />
           )}
-          {type == "requested" && (
+          {type === "requested" && (
             <>
               <AcceptFriendRequest requestId={friendshipId} />
               <IgnoreFriendRequest requestId={friendshipId} />

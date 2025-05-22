@@ -1,5 +1,5 @@
-import { Session } from "@workspace/auth";
-import { PrismaClient } from "@workspace/db";
+import type { Session } from "@workspace/auth";
+import type { PrismaClient } from "@workspace/db";
 import { countAndSortReactions } from "./util";
 
 type MessageData = {
@@ -11,11 +11,7 @@ type MessageData = {
   value?: string;
 };
 
-export const editMessage = async (
-  prisma: PrismaClient,
-  session: Session,
-  data: MessageData
-) => {
+export const editMessage = async (prisma: PrismaClient, session: Session, data: MessageData) => {
   const message = await prisma.message.findUnique({
     where: { id: data.messageId },
     select: {
@@ -57,11 +53,7 @@ export const editMessage = async (
   return editedMessage;
 };
 
-export const deleteMessage = async (
-  prisma: PrismaClient,
-  session: Session,
-  data: MessageData
-) => {
+export const deleteMessage = async (prisma: PrismaClient, session: Session, data: MessageData) => {
   const [server, message] = await prisma.$transaction([
     prisma.server.findUnique({
       where: { id: data.serverId },
@@ -75,9 +67,7 @@ export const deleteMessage = async (
     }),
   ]);
 
-  const member = server?.members.find(
-    (member) => member.userId === session.user.id
-  );
+  const member = server?.members.find((member) => member.userId === session.user.id);
 
   const isMessageOwner = message?.member.userId === session.user.id;
   const isAdmin = member?.role === "ADMIN";
@@ -94,11 +84,7 @@ export const deleteMessage = async (
   });
 };
 
-export const createReaction = async (
-  prisma: PrismaClient,
-  session: Session,
-  data: MessageData
-) => {
+export const createReaction = async (prisma: PrismaClient, session: Session, data: MessageData) => {
   const [message, member] = await prisma.$transaction([
     prisma.message.findUnique({
       where: { id: data.messageId },
@@ -142,11 +128,11 @@ export const createReaction = async (
     (reaction) =>
       sortedMessage.id === data.messageId &&
       reaction.memberId === member.id &&
-      reaction.value === data.value
+      reaction.value === data.value,
   );
 
   if (existingReactionFromUser) {
-    let message = await prisma.reaction.delete({
+    const message = await prisma.reaction.delete({
       where: { id: existingReactionFromUser.id },
       include: {
         member: {
@@ -172,14 +158,14 @@ export const createReaction = async (
     };
 
     return messageWithChannelId;
-  } else {
-    await prisma.reaction.create({
-      data: {
-        memberId: member.id,
-        messageId: message.id,
-        value: data.value,
-      },
-    });
-    return sortedMessage;
   }
+
+  await prisma.reaction.create({
+    data: {
+      memberId: member.id,
+      messageId: message.id,
+      value: data.value,
+    },
+  });
+  return sortedMessage;
 };

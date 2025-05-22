@@ -54,8 +54,8 @@ export const FriendsList: React.FC<FriendsListProps> = ({ friends, type }) => {
         </p>
 
         <div className="mt-6">
-          {filteredFriends &&
-            filteredFriends.map((friendship) => (
+          {
+            filteredFriends?.map((friendship) => (
               <FriendItem
                 type={type}
                 key={friendship.id}

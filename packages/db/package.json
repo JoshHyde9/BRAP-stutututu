@@ -15,10 +15,7 @@
     "db:studio": "prisma studio"
   },
   "devDependencies": {
-    "@types/bun": "latest",
-    "@workspace/eslint": "workspace:*",
-    "@workspace/tsconfig": "workspace:*",
-    "prisma": "^6.5.0"
+    "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"

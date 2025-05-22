@@ -40,7 +40,7 @@ type ConversationSearchProps = {
       | {
           id: string;
           icon?: never;
-          imageUrl: string | undefined;
+          imageUrl?: string | undefined;
           name: string;
         }[]
       | null;
@@ -58,10 +58,7 @@ type ParamsProps = {
   serverId: string;
 };
 
-export const ServerSearch: React.FC<ServerSearchProps> = ({
-  data,
-  searchTitle,
-}) => {
+export const ServerSearch: React.FC<ServerSearchProps> = ({ data, searchTitle }) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const params = useParams<ParamsProps>();
@@ -116,22 +113,17 @@ export const ServerSearch: React.FC<ServerSearchProps> = ({
 
             return (
               <CommandGroup key={label} heading={label}>
-                {data &&
-                  data.map(({ id, name, icon, imageUrl }) => (
-                    <CommandItem
-                      key={id}
-                      onSelect={() => onClick({ id, type })}
-                      className="cursor-pointer"
-                    >
-                      {imageUrl ? (
-                        <UserAvatar name={name} src={imageUrl} />
-                      ) : (
-                        icon
-                      )}
-                      <span>{name}</span>
-                      {type === "member" && icon}
-                    </CommandItem>
-                  ))}
+                {data?.map(({ id, name, icon, imageUrl }) => (
+                  <CommandItem
+                    key={id}
+                    onSelect={() => onClick({ id, type })}
+                    className="cursor-pointer"
+                  >
+                    {imageUrl ? <UserAvatar name={name} src={imageUrl} /> : icon}
+                    <span>{name}</span>
+                    {type === "member" && icon}
+                  </CommandItem>
+                ))}
               </CommandGroup>
             );
           })}

@@ -3,7 +3,7 @@ import { useSocket } from "@/providers/ws-provider";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 
-import { api, DirectMessageWithSortedReactions } from "@workspace/api";
+import { api, type DirectMessageWithSortedReactions } from "@workspace/api";
 
 type GroupedMessages = {
   [dateKey: string]: DirectMessageWithSortedReactions[];

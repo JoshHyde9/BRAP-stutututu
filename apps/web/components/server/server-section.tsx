@@ -4,7 +4,7 @@ import type { SectionType, ServerWithMembers } from "@/lib/types";
 
 import { Plus, Settings } from "lucide-react";
 
-import { ChannelType, MemberRole } from "@workspace/db";
+import { type ChannelType, MemberRole } from "@workspace/db";
 
 import { useModal } from "@/hooks/use-modal-store";
 

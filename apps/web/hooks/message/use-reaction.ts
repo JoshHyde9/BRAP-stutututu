@@ -1,7 +1,7 @@
+import type { QueryParamsKeys } from "@/lib/types";
+
 import { useSocket } from "@/providers/ws-provider";
 import { useMutation } from "@tanstack/react-query";
-
-import { QueryParamsKeys } from "@/lib/types";
 
 type MessageReactionParams = {
   queryParams: QueryParamsKeys;
@@ -51,6 +51,7 @@ export const useReactions = () => {
 
         return { success: true };
       } catch (error) {
+        console.log(error);
         throw error;
       }
     },
