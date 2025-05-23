@@ -2,7 +2,7 @@
 
 import type { Session } from "@workspace/auth";
 
-import { ComponentRef, useRef } from "react";
+import { type ComponentRef, useRef } from "react";
 import { differenceInMinutes } from "date-fns";
 import { Loader2, ServerCrash } from "lucide-react";
 

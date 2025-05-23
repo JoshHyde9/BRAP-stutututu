@@ -10,11 +10,8 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@workspace/eslint": "workspace:*",
-    "@workspace/tsconfig": "workspace:*",
     "@workspace/server": "workspace:*",
-    "elysia": "^1.2.21",
-    "eslint": "^9.21.0"
+    "elysia": "^1.2.21"
   },
   "peerDependencies": {
     "typescript": "^5"

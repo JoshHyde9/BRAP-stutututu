@@ -64,7 +64,7 @@ export const MessageToolbarMore: React.FC<MessageToolbarMoreProps> = ({
         </DropdownMenuItem>
         {messageUser.userId === loggedInMember.userId ||
         loggedInMember.role === "ADMIN" ||
-        (messageUser.role == "GUEST" && loggedInMember.role === "MODERATOR") ? (
+        (messageUser.role === "GUEST" && loggedInMember.role === "MODERATOR") ? (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer px-3 py-2 text-sm text-rose-500 focus:bg-rose-100/90 dark:focus:bg-rose-500/20">

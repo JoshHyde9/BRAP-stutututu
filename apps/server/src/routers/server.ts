@@ -1,7 +1,7 @@
 import { t } from "elysia";
 import { v4 as uuidv4 } from "uuid";
 
-import { ElysiaContext } from "..";
+import type { ElysiaContext } from "..";
 
 import { MemberRole } from "@workspace/db";
 

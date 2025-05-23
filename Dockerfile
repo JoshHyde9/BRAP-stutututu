@@ -14,9 +14,6 @@ COPY packages/db/package.json ./packages/db/
 COPY packages/auth/package.json ./packages/auth/
 COPY packages/api/package.json ./packages/api/
 COPY packages/ui/package.json ./packages/ui/
-COPY packages/eslint/package.json ./packages/eslint/
-COPY packages/tsconfig/package.json ./packages/tsconfig/
-COPY packages/prettier/package.json ./packages/prettier/
 
 # Install dependencies
 RUN bun install

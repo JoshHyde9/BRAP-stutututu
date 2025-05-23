@@ -1,6 +1,7 @@
 "use client";
 
 import type { Emoji } from "@/components/chat/emoji-picker";
+import type { QueryParamsKeys } from "@/lib/types";
 
 import { useState } from "react";
 import { SmilePlus } from "lucide-react";
@@ -8,7 +9,6 @@ import { SmilePlus } from "lucide-react";
 import { cn } from "@workspace/ui/lib/utils";
 
 import { useReactions } from "@/hooks/message/use-reaction";
-import { QueryParamsKeys } from "@/lib/types";
 
 import { EmojiPicker } from "@/components/chat/emoji-picker";
 

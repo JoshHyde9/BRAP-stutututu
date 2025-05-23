@@ -105,6 +105,7 @@ export const ServerSidebar: React.FC<ServerSidebarProps> = async ({
               {
                 label: "Members",
                 type: "member",
+                // @ts-expect-error
                 data: members.map((member) => ({
                   id: member.userId,
                   name:

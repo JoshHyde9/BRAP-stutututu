@@ -1,16 +1,16 @@
 "use client";
 
 import type { ModalType } from "@/hooks/use-modal-store";
+import type { ServerWithMembers } from "@/lib/types";
+import { type Channel, type Server, MemberRole } from "@workspace/db";
 
 import { useParams } from "next/navigation";
 import { Edit, Lock, Trash } from "lucide-react";
 
-import { Channel, MemberRole, Server } from "@workspace/db";
 import { cn } from "@workspace/ui/lib/utils";
 
 import { useModal } from "@/hooks/use-modal-store";
 import { sidebarIconMap } from "@/lib/iconMaps";
-import { ServerWithMembers } from "@/lib/types";
 
 import { ActionTooltip } from "@/components/action-tooltip";
 

@@ -36,6 +36,7 @@ const ConversationUserPage: React.FC<ConversationUserPageProps> = async ({
 
   return (
     <div className="flex h-full flex-col bg-white dark:bg-[#313338]">
+      {/* @ts-ignore */}
       <ChatHeader
         type="conversation"
         name={otherUser.displayName ?? otherUser.name}

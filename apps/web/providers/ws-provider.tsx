@@ -1,10 +1,7 @@
 "use client";
 
 import type { InfiniteData, QueryClient } from "@tanstack/react-query";
-import type {
-  DirectMessageWithSortedReactions,
-  MessageWithSortedReactions,
-} from "@workspace/api";
+import type { DirectMessageWithSortedReactions, MessageWithSortedReactions } from "@workspace/api";
 
 import {
   createContext,
@@ -64,10 +61,7 @@ type WebSocketMessage<T extends WebSocketMessageType> = {
 
 type NotificationState = {
   servers: Record<string, { hasNotification: boolean }>;
-  conversations: Record<
-    string,
-    { count: number; image?: string; name: string }
-  >;
+  conversations: Record<string, { count: number; image?: string; name: string }>;
 };
 
 type WebSocketContextType = {
@@ -117,6 +111,7 @@ const updateMessageData = <T extends PageData | ConversationPageData>(
 
 const prependMessage = <T extends PageData | ConversationPageData>(
   oldData: InfiniteData<T> | undefined,
+  // biome-ignore lint: any is fair enough here
   newMessage: any,
 ) => {
   if (!oldData?.pages[0]) return oldData;
@@ -169,9 +164,7 @@ const handleEditMessage: MessageHandler = (message, queryClient) => {
 
   queryClient.setQueryData(queryKey, (oldMessages: InfiniteData<PageData>) => {
     updateMessageData(oldMessages, (messages) =>
-      messages.map((msg) =>
-        msg.id === message.id ? { ...msg, content: message.content } : msg,
-      ),
+      messages.map((msg) => (msg.id === message.id ? { ...msg, content: message.content } : msg)),
     );
   });
 };
@@ -182,9 +175,7 @@ const handleDeleteMessage: MessageHandler = (message, queryClient) => {
     : ["messages", message.channelId];
 
   queryClient.setQueryData(queryKey, (oldMessages: InfiniteData<PageData>) => {
-    updateMessageData(oldMessages, (messages) =>
-      messages.filter((msg) => msg.id === message.id),
-    );
+    updateMessageData(oldMessages, (messages) => messages.filter((msg) => msg.id === message.id));
   });
 };
 
@@ -202,16 +193,14 @@ const handleCreateMessage: MessageHandler = (
 
     queryClient.setQueryData(
       ["conversation", message.conversationId],
-      (oldMessages: InfiniteData<ConversationPageData>) =>
-        prependMessage(oldMessages, message),
+      (oldMessages: InfiniteData<ConversationPageData>) => prependMessage(oldMessages, message),
     );
   } else {
     handleServerNotification({ serverId: message.serverId });
 
     queryClient.setQueryData(
       ["messages", message.channelId],
-      (oldMessages: InfiniteData<PageData>) =>
-        prependMessage(oldMessages, message),
+      (oldMessages: InfiniteData<PageData>) => prependMessage(oldMessages, message),
     );
   }
 };
@@ -239,9 +228,7 @@ const messageHandlers: HandlerMap = {
   "create-reaction-conversation": handleUpdateReaction,
 };
 
-const SocketContext = createContext<WebSocketContextType | undefined>(
-  undefined,
-);
+const SocketContext = createContext<WebSocketContextType | undefined>(undefined);
 
 export const SocketProvider = ({
   children,
@@ -262,7 +249,7 @@ export const SocketProvider = ({
 
   useEffect(() => {
     currentServerIdRef.current = currentServerId;
-  }, [currentServerId])
+  }, [currentServerId]);
 
   const handleConversationNotification = useCallback(
     ({
@@ -291,22 +278,19 @@ export const SocketProvider = ({
     [currentUserId],
   );
 
-  const handleServerNotification = useCallback(
-    ({ serverId }: { serverId: string }) => {
-      if (serverId === currentServerIdRef.current) return;
+  const handleServerNotification = useCallback(({ serverId }: { serverId: string }) => {
+    if (serverId === currentServerIdRef.current) return;
 
-      setNotifications((prev) => ({
-        ...prev,
-        servers: {
-          ...prev.servers,
-          [serverId]: {
-            hasNotification: true,
-          },
+    setNotifications((prev) => ({
+      ...prev,
+      servers: {
+        ...prev.servers,
+        [serverId]: {
+          hasNotification: true,
         },
-      }));
-    },
-    [],
-  );
+      },
+    }));
+  }, []);
 
   useEffect(() => {
     const socketInstance = api.ws.chat.subscribe();
@@ -370,9 +354,7 @@ export const SocketProvider = ({
     (params: { channelId?: string; serverId?: string }) => {
       return sendMessage({
         type: "leave-chat",
-        data: params.channelId
-          ? { channelId: params.channelId }
-          : { serverId: params.serverId },
+        data: params.channelId ? { channelId: params.channelId } : { serverId: params.serverId },
       });
     },
     [sendMessage],
@@ -389,9 +371,7 @@ export const SocketProvider = ({
 
       return sendMessage({
         type: "join-chat",
-        data: params.channelId
-          ? { channelId: params.channelId }
-          : { serverId: params.serverId },
+        data: params.channelId ? { channelId: params.channelId } : { serverId: params.serverId },
       });
     },
     [sendMessage],
@@ -446,9 +426,7 @@ export const SocketProvider = ({
     ],
   );
 
-  return (
-    <SocketContext.Provider value={value}>{children}</SocketContext.Provider>
-  );
+  return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>;
 };
 
 export const useSocket = (): WebSocketContextType => {

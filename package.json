@@ -2,8 +2,7 @@
   "name": "jims-rich-media-chat-client-v2",
   "version": "0.0.1",
   "devDependencies": {
-    "@workspace/eslint": "workspace:*",
-    "@workspace/tsconfig": "workspace:*",
+    "@biomejs/biome": "1.9.4",
     "dotenv-cli": "^8.0.0",
     "prettier": "^3.2.5",
     "turbo": "^2.3.0",
@@ -15,8 +14,7 @@
     "build": "dotenv -- turbo build",
     "dev": "turbo dev",
     "start": "dotenv -- turbo run start",
-    "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "check": "biome check --write .",
     "prisma:generate": "prisma generate --schema=./packages/db/prisma/schema.prisma"
   },
   "workspaces": [

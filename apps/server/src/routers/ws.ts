@@ -1,11 +1,9 @@
 import { auth, type Session } from "@workspace/auth";
-import { ElysiaContext } from "..";
+import type { ElysiaContext } from "..";
+import type { ElysiaWS } from "elysia/ws";
+
 import { t } from "elysia";
-import {
-  createReaction,
-  deleteMessage,
-  editMessage,
-} from "../lib/ws-message-funcs";
+import { createReaction, deleteMessage, editMessage } from "../lib/ws-message-funcs";
 import { getConversationId } from "../lib/util";
 import {
   dmCreateMessage,
@@ -13,7 +11,6 @@ import {
   dmEditMesage,
   dmMessageReaction,
 } from "../lib/ws-conversation-funcs";
-import { ElysiaWS } from "elysia/ws";
 
 type NonNullableSession = NonNullable<Session>;
 
@@ -142,11 +139,7 @@ export const wsRouter = (app: ElysiaContext) =>
             ws.unsubscribe(`channel:${channelId}`);
             break;
           case "join-conversation":
-            const conversation = await getConversationId(
-              prisma,
-              session.user.id,
-              targetId!
-            );
+            const conversation = await getConversationId(prisma, session.user.id, targetId!);
 
             addUserToConversation(session.user.id, conversation.conversationId);
 
@@ -154,9 +147,7 @@ export const wsRouter = (app: ElysiaContext) =>
             const targetSocket = wsConnections.get(targetId!);
 
             if (targetSocket) {
-              targetSocket.subscribe(
-                `conversation:${conversation.conversationId}`
-              );
+              targetSocket.subscribe(`conversation:${conversation.conversationId}`);
             }
 
             break;
@@ -203,9 +194,7 @@ export const wsRouter = (app: ElysiaContext) =>
               return ws.data.error("Bad Request");
             }
 
-            const member = server.members.find(
-              (member) => member.userId === session.user.id
-            );
+            const member = server.members.find((member) => member.userId === session.user.id);
 
             if (!member) {
               return ws.data.error("Bad Request");
@@ -419,5 +408,5 @@ export const wsRouter = (app: ElysiaContext) =>
         wsConnections.delete(ws.id);
         userSessions.delete(ws.id);
       },
-    })
+    }),
   );

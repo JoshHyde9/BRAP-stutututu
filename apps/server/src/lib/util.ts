@@ -1,5 +1,5 @@
 import type { PrismaClient } from "@workspace/db";
-import {
+import type {
   MessageWithReactions,
   SortedReaction,
   MessageWithSortedReactions,
@@ -147,6 +147,6 @@ export const fetchMessageWithReactions = async (prisma: PrismaClient, messageId:
       user: { omit: { emailVerified: true, email: true, updatedAt: true } },
     },
   });
-  
+
   return message ? countAndSortDirectMessageReactions(message) : null;
 };

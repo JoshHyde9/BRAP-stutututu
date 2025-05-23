@@ -1,6 +1,6 @@
 import { t } from "elysia";
 
-import { ElysiaContext } from "..";
+import type { ElysiaContext } from "..";
 
 export const friendRouter = (app: ElysiaContext) =>
   app.group("/friend", (app) =>

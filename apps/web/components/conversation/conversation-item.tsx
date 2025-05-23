@@ -92,7 +92,7 @@ export const ConversationItem: React.FC<ConversationItem> = ({
               </span>
             </div>
           ) : (
-            <span></span>
+            <span />
           )}
           {isImage && (
             <Dialog>

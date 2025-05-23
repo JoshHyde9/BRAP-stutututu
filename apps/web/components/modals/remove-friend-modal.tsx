@@ -1,6 +1,7 @@
 "use client";
 
 import type z from "zod";
+import type { removeFriendSchema } from "@/lib/schema";
 
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
@@ -17,7 +18,6 @@ import {
 } from "@workspace/ui/components/dialog";
 
 import { useModal } from "@/hooks/use-modal-store";
-import { removeFriendSchema } from "@/lib/schema";
 
 export const RemoveFriendModal = () => {
   const { isOpen, onClose, type, props } = useModal();

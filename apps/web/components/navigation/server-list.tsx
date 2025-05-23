@@ -1,8 +1,9 @@
 "use client";
 
+import type { Channel, Server } from "@workspace/db";
+
 import Link from "next/link";
 
-import { Channel, Server } from "@workspace/db";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 
 import { NavigationItem } from "@/components/navigation/navigation-item";
